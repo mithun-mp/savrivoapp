@@ -318,9 +318,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   saveBtn?.addEventListener('click', async () => {
     const editId = (document.getElementById('m-edit-id') as HTMLInputElement).value;
     const name = (document.getElementById('m-name') as HTMLInputElement).value.trim();
-    const websiteUrl = (document.getElementById('m-url') as HTMLInputElement).value.trim();
+    let websiteUrl = (document.getElementById('m-url') as HTMLInputElement).value.trim();
     const affiliateProgramName = (document.getElementById('m-program') as HTMLInputElement).value.trim();
-    const logoUrl = (document.getElementById('m-logo') as HTMLInputElement).value.trim();
+    let logoUrl = (document.getElementById('m-logo') as HTMLInputElement).value.trim();
 
     if (!name || !websiteUrl) {
       if (errorEl) {
@@ -328,6 +328,13 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         errorEl.classList.remove('hidden');
       }
       return;
+    }
+
+    if (websiteUrl && !/^https?:\/\//i.test(websiteUrl)) {
+      websiteUrl = 'https://' + websiteUrl;
+    }
+    if (logoUrl && !/^https?:\/\//i.test(logoUrl)) {
+      logoUrl = 'https://' + logoUrl;
     }
 
     saveBtn.disabled = true;

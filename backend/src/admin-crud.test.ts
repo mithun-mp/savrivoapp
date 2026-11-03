@@ -72,7 +72,8 @@ describe('Admin CRUD Schemas, Relational Integrity & API Route Tests', () => {
     method: string,
     path: string,
     payload?: Record<string, unknown>,
-    token?: string
+    token?: string,
+    overrideHeaders?: Record<string, string>
   ): Promise<{ statusCode?: number; body: string }> {
     return new Promise((resolve, reject) => {
       const postData = payload ? JSON.stringify(payload) : '';
@@ -88,6 +89,10 @@ describe('Admin CRUD Schemas, Relational Integrity & API Route Tests', () => {
       if (payload) {
         headers['Content-Type'] = 'application/json';
         headers['Content-Length'] = Buffer.byteLength(postData);
+      }
+
+      if (overrideHeaders) {
+        Object.assign(headers, overrideHeaders);
       }
 
       const req = http.request(
@@ -151,6 +156,46 @@ describe('Admin CRUD Schemas, Relational Integrity & API Route Tests', () => {
           websiteUrl: 'not-a-valid-url',
         });
       });
+    });
+
+    it('Merchant Schema: accepts valid root-level Amazon India payload', () => {
+      const valid = createMerchantSchema.parse({
+        name: 'Amazon India',
+        websiteUrl: 'https://amazon.in',
+        affiliateProgramName: 'Amazon Associates',
+      });
+      assert.equal(valid.name, 'Amazon India');
+      assert.equal(valid.websiteUrl, 'https://amazon.in');
+      assert.equal(valid.affiliateProgramName, 'Amazon Associates');
+      assert.equal(valid.enabled, true);
+    });
+
+    it('Merchant Schema: rejects payload missing name', () => {
+      assert.throws(
+        () => createMerchantSchema.parse({ websiteUrl: 'https://amazon.in' }),
+        (err: any) => err.errors.some((e: any) => e.path.includes('name') && e.message === 'Required')
+      );
+    });
+
+    it('Merchant Schema: rejects payload missing websiteUrl', () => {
+      assert.throws(
+        () => createMerchantSchema.parse({ name: 'Amazon India' }),
+        (err: any) => err.errors.some((e: any) => e.path.includes('websiteUrl') && e.message === 'Required')
+      );
+    });
+
+    it('Merchant Schema: rejects nested wrapper object { merchant: { ... } } as missing root-level fields', () => {
+      assert.throws(
+        () => createMerchantSchema.parse({
+          merchant: {
+            name: 'Amazon India',
+            websiteUrl: 'https://amazon.in',
+          },
+        }),
+        (err: any) =>
+          err.errors.some((e: any) => e.path.includes('name') && e.message === 'Required') &&
+          err.errors.some((e: any) => e.path.includes('websiteUrl') && e.message === 'Required')
+      );
     });
 
     it('Offer Schema: coerces numeric price strings and rejects invalid productUrl', () => {
@@ -269,6 +314,75 @@ describe('Admin CRUD Schemas, Relational Integrity & API Route Tests', () => {
       assert.equal(json.success, false);
       assert.equal(json.error.code, 'VALIDATION_ERROR');
       assert.ok(json.error.details.some((d: { field: string }) => d.field === 'websiteUrl'));
+    });
+
+    it('returns HTTP 400 when merchant payload is nested under wrapper object', async () => {
+      const res = await makeRequest(
+        'POST',
+        '/api/admin/merchants',
+        {
+          merchant: {
+            name: 'Amazon India',
+            websiteUrl: 'https://amazon.in',
+            affiliateProgramName: 'Amazon Associates',
+          },
+        },
+        adminToken
+      );
+      assert.equal(res.statusCode, 400);
+      const json = JSON.parse(res.body);
+      assert.equal(json.success, false);
+      assert.equal(json.error.code, 'VALIDATION_ERROR');
+      assert.ok(json.error.details.some((d: any) => d.field === 'name' && d.message === 'Required'));
+      assert.ok(json.error.details.some((d: any) => d.field === 'websiteUrl' && d.message === 'Required'));
+    });
+
+    it('returns HTTP 400 when Content-Type application/json is omitted (body parser ignores payload)', async () => {
+      const res = await makeRequest(
+        'POST',
+        '/api/admin/merchants',
+        {
+          name: 'Amazon India',
+          websiteUrl: 'https://amazon.in',
+        },
+        adminToken,
+        { 'Content-Type': 'text/plain' }
+      );
+      assert.equal(res.statusCode, 400);
+      const json = JSON.parse(res.body);
+      assert.equal(json.success, false);
+      assert.equal(json.error.code, 'VALIDATION_ERROR');
+      assert.ok(json.error.details.some((d: any) => d.field === 'name' && d.message === 'Required'));
+      assert.ok(json.error.details.some((d: any) => d.field === 'websiteUrl' && d.message === 'Required'));
+    });
+
+    it('successfully creates merchant with HTTP 201 when root-level payload and Content-Type are sent', async () => {
+      const originalSave = Merchant.prototype.save;
+      (Merchant.prototype as any).save = function () {
+        return Promise.resolve(this);
+      };
+
+      try {
+        const res = await makeRequest(
+          'POST',
+          '/api/admin/merchants',
+          {
+            name: 'Amazon India',
+            websiteUrl: 'https://amazon.in',
+            affiliateProgramName: 'Amazon Associates',
+          },
+          adminToken
+        );
+        assert.equal(res.statusCode, 201);
+        const json = JSON.parse(res.body);
+        assert.equal(json.success, true);
+        assert.equal(json.message, 'Merchant created');
+        assert.equal(json.data.name, 'Amazon India');
+        assert.equal(json.data.websiteUrl, 'https://amazon.in');
+        assert.equal(json.data.affiliateProgramName, 'Amazon Associates');
+      } finally {
+        Merchant.prototype.save = originalSave;
+      }
     });
 
     it('returns HTTP 400 with VALIDATION_ERROR when creating offer with missing required fields', async () => {

@@ -8,15 +8,39 @@ async function apiRequest<T>(path: string, options?: RequestInit): Promise<ApiRe
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (options?.headers) {
+      if (options.headers instanceof Headers) {
+        options.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+      } else if (Array.isArray(options.headers)) {
+        options.headers.forEach(([key, value]) => {
+          headers[key] = value;
+        });
+      } else {
+        Object.assign(headers, options.headers);
+      }
+    }
+
     const res = await fetch(`${API_BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      signal: controller.signal,
       ...options,
+      headers,
+      signal: controller.signal,
     });
     clearTimeout(timeout);
     if (!res.ok) {
-      const err = await res.json().catch(() => ({})) as ApiResponse;
-      throw new Error(err.error?.message || `Request failed: ${res.status}`);
+      const err = (await res.json().catch(() => ({}))) as ApiResponse;
+      let errMsg = err.error?.message || `Request failed: ${res.status}`;
+      if (Array.isArray(err.error?.details) && err.error.details.length > 0) {
+        const details = err.error.details
+          .map((d: any) => (d.field ? `${d.field}: ${d.message}` : d.message || JSON.stringify(d)))
+          .join(', ');
+        errMsg = `${errMsg} (${details})`;
+      }
+      throw new Error(errMsg);
     }
     return res.json() as Promise<ApiResponse<T>>;
   } catch (err) {
