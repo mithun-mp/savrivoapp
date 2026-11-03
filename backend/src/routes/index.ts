@@ -14,6 +14,7 @@ import adminOfferRoutes from './admin/offers.routes';
 import adminGuideRoutes from './admin/guides.routes';
 import adminSettingsRoutes from './admin/settings.routes';
 import adminDashboardRoutes from './admin/dashboard.routes';
+import adminProductImportRoutes from '../modules/product-import/product-import.routes';
 
 const router = Router();
 
@@ -35,5 +36,6 @@ router.use('/admin/merchants', adminMerchantRoutes);
 router.use('/admin/offers', adminOfferRoutes);
 router.use('/admin/guides', adminGuideRoutes);
 router.use('/admin/settings', adminSettingsRoutes);
+router.use('/admin/product-import', adminProductImportRoutes);
 
 export default router;

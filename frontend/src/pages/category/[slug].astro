@@ -5,15 +5,12 @@ import GuideCard from '../../components/guide/GuideCard';
 import Breadcrumb from '../../components/ui/Breadcrumb';
 import { url } from '../../lib/paths';
 import { API_BASE } from '../../lib/api';
+import { getBuildCategories } from '../../lib/categories.data';
 import type { Category, Product, Guide } from '../../types';
 
 export async function getStaticPaths() {
-  try {
-    const res = await fetch(`${API_BASE}/categories`, { signal: AbortSignal.timeout(5000) });
-    if (!res.ok) return [];
-    const json = await res.json();
-    return (json.data as Category[] || []).map(c => ({ params: { slug: c.slug }, props: { category: c } }));
-  } catch { return []; }
+  const { categories } = await getBuildCategories();
+  return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
 }
 
 const { category } = Astro.props as { category: Category };

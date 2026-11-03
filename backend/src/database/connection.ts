@@ -1,13 +1,8 @@
 import mongoose from 'mongoose';
 import { config } from '../config/env';
+import { sanitizeMongoUri, sanitizeErrorMessage, sanitizeError } from '../utils/sanitize';
 
-/**
- * Strips password and sensitive credentials from MongoDB URI for safe logging.
- */
-export function sanitizeMongoUri(uri: string): string {
-  if (!uri) return '[NOT_SET]';
-  return uri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@');
-}
+export { sanitizeMongoUri, sanitizeErrorMessage, sanitizeError };
 
 let eventListenersAttached = false;
 
@@ -28,7 +23,8 @@ function attachLifecycleEventListeners(): void {
   });
 
   mongoose.connection.on('error', (err: unknown) => {
-    const message = err instanceof Error ? err.message : String(err);
+    const sanitized = sanitizeError(err);
+    const message = sanitized instanceof Error ? sanitized.message : String(sanitized);
     console.error('[DB] MongoDB Atlas connection error:', message);
   });
 }
@@ -47,7 +43,7 @@ export async function connectDatabase(): Promise<void> {
   if (mongoose.connection.readyState === 2) {
     await new Promise<void>((resolve, reject) => {
       mongoose.connection.once('connected', () => resolve());
-      mongoose.connection.once('error', (err) => reject(err));
+      mongoose.connection.once('error', (err) => reject(sanitizeError(err)));
     });
     return;
   }
@@ -94,15 +90,17 @@ export async function connectDatabase(): Promise<void> {
         console.log('[DB] Successfully connected to MongoDB Atlas database: savrivo');
         return;
       } catch (retryErr: unknown) {
-        const retryMsg = retryErr instanceof Error ? retryErr.message : String(retryErr);
+        const sanitizedRetry = sanitizeError(retryErr);
+        const retryMsg = sanitizedRetry instanceof Error ? sanitizedRetry.message : String(sanitizedRetry);
         console.error('[DB] Failed to connect to MongoDB Atlas after DNS fallback:', retryMsg);
-        throw retryErr;
+        throw sanitizedRetry;
       }
     }
 
-    const message = err instanceof Error ? err.message : String(err);
+    const sanitizedErr = sanitizeError(err);
+    const message = sanitizedErr instanceof Error ? sanitizedErr.message : String(sanitizedErr);
     console.error('[DB] Failed to connect to MongoDB Atlas:', message);
-    throw err;
+    throw sanitizedErr;
   }
 }
 
@@ -115,7 +113,8 @@ export async function disconnectDatabase(): Promise<void> {
       await mongoose.disconnect();
       console.log('[DB] MongoDB connection closed gracefully');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
+      const sanitized = sanitizeError(err);
+      const message = sanitized instanceof Error ? sanitized.message : String(sanitized);
       console.error('[DB] Error during MongoDB disconnect:', message);
     }
   }

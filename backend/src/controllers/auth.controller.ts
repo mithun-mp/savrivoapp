@@ -5,7 +5,7 @@ import { sendSuccess, sendError } from '../utils/response';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.string().trim().toLowerCase().email(),
   password: z.string().min(1),
 });
 
@@ -13,7 +13,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
   try {
     const { email, password } = loginSchema.parse(req.body);
     const user = await AdminUser.findOne({ email, active: true }).select('+passwordHash');
-    if (!user) {
+    if (!user || !user.passwordHash) {
       sendError(res, 'Invalid credentials', 401, 'INVALID_CREDENTIALS');
       return;
     }

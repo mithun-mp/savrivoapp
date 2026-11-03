@@ -1,5 +1,6 @@
 import { createApp } from './app';
 import { connectDatabase, disconnectDatabase } from './database/connection';
+import { sanitizeErrorMessage } from './utils/sanitize';
 import { config } from './config/env';
 
 async function start() {
@@ -37,7 +38,7 @@ async function start() {
     process.on('SIGINT', () => graceful('SIGINT'));
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error('[Server] Fatal startup error:', message);
+    console.error('[Server] Fatal startup error:', sanitizeErrorMessage(message));
     process.exit(1);
   }
 }

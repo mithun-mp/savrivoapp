@@ -1,0 +1,1523 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { url } from '../../lib/paths';
+---
+
+<AdminLayout title="AI Product Import Agent">
+  <div class="max-w-6xl space-y-6 pb-16">
+    <!-- Breadcrumb & Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b" style="border-color: var(--color-border)">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <a
+            href={url('/admin/products')}
+            class="inline-flex items-center gap-1 text-xs font-semibold hover:text-[var(--color-accent)] transition-colors"
+            style="color: var(--color-text-2)"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Products
+          </a>
+          <span style="color: var(--color-border)">/</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Automated Ingestion
+          </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold font-display tracking-tight flex items-center gap-2.5" style="color: var(--color-text-1)">
+          <span>AI Product Import Agent</span>
+          <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg border bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-500/30">
+            GEMINI-POWERED
+          </span>
+        </h1>
+        <p class="text-xs sm:text-sm mt-1" style="color: var(--color-text-2)">
+          Import e-commerce products from Amazon India, Flipkart, or generic merchants with SSRF protection, factual scraping, and Gemini structured enrichment.
+        </p>
+      </div>
+
+      <!-- Gemini Project Diagnostics Trigger -->
+      <button
+        id="toggle-diagnostics-btn"
+        type="button"
+        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all hover:bg-[var(--color-overlay)] self-start md:self-auto cursor-pointer"
+        style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-1)"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="header-gemini-status">Gemini 3-Key Status</span>
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      </button>
+    </div>
+
+    <!-- Gemini Key Diagnostics Drawer / Panel (Collapsible) -->
+    <div
+      id="diagnostics-panel"
+      class="hidden p-5 rounded-2xl border transition-all space-y-5"
+      style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+    >
+      <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--color-border)">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <h3 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">
+            Gemini Two-Level Rotation Engine (Level 1: Model-First → Level 2: Project-Key)
+          </h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            id="refresh-diag-btn"
+            type="button"
+            class="text-xs px-2.5 py-1 rounded-lg border font-medium hover:bg-[var(--color-overlay)] cursor-pointer"
+            style="border-color: var(--color-border); color: var(--color-text-2)"
+          >
+            Refresh Telemetry
+          </button>
+          <button
+            id="close-diag-btn"
+            type="button"
+            class="p-1 rounded-lg hover:bg-[var(--color-overlay)] cursor-pointer"
+            style="color: var(--color-text-3)"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Model Priority Sequence Banner -->
+      <div class="p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs" style="background: var(--color-bg); border-color: var(--color-border)">
+        <div>
+          <span class="font-bold uppercase tracking-wider text-[11px] block" style="color: var(--color-text-1)">Model Priority Order:</span>
+          <div id="diag-model-priority-container" class="flex flex-wrap items-center gap-1.5 mt-1">
+            <span class="font-mono text-zinc-400">Loading models...</span>
+          </div>
+        </div>
+        <div class="text-[11px] text-right font-mono" style="color: var(--color-text-3)">
+          <div>Last Successful: <span id="diag-last-success" class="text-emerald-400 font-bold">None</span></div>
+        </div>
+      </div>
+
+      <!-- Key Slots (Level 2) -->
+      <div>
+        <h4 class="text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--color-text-2)">API Key Project Slots (Level 2)</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="diagnostics-slots-container">
+          <div class="p-3.5 rounded-xl border flex flex-col justify-between" style="background: var(--color-bg); border-color: var(--color-border)">
+            <div class="text-xs font-medium" style="color: var(--color-text-2)">Loading key diagnostics...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Attempt Breadcrumb Trail -->
+      <div class="p-3.5 rounded-xl border space-y-1.5" style="background: var(--color-bg); border-color: var(--color-border)">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider" style="color: var(--color-text-2)">Last Execution Breadcrumb History:</span>
+          <span class="text-[10px] font-mono text-emerald-400">Real-time Failover</span>
+        </div>
+        <div id="diag-breadcrumb-trail" class="font-mono text-xs p-2.5 rounded-lg border bg-black/30 overflow-x-auto whitespace-nowrap text-zinc-300" style="border-color: var(--color-border)">
+          No rotation history recorded yet.
+        </div>
+      </div>
+
+      <p class="text-[11px]" style="color: var(--color-text-3)">
+        * Model failover activates first: when a model hits a 429 rate limit or capacity constraint, the agent seamlessly attempts the next configured model on the same project key. If all models fail or a project-wide daily quota is exhausted, it rotates to the next API key.
+      </p>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="flex items-center gap-2 border-b" style="border-color: var(--color-border)">
+      <button
+        id="mode-tab-single"
+        type="button"
+        class="px-4 py-2.5 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m12 8 4 4-4 4M8 12h8"/></svg>
+        Single Product URL
+      </button>
+      <button
+        id="mode-tab-bulk"
+        type="button"
+        class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent hover:text-[var(--color-text-1)] transition-colors flex items-center gap-2 cursor-pointer"
+        style="color: var(--color-text-2)"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="8" x="3" y="3" rx="2"/><rect width="8" height="8" x="13" y="3" rx="2"/><rect width="8" height="8" x="3" y="13" rx="2"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg>
+        Bulk Ingestion (Batch)
+      </button>
+    </div>
+
+    <!-- Input Section: Single Mode -->
+    <div
+      id="input-card-single"
+      class="p-6 sm:p-7 rounded-2xl border space-y-4"
+      style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+    >
+      <div>
+        <label for="product-url-input" class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+          Product Source URL *
+        </label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--color-text-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg>
+            <input
+              type="url"
+              id="product-url-input"
+              placeholder="https://www.amazon.in/dp/... or https://www.flipkart.com/..."
+              class="w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-mono"
+              style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+            />
+          </div>
+          <button
+            id="start-import-btn"
+            type="button"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-95 active:scale-95 shadow-md cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)"
+          >
+            <svg id="btn-icon-sparkle" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            <svg id="btn-icon-spinner" class="w-4 h-4 animate-spin hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span id="btn-text">Extract & Enrich with AI</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick presets -->
+      <div class="flex flex-wrap items-center gap-2 text-xs pt-1" style="color: var(--color-text-3)">
+        <span class="font-medium">Quick samples:</span>
+        <button
+          type="button"
+          class="preset-url-btn px-2.5 py-1 rounded-lg border hover:bg-[var(--color-overlay)] transition-colors"
+          style="border-color: var(--color-border); color: var(--color-text-2)"
+          data-url="https://www.amazon.in/dp/B0BDK62PDX"
+        >
+          Amazon India (iPhone 16)
+        </button>
+        <button
+          type="button"
+          class="preset-url-btn px-2.5 py-1 rounded-lg border hover:bg-[var(--color-overlay)] transition-colors"
+          style="border-color: var(--color-border); color: var(--color-text-2)"
+          data-url="https://www.flipkart.com/apple-iphone-15-black-128-gb/p/itm6ac6485515ae4?pid=MOBGTAGPNUUMGX7F"
+        >
+          Flipkart (iPhone 15)
+        </button>
+      </div>
+    </div>
+
+    <!-- Input Section: Bulk Mode -->
+    <div
+      id="input-card-bulk"
+      class="hidden p-6 sm:p-7 rounded-2xl border space-y-4"
+      style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+    >
+      <div>
+        <label for="bulk-urls-input" class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+          Paste Product URLs (One per line, up to 10) *
+        </label>
+        <textarea
+          id="bulk-urls-input"
+          rows="5"
+          placeholder="https://www.amazon.in/dp/B0BDK62PDX&#10;https://www.flipkart.com/product/p/itm123?pid=MOB123456"
+          class="w-full p-4 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-mono"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        ></textarea>
+        <div class="flex items-center justify-between text-xs mt-2" style="color: var(--color-text-3)">
+          <span id="bulk-counter">0 / 10 URLs detected</span>
+          <button
+            id="start-bulk-import-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-95 active:scale-95 shadow cursor-pointer disabled:opacity-50"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)"
+          >
+            <span>Process Bulk Batch</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stepper Pipeline Visualizer (Progress) -->
+    <div
+      id="pipeline-stepper"
+      class="hidden p-5 rounded-2xl border"
+      style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+    >
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+        <div id="step-ssrf" class="flex items-center gap-2 p-2 rounded-lg" style="background: var(--color-bg)">
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400">1</span>
+          <span class="font-medium" style="color: var(--color-text-2)">SSRF Security</span>
+        </div>
+        <div id="step-scrape" class="flex items-center gap-2 p-2 rounded-lg" style="background: var(--color-bg)">
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400">2</span>
+          <span class="font-medium" style="color: var(--color-text-2)">Factual Scraping</span>
+        </div>
+        <div id="step-duplicate" class="flex items-center gap-2 p-2 rounded-lg" style="background: var(--color-bg)">
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400">3</span>
+          <span class="font-medium" style="color: var(--color-text-2)">Duplicate Check</span>
+        </div>
+        <div id="step-gemini" class="flex items-center gap-2 p-2 rounded-lg" style="background: var(--color-bg)">
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400">4</span>
+          <span class="font-medium" style="color: var(--color-text-2)">Gemini AI Enrichment</span>
+        </div>
+        <div id="step-ready" class="flex items-center gap-2 p-2 rounded-lg" style="background: var(--color-bg)">
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400">5</span>
+          <span class="font-medium" style="color: var(--color-text-2)">Catalog Staging</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review & Staging Workspace -->
+    <div id="staging-workspace" class="hidden space-y-6">
+      <!-- Quality & Integrity Signals Bar -->
+      <div
+        class="p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+      >
+        <div class="flex items-center gap-4">
+          <!-- Confidence Gauge -->
+          <div class="flex items-center gap-3">
+            <div class="relative w-12 h-12 flex items-center justify-center rounded-full border-2 border-emerald-500/40 bg-emerald-500/10">
+              <span id="confidence-percentage" class="text-sm font-bold text-emerald-400 font-mono">95%</span>
+            </div>
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Confidence Score</div>
+              <div id="confidence-label" class="text-xs" style="color: var(--color-text-2)">Verified factual data & specifications</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="enrichment-source-badge" class="text-xs font-semibold px-3 py-1 rounded-full border bg-emerald-500/15 text-emerald-300 border-emerald-500/30 flex items-center gap-1.5">
+            <span id="enrichment-source-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span id="enrichment-source-text">Gemini Enriched</span>
+          </span>
+          <span id="merchant-tag" class="text-xs font-semibold px-3 py-1 rounded-full border bg-zinc-800 text-zinc-200 border-zinc-700">
+            Amazon India
+          </span>
+          <span id="duplicate-status-badge" class="hidden text-xs font-semibold px-3 py-1 rounded-full border bg-amber-500/15 text-amber-300 border-amber-500/30">
+            Duplicate Found
+          </span>
+          <span id="anti-bot-badge" class="hidden text-xs font-semibold px-3 py-1 rounded-full border bg-rose-500/15 text-rose-300 border-rose-500/30">
+            Anti-Bot Challenged
+          </span>
+        </div>
+      </div>
+
+      <!-- Warning notice list (if any) -->
+      <div id="warnings-banner" class="hidden p-4 rounded-xl border bg-amber-500/10 border-amber-500/25 text-amber-300 text-xs space-y-1">
+        <div class="font-semibold flex items-center gap-1.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Verification Notices:
+        </div>
+        <ul id="warnings-list" class="list-disc list-inside space-y-0.5 pl-1"></ul>
+      </div>
+
+      <!-- Workspace Tabs -->
+      <div class="flex items-center gap-2 border-b" style="border-color: var(--color-border)">
+        <button
+          id="tab-btn-draft"
+          type="button"
+          class="px-4 py-2.5 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition-colors flex items-center gap-1.5 cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Catalog Editor (Live Staging)
+        </button>
+        <button
+          id="tab-btn-images"
+          type="button"
+          class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent hover:text-[var(--color-text-1)] transition-colors flex items-center gap-1.5 cursor-pointer"
+          style="color: var(--color-text-2)"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          Image Gallery (<span id="images-count-badge">0</span>)
+        </button>
+        <button
+          id="tab-btn-audit"
+          type="button"
+          class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent hover:text-[var(--color-text-1)] transition-colors flex items-center gap-1.5 cursor-pointer"
+          style="color: var(--color-text-2)"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Raw Factual Extraction
+        </button>
+      </div>
+
+      <!-- Tab Content: Catalog Editor Form -->
+      <form id="staging-form" class="space-y-6">
+        <!-- Section 1: Core Catalog Metadata -->
+        <div
+          id="tab-panel-draft"
+          class="p-6 sm:p-7 rounded-2xl border space-y-5"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+        >
+          <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M14 12H5M20 12h-2M20 17h-2"/></svg>
+            <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Product Catalog Identity</h2>
+          </div>
+
+          <div>
+            <label for="edit-title" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+              Curated Title *
+            </label>
+            <input
+              type="text"
+              id="edit-title"
+              required
+              class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-medium"
+              style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label for="edit-slug" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                Catalog Slug *
+              </label>
+              <input
+                type="text"
+                id="edit-slug"
+                required
+                class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 font-mono"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              />
+            </div>
+            <div>
+              <label for="edit-brand" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                Brand *
+              </label>
+              <input
+                type="text"
+                id="edit-brand"
+                required
+                class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              />
+            </div>
+            <div>
+              <label for="edit-category" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                Primary Category
+              </label>
+              <select
+                id="edit-category"
+                class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 cursor-pointer"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              >
+                <option value="">Select Category...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Descriptions -->
+          <div class="space-y-4">
+            <div>
+              <label for="edit-short-desc" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                Short Value Proposition (Hook)
+              </label>
+              <textarea
+                id="edit-short-desc"
+                rows="2"
+                class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="edit-full-desc" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                Full Editorial Overview (Markdown)
+              </label>
+              <textarea
+                id="edit-full-desc"
+                rows="6"
+                class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 font-mono text-xs"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Feature Highlights (Dynamic bullet items) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">
+                Key Feature Highlights
+              </label>
+              <button
+                type="button"
+                id="add-highlight-btn"
+                class="text-xs px-2.5 py-1 rounded-lg border font-medium hover:bg-[var(--color-overlay)] text-emerald-400 border-emerald-500/30"
+              >
+                + Add Highlight
+              </button>
+            </div>
+            <div id="highlights-container" class="space-y-2"></div>
+          </div>
+
+          <!-- Specifications Table (Dynamic Key-Value) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">
+                Technical Specifications
+              </label>
+              <button
+                type="button"
+                id="add-spec-btn"
+                class="text-xs px-2.5 py-1 rounded-lg border font-medium hover:bg-[var(--color-overlay)] text-emerald-400 border-emerald-500/30"
+              >
+                + Add Specification
+              </button>
+            </div>
+            <div id="specs-container" class="space-y-2"></div>
+          </div>
+
+          <!-- Offer Details & Price Verification -->
+          <div class="p-5 rounded-xl border space-y-4" style="background: var(--color-bg); border-color: var(--color-border)">
+            <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <h3 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Associated Merchant Offer</h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="edit-current-price" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                  Current Deal Price (₹ INR) *
+                </label>
+                <input
+                  type="number"
+                  id="edit-current-price"
+                  step="0.01"
+                  class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 font-mono font-bold"
+                  style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-1)"
+                />
+              </div>
+              <div>
+                <label for="edit-original-price" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                  MRP / Original Price (₹ INR)
+                </label>
+                <input
+                  type="number"
+                  id="edit-original-price"
+                  step="0.01"
+                  class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 font-mono"
+                  style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-2)"
+                />
+              </div>
+              <div>
+                <label for="edit-availability" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                  Stock Availability
+                </label>
+                <select
+                  id="edit-availability"
+                  class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-emerald-500 cursor-pointer"
+                  style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-1)"
+                >
+                  <option value="in_stock">In Stock</option>
+                  <option value="out_of_stock">Out of Stock</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="edit-canonical-url" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">
+                Clean Canonical Product URL
+              </label>
+              <input
+                type="url"
+                id="edit-canonical-url"
+                class="w-full px-4 py-2.5 rounded-xl border text-xs outline-none transition-all focus:border-emerald-500 font-mono"
+                style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-1)"
+              />
+            </div>
+          </div>
+
+          <!-- SEO & Meta -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="edit-seo-title" class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">
+                  SEO Meta Title
+                </label>
+                <span id="seo-title-count" class="text-[11px] font-mono" style="color: var(--color-text-3)">0 / 60</span>
+              </div>
+              <input
+                type="text"
+                id="edit-seo-title"
+                maxlength="70"
+                class="w-full px-4 py-2.5 rounded-xl border text-xs outline-none transition-all focus:border-emerald-500"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="edit-seo-desc" class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">
+                  SEO Meta Description
+                </label>
+                <span id="seo-desc-count" class="text-[11px] font-mono" style="color: var(--color-text-3)">0 / 155</span>
+              </div>
+              <input
+                type="text"
+                id="edit-seo-desc"
+                maxlength="165"
+                class="w-full px-4 py-2.5 rounded-xl border text-xs outline-none transition-all focus:border-emerald-500"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content: Image Gallery Staging -->
+        <div
+          id="tab-panel-images"
+          class="hidden p-6 sm:p-7 rounded-2xl border space-y-4"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+        >
+          <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--color-border)">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Extracted Product Images</h3>
+              <p class="text-xs mt-0.5" style="color: var(--color-text-2)">Check images to include in product catalog. Click 'Primary' to designate cover image.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input
+                type="url"
+                id="add-custom-image-input"
+                placeholder="https://... custom image URL"
+                class="px-3 py-1.5 rounded-lg border text-xs outline-none font-mono"
+                style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+              />
+              <button
+                type="button"
+                id="add-custom-image-btn"
+                class="text-xs px-3 py-1.5 rounded-lg border font-medium hover:bg-[var(--color-overlay)] text-emerald-400 border-emerald-500/30"
+              >
+                + Add Image
+              </button>
+            </div>
+          </div>
+
+          <div id="image-gallery-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
+        </div>
+
+        <!-- Tab Content: Factual Audit -->
+        <div
+          id="tab-panel-audit"
+          class="hidden p-6 sm:p-7 rounded-2xl border space-y-4 font-mono text-xs"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)"
+        >
+          <div class="pb-2 border-b" style="border-color: var(--color-border)">
+            <h3 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">
+              Factual Extraction Raw Payload
+            </h3>
+            <p class="text-[11px] mt-0.5" style="color: var(--color-text-2)">
+              Audit the exact data scraped from source markup before Gemini editorial enrichment.
+            </p>
+          </div>
+          <pre
+            id="audit-json-viewer"
+            class="p-4 rounded-xl overflow-x-auto max-h-96"
+            style="background: var(--color-bg); color: var(--color-text-2); border: 1px solid var(--color-border)"
+          ></pre>
+        </div>
+
+        <!-- Action Bar (Sticky at Bottom) -->
+        <div
+          class="sticky bottom-4 p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 backdrop-blur-md z-20"
+          style="background: rgba(18, 20, 24, 0.9); border-color: var(--color-border); box-shadow: var(--shadow-lg)"
+        >
+          <div class="flex items-center gap-2 text-xs" style="color: var(--color-text-2)">
+            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Review specifications, select category, then choose action.</span>
+          </div>
+
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              id="action-save-draft-btn"
+              class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:bg-[var(--color-overlay)] cursor-pointer"
+              style="border-color: var(--color-border); color: var(--color-text-1)"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span>Save as Draft</span>
+            </button>
+
+            <button
+              type="button"
+              id="action-publish-btn"
+              class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-95 shadow cursor-pointer"
+              style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Publish Directly</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bulk Results Workspace (Visible after batch processing) -->
+    <div id="bulk-results-workspace" class="hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--color-border)">
+        <h2 class="text-sm font-bold uppercase tracking-wider" style="color: var(--color-text-1)">
+          Batch Ingestion Results (<span id="bulk-completed-count">0</span>)
+        </h2>
+        <button
+          type="button"
+          id="bulk-save-all-drafts-btn"
+          class="text-xs px-4 py-2 rounded-xl text-white font-semibold transition-all shadow"
+          style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)"
+        >
+          Save All Valid as Drafts
+        </button>
+      </div>
+      <div id="bulk-results-list" class="space-y-3"></div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { api } from '../../lib/api';
+  import { url } from '../../lib/paths';
+
+  // State
+  let currentPreviewResult: any = null;
+  let activeTab = 'draft';
+  let activeMode = 'single';
+  let availableCategories: any[] = [];
+  let stagedImages: Array<{ url: string; alt: string; selected: boolean; isPrimary: boolean }> = [];
+  let stagedSpecs: Array<{ key: string; value: string }> = [];
+  let stagedHighlights: string[] = [];
+
+  // DOM Elements
+  const urlInput = document.getElementById('product-url-input') as HTMLInputElement;
+  const startImportBtn = document.getElementById('start-import-btn') as HTMLButtonElement;
+  const btnIconSparkle = document.getElementById('btn-icon-sparkle');
+  const btnIconSpinner = document.getElementById('btn-icon-spinner');
+  const btnText = document.getElementById('btn-text');
+
+  const modeTabSingle = document.getElementById('mode-tab-single');
+  const modeTabBulk = document.getElementById('mode-tab-bulk');
+  const inputCardSingle = document.getElementById('input-card-single');
+  const inputCardBulk = document.getElementById('input-card-bulk');
+
+  const bulkUrlsInput = document.getElementById('bulk-urls-input') as HTMLTextAreaElement;
+  const bulkCounter = document.getElementById('bulk-counter');
+  const startBulkBtn = document.getElementById('start-bulk-import-btn') as HTMLButtonElement;
+
+  const stepper = document.getElementById('pipeline-stepper');
+  const stagingWorkspace = document.getElementById('staging-workspace');
+  const bulkResultsWorkspace = document.getElementById('bulk-results-workspace');
+
+  const diagnosticsPanel = document.getElementById('diagnostics-panel');
+  const toggleDiagnosticsBtn = document.getElementById('toggle-diagnostics-btn');
+  const closeDiagBtn = document.getElementById('close-diag-btn');
+  const refreshDiagBtn = document.getElementById('refresh-diag-btn');
+  const headerGeminiStatus = document.getElementById('header-gemini-status');
+  const diagSlotsContainer = document.getElementById('diagnostics-slots-container');
+  const diagModelPriorityContainer = document.getElementById('diag-model-priority-container');
+  const diagLastSuccess = document.getElementById('diag-last-success');
+  const diagBreadcrumbTrail = document.getElementById('diag-breadcrumb-trail');
+
+  const confidencePercentage = document.getElementById('confidence-percentage');
+  const confidenceLabel = document.getElementById('confidence-label');
+  const merchantTag = document.getElementById('merchant-tag');
+  const duplicateBadge = document.getElementById('duplicate-status-badge');
+  const antiBotBadge = document.getElementById('anti-bot-badge');
+  const warningsBanner = document.getElementById('warnings-banner');
+  const warningsList = document.getElementById('warnings-list');
+
+  // Form Fields
+  const editTitle = document.getElementById('edit-title') as HTMLInputElement;
+  const editSlug = document.getElementById('edit-slug') as HTMLInputElement;
+  const editBrand = document.getElementById('edit-brand') as HTMLInputElement;
+  const editCategory = document.getElementById('edit-category') as HTMLSelectElement;
+  const editShortDesc = document.getElementById('edit-short-desc') as HTMLTextAreaElement;
+  const editFullDesc = document.getElementById('edit-full-desc') as HTMLTextAreaElement;
+  const editCurrentPrice = document.getElementById('edit-current-price') as HTMLInputElement;
+  const editOriginalPrice = document.getElementById('edit-original-price') as HTMLInputElement;
+  const editAvailability = document.getElementById('edit-availability') as HTMLSelectElement;
+  const editCanonicalUrl = document.getElementById('edit-canonical-url') as HTMLInputElement;
+  const editSeoTitle = document.getElementById('edit-seo-title') as HTMLInputElement;
+  const editSeoDesc = document.getElementById('edit-seo-desc') as HTMLInputElement;
+  const seoTitleCount = document.getElementById('seo-title-count');
+  const seoDescCount = document.getElementById('seo-desc-count');
+
+  const highlightsContainer = document.getElementById('highlights-container');
+  const addHighlightBtn = document.getElementById('add-highlight-btn');
+  const specsContainer = document.getElementById('specs-container');
+  const addSpecBtn = document.getElementById('add-spec-btn');
+
+  const imageGalleryGrid = document.getElementById('image-gallery-grid');
+  const imagesCountBadge = document.getElementById('images-count-badge');
+  const addCustomImageInput = document.getElementById('add-custom-image-input') as HTMLInputElement;
+  const addCustomImageBtn = document.getElementById('add-custom-image-btn');
+
+  const tabBtnDraft = document.getElementById('tab-btn-draft');
+  const tabBtnImages = document.getElementById('tab-btn-images');
+  const tabBtnAudit = document.getElementById('tab-btn-audit');
+  const tabPanelDraft = document.getElementById('tab-panel-draft');
+  const tabPanelImages = document.getElementById('tab-panel-images');
+  const tabPanelAudit = document.getElementById('tab-panel-audit');
+  const auditJsonViewer = document.getElementById('audit-json-viewer');
+
+  const actionSaveDraftBtn = document.getElementById('action-save-draft-btn');
+  const actionPublishBtn = document.getElementById('action-publish-btn');
+
+  // Toast Notification Utility
+  function showToast(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `p-4 rounded-xl border text-xs font-medium shadow-lg transition-all transform translate-y-2 pointer-events-auto flex items-center justify-between gap-3 ${
+      type === 'success'
+        ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200'
+        : type === 'warning'
+        ? 'bg-amber-950/90 border-amber-500/40 text-amber-200'
+        : type === 'error'
+        ? 'bg-rose-950/90 border-rose-500/40 text-rose-200'
+        : 'bg-zinc-900/90 border-zinc-700 text-zinc-200'
+    }`;
+    toast.innerHTML = `
+      <span>${message}</span>
+      <button class="opacity-60 hover:opacity-100">&times;</button>
+    `;
+
+    toast.querySelector('button')?.addEventListener('click', () => toast.remove());
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 4500);
+  }
+
+  // Load Categories for Selector
+  async function loadCategories() {
+    try {
+      const res = await api.categories.list();
+      availableCategories = res.data || [];
+      if (editCategory) {
+        editCategory.innerHTML = '<option value="">Select Category...</option>';
+        for (const cat of availableCategories) {
+          const opt = document.createElement('option');
+          opt.value = cat._id || cat.slug;
+          opt.textContent = cat.name;
+          editCategory.appendChild(opt);
+        }
+      }
+    } catch {
+      // Fallback categories
+      availableCategories = [
+        { name: 'Electronics', slug: 'electronics' },
+        { name: 'Audio', slug: 'audio' },
+        { name: 'Computing', slug: 'computing' },
+      ];
+    }
+  }
+
+  // Load Key & Model Two-Level Diagnostics
+  async function loadDiagnostics() {
+    try {
+      const res = await api.admin.productImport.diagnostics();
+      const diag: any = res.data;
+      if (!diag) return;
+
+      if (headerGeminiStatus) {
+        const primaryModel = diag.modelPriorityOrder?.[0] || 'gemini-3.8-flash';
+        headerGeminiStatus.textContent = `Gemini (${diag.totalHealthyKeys || 0}/${diag.totalConfiguredKeys || 0} Projects | ${primaryModel})`;
+      }
+
+      if (diagLastSuccess) {
+        if (diag.lastSuccessfulModel && diag.lastSuccessfulSlot) {
+          diagLastSuccess.textContent = `${diag.lastSuccessfulModel} (Key ${diag.lastSuccessfulSlot})`;
+        } else {
+          diagLastSuccess.textContent = 'None yet';
+        }
+      }
+
+      if (diagBreadcrumbTrail) {
+        diagBreadcrumbTrail.textContent = diag.lastAttemptBreadcrumb || 'Ready for failover requests.';
+      }
+
+      if (diagModelPriorityContainer && Array.isArray(diag.modelPriorityOrder)) {
+        diagModelPriorityContainer.innerHTML = '';
+        diag.modelPriorityOrder.forEach((m: string, idx: number) => {
+          const badge = document.createElement('span');
+          badge.className = 'font-mono text-[11px] font-semibold px-2 py-0.5 rounded border flex items-center gap-1 bg-zinc-800/80 text-zinc-200 border-zinc-700';
+          badge.innerHTML = `
+            <span class="text-emerald-400 font-bold">${idx + 1}.</span>
+            <span>${m}</span>
+          `;
+          diagModelPriorityContainer.appendChild(badge);
+        });
+      }
+
+      const keySlots = diag.keySlots || diag.slots || [];
+      if (diagSlotsContainer) {
+        diagSlotsContainer.innerHTML = '';
+        for (const s of keySlots) {
+          const card = document.createElement('div');
+          card.className = 'p-3.5 rounded-xl border flex flex-col justify-between';
+          card.style.background = 'var(--color-bg)';
+          card.style.borderColor = s.quotaExhausted
+            ? 'rgba(239, 68, 68, 0.4)'
+            : s.rateLimited
+            ? 'rgba(245, 158, 11, 0.4)'
+            : s.healthy && s.configured
+            ? 'rgba(16, 185, 129, 0.4)'
+            : 'var(--color-border)';
+
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold" style="color: var(--color-text-1)">Key Project Slot ${s.slot}</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                  !s.configured
+                    ? 'bg-zinc-800 text-zinc-400'
+                    : s.quotaExhausted
+                    ? 'bg-rose-500/20 text-rose-300'
+                    : s.rateLimited
+                    ? 'bg-amber-500/20 text-amber-300'
+                    : s.healthy
+                    ? 'bg-emerald-500/20 text-emerald-400'
+                    : 'bg-rose-500/20 text-rose-300'
+                }">
+                  ${
+                    !s.configured
+                      ? 'Unconfigured'
+                      : s.quotaExhausted
+                      ? 'Daily Quota Exhausted'
+                      : s.rateLimited
+                      ? `Cooldown (${s.cooldownSecondsRemaining}s)`
+                      : s.healthy
+                      ? 'Healthy & Ready'
+                      : 'Auth Failure'
+                  }
+                </span>
+              </div>
+              <div class="text-[11px]" style="color: var(--color-text-3)">
+                ${
+                  !s.configured
+                    ? 'GEMINI_API_KEY_' + s.slot + ' not set'
+                    : s.quotaExhausted
+                    ? s.lastError || 'Project daily quota reached'
+                    : s.rateLimited
+                    ? s.lastError || 'Temporary cooldown active'
+                    : s.healthy
+                    ? 'Level-2 project pool active'
+                    : s.lastError || 'Authentication failure'
+                }
+              </div>
+            </div>
+          `;
+          diagSlotsContainer.appendChild(card);
+        }
+      }
+    } catch {
+      if (headerGeminiStatus) headerGeminiStatus.textContent = 'Gemini Status';
+    }
+  }
+
+  // Preset Buttons
+  document.querySelectorAll('.preset-url-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      const sampleUrl = target.getAttribute('data-url');
+      if (sampleUrl && urlInput) {
+        urlInput.value = sampleUrl;
+      }
+    });
+  });
+
+  // Tab Switching (Draft vs Images vs Audit)
+  function switchTab(tab: string) {
+    activeTab = tab;
+    tabBtnDraft?.classList.toggle('border-emerald-500', tab === 'draft');
+    tabBtnDraft?.classList.toggle('text-emerald-400', tab === 'draft');
+    tabBtnDraft?.classList.toggle('border-transparent', tab !== 'draft');
+
+    tabBtnImages?.classList.toggle('border-emerald-500', tab === 'images');
+    tabBtnImages?.classList.toggle('text-emerald-400', tab === 'images');
+    tabBtnImages?.classList.toggle('border-transparent', tab !== 'images');
+
+    tabBtnAudit?.classList.toggle('border-emerald-500', tab === 'audit');
+    tabBtnAudit?.classList.toggle('text-emerald-400', tab === 'audit');
+    tabBtnAudit?.classList.toggle('border-transparent', tab !== 'audit');
+
+    tabPanelDraft?.classList.toggle('hidden', tab !== 'draft');
+    tabPanelImages?.classList.toggle('hidden', tab !== 'images');
+    tabPanelAudit?.classList.toggle('hidden', tab !== 'audit');
+  }
+
+  tabBtnDraft?.addEventListener('click', () => switchTab('draft'));
+  tabBtnImages?.addEventListener('click', () => switchTab('images'));
+  tabBtnAudit?.addEventListener('click', () => switchTab('audit'));
+
+  // Mode Switching (Single vs Bulk)
+  modeTabSingle?.addEventListener('click', () => {
+    activeMode = 'single';
+    modeTabSingle.classList.add('border-emerald-500', 'text-emerald-400');
+    modeTabSingle.classList.remove('border-transparent');
+    modeTabBulk?.classList.remove('border-emerald-500', 'text-emerald-400');
+    modeTabBulk?.classList.add('border-transparent');
+
+    inputCardSingle?.classList.remove('hidden');
+    inputCardBulk?.classList.add('hidden');
+    bulkResultsWorkspace?.classList.add('hidden');
+  });
+
+  modeTabBulk?.addEventListener('click', () => {
+    activeMode = 'bulk';
+    modeTabBulk.classList.add('border-emerald-500', 'text-emerald-400');
+    modeTabBulk.classList.remove('border-transparent');
+    modeTabSingle?.classList.remove('border-emerald-500', 'text-emerald-400');
+    modeTabSingle?.classList.add('border-transparent');
+
+    inputCardBulk?.classList.remove('hidden');
+    inputCardSingle?.classList.add('hidden');
+    stagingWorkspace?.classList.add('hidden');
+  });
+
+  // Diagnostics Toggles
+  toggleDiagnosticsBtn?.addEventListener('click', () => {
+    diagnosticsPanel?.classList.toggle('hidden');
+  });
+  closeDiagBtn?.addEventListener('click', () => {
+    diagnosticsPanel?.classList.add('hidden');
+  });
+  refreshDiagBtn?.addEventListener('click', () => {
+    loadDiagnostics();
+  });
+
+  // SEO Counters
+  editSeoTitle?.addEventListener('input', () => {
+    if (seoTitleCount) seoTitleCount.textContent = `${editSeoTitle.value.length} / 60`;
+  });
+  editSeoDesc?.addEventListener('input', () => {
+    if (seoDescCount) seoDescCount.textContent = `${editSeoDesc.value.length} / 155`;
+  });
+
+  // Dynamic Highlights List Renderer
+  function renderHighlights() {
+    if (!highlightsContainer) return;
+    highlightsContainer.innerHTML = '';
+    stagedHighlights.forEach((highlight, idx) => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2';
+      row.innerHTML = `
+        <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400 shrink-0">${idx + 1}</span>
+        <input
+          type="text"
+          value="${highlight.replace(/"/g, '&quot;')}"
+          class="highlight-item-input flex-1 px-3 py-2 rounded-xl border text-xs outline-none focus:border-emerald-500"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
+        <button
+          type="button"
+          class="delete-highlight-btn p-2 rounded-lg hover:bg-rose-500/10 text-rose-400 shrink-0"
+          data-index="${idx}"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      `;
+      highlightsContainer.appendChild(row);
+    });
+
+    highlightsContainer.querySelectorAll('.delete-highlight-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-index') || '0', 10);
+        stagedHighlights.splice(idx, 1);
+        renderHighlights();
+      });
+    });
+
+    highlightsContainer.querySelectorAll('.highlight-item-input').forEach((input, idx) => {
+      input.addEventListener('change', (e) => {
+        stagedHighlights[idx] = (e.target as HTMLInputElement).value;
+      });
+    });
+  }
+
+  addHighlightBtn?.addEventListener('click', () => {
+    stagedHighlights.push('New key feature');
+    renderHighlights();
+  });
+
+  // Dynamic Specifications Table Renderer
+  function renderSpecs() {
+    if (!specsContainer) return;
+    specsContainer.innerHTML = '';
+    stagedSpecs.forEach((spec, idx) => {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-1 sm:grid-cols-12 gap-2 items-center';
+      row.innerHTML = `
+        <input
+          type="text"
+          value="${spec.key.replace(/"/g, '&quot;')}"
+          placeholder="Specification (e.g. Battery)"
+          class="spec-key-input sm:col-span-4 px-3 py-2 rounded-xl border text-xs outline-none focus:border-emerald-500 font-semibold"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
+        <input
+          type="text"
+          value="${spec.value.replace(/"/g, '&quot;')}"
+          placeholder="Value (e.g. 5000 mAh)"
+          class="spec-val-input sm:col-span-7 px-3 py-2 rounded-xl border text-xs outline-none focus:border-emerald-500"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
+        <button
+          type="button"
+          class="delete-spec-btn sm:col-span-1 p-2 rounded-lg hover:bg-rose-500/10 text-rose-400 flex items-center justify-center"
+          data-index="${idx}"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      `;
+      specsContainer.appendChild(row);
+    });
+
+    specsContainer.querySelectorAll('.delete-spec-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-index') || '0', 10);
+        stagedSpecs.splice(idx, 1);
+        renderSpecs();
+      });
+    });
+
+    specsContainer.querySelectorAll('.spec-key-input').forEach((input, idx) => {
+      input.addEventListener('change', (e) => {
+        stagedSpecs[idx].key = (e.target as HTMLInputElement).value;
+      });
+    });
+
+    specsContainer.querySelectorAll('.spec-val-input').forEach((input, idx) => {
+      input.addEventListener('change', (e) => {
+        stagedSpecs[idx].value = (e.target as HTMLInputElement).value;
+      });
+    });
+  }
+
+  addSpecBtn?.addEventListener('click', () => {
+    stagedSpecs.push({ key: '', value: '' });
+    renderSpecs();
+  });
+
+  // Image Gallery Staging Renderer
+  function renderImages() {
+    if (!imageGalleryGrid) return;
+    imageGalleryGrid.innerHTML = '';
+    if (imagesCountBadge) imagesCountBadge.textContent = String(stagedImages.filter((img) => img.selected).length);
+
+    stagedImages.forEach((img, idx) => {
+      const card = document.createElement('div');
+      card.className = `relative rounded-xl border p-2 flex flex-col items-center justify-between transition-all ${
+        img.selected ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 opacity-50'
+      }`;
+
+      card.innerHTML = `
+        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-black/40 flex items-center justify-center mb-2">
+          <img src="${img.url}" alt="${img.alt}" class="w-full h-full object-contain" loading="lazy" />
+          ${img.isPrimary ? '<span class="absolute top-1 left-1 bg-emerald-500 text-black text-[9px] font-bold px-1.5 py-0.5 rounded">PRIMARY</span>' : ''}
+        </div>
+        <div class="flex items-center justify-between w-full text-xs">
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="img-toggle-chk" data-index="${idx}" ${img.selected ? 'checked' : ''} />
+            <span class="text-[10px]">Use</span>
+          </label>
+          <button type="button" class="img-primary-btn text-[10px] font-semibold text-emerald-400 hover:underline" data-index="${idx}">
+            Set Primary
+          </button>
+        </div>
+      `;
+
+      imageGalleryGrid.appendChild(card);
+    });
+
+    imageGalleryGrid.querySelectorAll('.img-toggle-chk').forEach((chk) => {
+      chk.addEventListener('change', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-index') || '0', 10);
+        stagedImages[idx].selected = (e.target as HTMLInputElement).checked;
+        renderImages();
+      });
+    });
+
+    imageGalleryGrid.querySelectorAll('.img-primary-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-index') || '0', 10);
+        stagedImages.forEach((img, i) => {
+          img.isPrimary = i === idx;
+          if (i === idx) img.selected = true;
+        });
+        renderImages();
+      });
+    });
+  }
+
+  addCustomImageBtn?.addEventListener('click', () => {
+    const customUrl = addCustomImageInput?.value.trim();
+    if (customUrl && customUrl.startsWith('http')) {
+      stagedImages.push({ url: customUrl, alt: 'Custom Product Image', selected: true, isPrimary: stagedImages.length === 0 });
+      if (addCustomImageInput) addCustomImageInput.value = '';
+      renderImages();
+    }
+  });
+
+  // Populate Staging Workspace with Extracted + Enriched Result
+  function populateWorkspace(result: any) {
+    currentPreviewResult = result;
+    const { factual, enriched, confidenceScore, duplicateCheck, warnings } = result;
+
+    // Show Workspace
+    stagingWorkspace?.classList.remove('hidden');
+    stepper?.classList.remove('hidden');
+
+    // Confidence
+    if (confidencePercentage) confidencePercentage.textContent = `${confidenceScore}%`;
+    if (confidenceLabel) {
+      if (confidenceScore >= 80) confidenceLabel.textContent = 'High confidence: verified factual specs & images';
+      else if (confidenceScore >= 50) confidenceLabel.textContent = 'Moderate confidence: check specs & pricing carefully';
+      else confidenceLabel.textContent = 'Low confidence: verify fields before publishing';
+    }
+
+    // Merchant Badge
+    if (merchantTag) {
+      merchantTag.textContent = factual.merchantName || factual.merchantType;
+    }
+
+    // Enrichment Source Badge (Gemini vs Heuristic Fallback)
+    const isHeuristicFallback = Array.isArray(warnings) && warnings.some((w: string) => 
+      w.toLowerCase().includes('heuristic') || 
+      w.toLowerCase().includes('fallback') ||
+      w.toLowerCase().includes('gemini rotation warning')
+    );
+
+    const enrichmentSourceBadge = document.getElementById('enrichment-source-badge');
+    const enrichmentSourceDot = document.getElementById('enrichment-source-dot');
+    const enrichmentSourceText = document.getElementById('enrichment-source-text');
+    const stepGemini = document.getElementById('step-gemini');
+
+    if (enrichmentSourceBadge && enrichmentSourceDot && enrichmentSourceText) {
+      if (isHeuristicFallback) {
+        enrichmentSourceBadge.className = 'text-xs font-semibold px-3 py-1 rounded-full border bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1.5';
+        enrichmentSourceDot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+        enrichmentSourceText.textContent = 'Heuristic Fallback (Gemini Exhausted)';
+      } else {
+        enrichmentSourceBadge.className = 'text-xs font-semibold px-3 py-1 rounded-full border bg-emerald-500/15 text-emerald-300 border-emerald-500/30 flex items-center gap-1.5';
+        enrichmentSourceDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+        enrichmentSourceText.textContent = 'Gemini AI Enriched';
+      }
+    }
+
+    if (stepGemini) {
+      if (isHeuristicFallback) {
+        stepGemini.innerHTML = `
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-amber-500/20 text-amber-400">4</span>
+          <span class="font-medium text-amber-300">Heuristic Fallback</span>
+        `;
+      } else {
+        stepGemini.innerHTML = `
+          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] bg-emerald-500/20 text-emerald-400">4</span>
+          <span class="font-medium" style="color: var(--color-text-2)">Gemini AI Enrichment</span>
+        `;
+      }
+    }
+
+    // Duplicate Badge
+    if (duplicateBadge) {
+      if (duplicateCheck?.isDuplicate) {
+        duplicateBadge.classList.remove('hidden');
+        duplicateBadge.textContent = `Existing Catalog Match: ${duplicateCheck.duplicateProductTitle || 'Duplicate'}`;
+      } else {
+        duplicateBadge.classList.add('hidden');
+      }
+    }
+
+    // Anti-bot Badge
+    if (antiBotBadge) {
+      if (factual.isAntiBotBlocked) antiBotBadge.classList.remove('hidden');
+      else antiBotBadge.classList.add('hidden');
+    }
+
+    // Warnings Banner
+    if (warningsBanner && warningsList) {
+      if (warnings && warnings.length > 0) {
+        warningsBanner.classList.remove('hidden');
+        warningsList.innerHTML = warnings.map((w: string) => `<li>${w}</li>`).join('');
+      } else {
+        warningsBanner.classList.add('hidden');
+      }
+    }
+
+    // Fill Form Fields
+    if (editTitle) editTitle.value = enriched.title || factual.rawTitle || '';
+    if (editSlug) editSlug.value = enriched.slug || '';
+    if (editBrand) editBrand.value = enriched.brand || factual.brand || '';
+    if (editShortDesc) editShortDesc.value = enriched.shortDescription || '';
+    if (editFullDesc) editFullDesc.value = enriched.fullDescription || '';
+    if (editCurrentPrice) editCurrentPrice.value = factual.price !== undefined ? String(factual.price) : '';
+    if (editOriginalPrice) editOriginalPrice.value = factual.originalPrice !== undefined ? String(factual.originalPrice) : '';
+    if (editAvailability) editAvailability.value = factual.availability || 'unknown';
+    if (editCanonicalUrl) editCanonicalUrl.value = factual.canonicalUrl || factual.url || '';
+    if (editSeoTitle) {
+      editSeoTitle.value = enriched.seoTitle || '';
+      if (seoTitleCount) seoTitleCount.textContent = `${editSeoTitle.value.length} / 60`;
+    }
+    if (editSeoDesc) {
+      editSeoDesc.value = enriched.seoDescription || '';
+      if (seoDescCount) seoDescCount.textContent = `${editSeoDesc.value.length} / 155`;
+    }
+
+    // Category matching
+    if (editCategory && enriched.suggestedCategorySlug) {
+      const match = availableCategories.find(
+        (c) => c.slug === enriched.suggestedCategorySlug || c.name.toLowerCase() === enriched.suggestedCategorySlug.toLowerCase()
+      );
+      if (match) {
+        editCategory.value = match._id || match.slug;
+      }
+    }
+
+    // Dynamic Highlights & Specs
+    stagedHighlights = [...(enriched.highlights || factual.features || [])];
+    renderHighlights();
+
+    stagedSpecs = (enriched.specifications?.length ? enriched.specifications : factual.specifications) || [];
+    renderSpecs();
+
+    // Staged Images
+    stagedImages = (factual.images || []).map((img: any, i: number) => ({
+      url: img.url,
+      alt: img.alt || enriched.title,
+      selected: true,
+      isPrimary: i === 0,
+    }));
+    renderImages();
+
+    // Raw Audit JSON
+    if (auditJsonViewer) {
+      auditJsonViewer.textContent = JSON.stringify({ factual, duplicateCheck, warnings }, null, 2);
+    }
+
+    // Scroll to workspace smoothly
+    stagingWorkspace?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Handle Single Product Import Submit
+  startImportBtn?.addEventListener('click', async () => {
+    const targetUrl = urlInput.value.trim();
+    if (!targetUrl) {
+      showToast('Please enter a valid product URL.', 'error');
+      return;
+    }
+
+    // UI Loading state
+    startImportBtn.disabled = true;
+    btnIconSparkle?.classList.add('hidden');
+    btnIconSpinner?.classList.remove('hidden');
+    if (btnText) btnText.textContent = 'Extracting & AI Enriching...';
+    stepper?.classList.remove('hidden');
+
+    try {
+      const res = await api.admin.productImport.preview(targetUrl);
+      const result: any = res.data;
+      populateWorkspace(result);
+      const isFallback = Array.isArray(result.warnings) && result.warnings.some((w: string) => 
+        w.toLowerCase().includes('heuristic') || 
+        w.toLowerCase().includes('fallback') ||
+        w.toLowerCase().includes('gemini rotation warning')
+      );
+      if (isFallback) {
+        showToast('Product extracted using Heuristic Fallback (Gemini models exhausted).', 'warning');
+      } else {
+        showToast('Product successfully extracted and enriched with Gemini!', 'success');
+      }
+      loadDiagnostics();
+    } catch (err: any) {
+      showToast(err.message || 'Import failed. Check URL and server connectivity.', 'error');
+    } finally {
+      startImportBtn.disabled = false;
+      btnIconSparkle?.classList.remove('hidden');
+      btnIconSpinner?.classList.add('hidden');
+      if (btnText) btnText.textContent = 'Extract & Enrich with AI';
+    }
+  });
+
+  // Bulk URLs Count Tracker
+  bulkUrlsInput?.addEventListener('input', () => {
+    const urls = bulkUrlsInput.value
+      .split('\n')
+      .map((u) => u.trim())
+      .filter((u) => u.length > 5);
+    if (bulkCounter) bulkCounter.textContent = `${urls.length} / 10 URLs detected`;
+  });
+
+  // Handle Bulk Batch Import
+  startBulkBtn?.addEventListener('click', async () => {
+    const urls = bulkUrlsInput.value
+      .split('\n')
+      .map((u) => u.trim())
+      .filter((u) => u.length > 5);
+
+    if (urls.length === 0) {
+      showToast('Please paste at least one URL.', 'error');
+      return;
+    }
+    if (urls.length > 10) {
+      showToast('Maximum 10 URLs allowed per batch.', 'error');
+      return;
+    }
+
+    startBulkBtn.disabled = true;
+    startBulkBtn.textContent = `Processing ${urls.length} URLs...`;
+
+    try {
+      const res = await api.admin.productImport.bulkPreview(urls);
+      const items: any[] = (res.data as any[]) || [];
+
+      bulkResultsWorkspace?.classList.remove('hidden');
+      const completedCount = document.getElementById('bulk-completed-count');
+      if (completedCount) completedCount.textContent = String(items.length);
+
+      const bulkList = document.getElementById('bulk-results-list');
+      if (bulkList) {
+        bulkList.innerHTML = '';
+        items.forEach((item, idx) => {
+          const card = document.createElement('div');
+          card.className = 'p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+          card.style.background = 'var(--color-surface)';
+          card.style.borderColor = 'var(--color-border)';
+
+          const isItemFallback = Array.isArray(item.warnings) && item.warnings.some((w: string) => 
+            w.toLowerCase().includes('heuristic') || 
+            w.toLowerCase().includes('fallback')
+          );
+
+          card.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-emerald-500/20 text-emerald-400 shrink-0">${idx + 1}</span>
+              <div>
+                <div class="text-sm font-semibold flex items-center gap-2" style="color: var(--color-text-1)">
+                  <span>${item.enriched?.title || item.factual?.rawTitle || 'Untitled'}</span>
+                  ${isItemFallback ? '<span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Fallback</span>' : ''}
+                </div>
+                <div class="text-xs font-mono" style="color: var(--color-text-3)">${item.url}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${
+                item.confidenceScore >= 75 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-300'
+              }">${item.confidenceScore}%</span>
+              <button
+                type="button"
+                class="bulk-inspect-btn px-3 py-1.5 rounded-lg border text-xs font-semibold hover:bg-[var(--color-overlay)]"
+                style="border-color: var(--color-border); color: var(--color-text-1)"
+                data-index="${idx}"
+              >
+                Inspect & Edit
+              </button>
+            </div>
+          `;
+          bulkList.appendChild(card);
+        });
+
+        bulkList.querySelectorAll('.bulk-inspect-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-index') || '0', 10);
+            populateWorkspace(items[idx]);
+          });
+        });
+      }
+
+      showToast(`Batch completed: ${items.length} products processed.`, 'success');
+      loadDiagnostics();
+    } catch (err: any) {
+      showToast(err.message || 'Bulk batch failed.', 'error');
+    } finally {
+      startBulkBtn.disabled = false;
+      startBulkBtn.textContent = 'Process Batch with AI';
+    }
+  });
+
+  // Build Payload from Staging Form
+  function buildPayload() {
+    const selectedImages = stagedImages
+      .filter((img) => img.selected)
+      .map((img) => ({ url: img.url, alt: img.alt || editTitle.value }));
+
+    if (selectedImages.length === 0 && stagedImages.length > 0) {
+      selectedImages.push({ url: stagedImages[0].url, alt: editTitle.value });
+    }
+
+    const priceNum = editCurrentPrice.value ? parseFloat(editCurrentPrice.value) : undefined;
+    const origPriceNum = editOriginalPrice.value ? parseFloat(editOriginalPrice.value) : undefined;
+
+    return {
+      title: editTitle.value.trim(),
+      slug: editSlug.value.trim(),
+      brand: editBrand.value.trim(),
+      categoryId: editCategory.value || null,
+      shortDescription: editShortDesc.value.trim(),
+      fullDescription: editFullDesc.value.trim(),
+      images: selectedImages,
+      highlights: stagedHighlights.filter((h) => h.trim().length > 0),
+      specifications: stagedSpecs.filter((s) => s.key.trim().length > 0),
+      searchKeywords: currentPreviewResult?.enriched?.searchKeywords || [],
+      tags: currentPreviewResult?.enriched?.tags || [],
+      seoTitle: editSeoTitle.value.trim(),
+      seoDescription: editSeoDesc.value.trim(),
+      canonicalUrl: editCanonicalUrl.value.trim(),
+      offer: {
+        productUrl: currentPreviewResult?.factual?.url || editCanonicalUrl.value.trim(),
+        currentPrice: priceNum,
+        originalPrice: origPriceNum,
+        currency: 'INR',
+        availability: editAvailability.value,
+      },
+    };
+  }
+
+  // Save as Draft
+  actionSaveDraftBtn?.addEventListener('click', async () => {
+    const payload = buildPayload();
+    if (!payload.title) {
+      showToast('Title is required.', 'error');
+      return;
+    }
+    if (payload.images.length === 0) {
+      showToast('At least one product image is required.', 'error');
+      return;
+    }
+
+    actionSaveDraftBtn.setAttribute('disabled', 'true');
+    try {
+      await api.admin.productImport.saveDraft(payload);
+      showToast('Product successfully saved to catalog as Draft!', 'success');
+      setTimeout(() => {
+        window.location.href = url('/admin/products');
+      }, 1200);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save product draft.', 'error');
+      actionSaveDraftBtn.removeAttribute('disabled');
+    }
+  });
+
+  // Publish Directly
+  actionPublishBtn?.addEventListener('click', async () => {
+    const payload = buildPayload();
+    if (!payload.title) {
+      showToast('Title is required.', 'error');
+      return;
+    }
+    if (payload.images.length === 0) {
+      showToast('At least one product image is required.', 'error');
+      return;
+    }
+
+    actionPublishBtn.setAttribute('disabled', 'true');
+    try {
+      await api.admin.productImport.publish(payload);
+      showToast('Product successfully published to the live platform!', 'success');
+      setTimeout(() => {
+        window.location.href = url('/admin/products');
+      }, 1200);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to publish product.', 'error');
+      actionPublishBtn.removeAttribute('disabled');
+    }
+  });
+
+  // Initialization
+  loadCategories();
+  loadDiagnostics();
+</script>
+

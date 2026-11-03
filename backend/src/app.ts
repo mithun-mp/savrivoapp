@@ -11,6 +11,9 @@ import routes from './routes';
 export function createApp() {
   const app = express();
 
+  // Trust first proxy hop (Render reverse proxy) for accurate client IP resolution in rate limiting
+  app.set('trust proxy', 1);
+
   // Security headers
   app.use(helmet());
 

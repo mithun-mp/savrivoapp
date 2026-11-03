@@ -2,14 +2,10 @@
 import MainLayout from '../../layouts/MainLayout.astro';
 import CategoryCard from '../../components/category/CategoryCard';
 import Breadcrumb from '../../components/ui/Breadcrumb';
-import { API_BASE } from '../../lib/api';
+import { getBuildCategories } from '../../lib/categories.data';
 import type { Category } from '../../types';
 
-let categories: Category[] = [];
-try {
-  const res = await fetch(`${API_BASE}/categories`, { signal: AbortSignal.timeout(5000) });
-  if (res.ok) { const json = await res.json(); categories = json.data || []; }
-} catch {}
+const { categories } = await getBuildCategories();
 ---
 
 <MainLayout

@@ -4,9 +4,10 @@ const isProd = import.meta.env.PROD;
 const DEFAULT_API = isProd ? 'https://savrivo-api.onrender.com/api' : 'http://localhost:4000/api';
 export const API_BASE = (import.meta as unknown as { env: Record<string, string> }).env?.PUBLIC_API_URL || DEFAULT_API;
 
-async function apiRequest<T>(path: string, options?: RequestInit): Promise<ApiResponse<T>> {
+async function apiRequest<T>(path: string, options?: RequestInit & { timeoutMs?: number }): Promise<ApiResponse<T>> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeoutMs = options?.timeoutMs || 10000;
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -169,6 +170,24 @@ export const api = {
       get: () => apiRequest<unknown>('/admin/settings', { headers: authHeaders() }),
       update: (data: unknown) => apiRequest<unknown>('/admin/settings', {
         method: 'PATCH', body: JSON.stringify(data), headers: authHeaders(),
+      }),
+    },
+
+    productImport: {
+      preview: (url: string) => apiRequest<unknown>('/admin/product-import/preview', {
+        method: 'POST', body: JSON.stringify({ url }), headers: authHeaders(), timeoutMs: 30000,
+      }),
+      bulkPreview: (urls: string[]) => apiRequest<unknown[]>('/admin/product-import/bulk-preview', {
+        method: 'POST', body: JSON.stringify({ urls }), headers: authHeaders(), timeoutMs: 45000,
+      }),
+      saveDraft: (data: unknown) => apiRequest<unknown>('/admin/product-import/save-draft', {
+        method: 'POST', body: JSON.stringify(data), headers: authHeaders(),
+      }),
+      publish: (data: unknown) => apiRequest<unknown>('/admin/product-import/publish', {
+        method: 'POST', body: JSON.stringify(data), headers: authHeaders(),
+      }),
+      diagnostics: () => apiRequest<unknown>('/admin/product-import/diagnostics', {
+        headers: authHeaders(),
       }),
     },
   },
