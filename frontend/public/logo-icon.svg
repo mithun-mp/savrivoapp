@@ -1,8 +1,50 @@
-<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SAVRIVO Icon">
-  <!-- Precision S Contour -->
-  <path d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31" 
-        stroke="#FF5A1F" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Central Discovery Prism Diamond -->
-  <polygon points="32,24 38,32 32,40 26,32" fill="#FF5A1F"/>
-</svg>
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SAVRIVO Precision S Icon">
+  <defs>
+    <!-- Upper Sweep: Apex highlight to core -->
+    <linearGradient id="savrivo-sweep-upper" x1="53" y1="11" x2="21" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="35%" stop-color="#FF5A1F"/>
+      <stop offset="100%" stop-color="#E6450A"/>
+    </linearGradient>
+    <!-- Lower Sweep: Core transition to luxury ember base -->
+    <linearGradient id="savrivo-sweep-lower" x1="21" y1="36" x2="48" y2="53" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF5A1F"/>
+      <stop offset="60%" stop-color="#E6450A"/>
+      <stop offset="100%" stop-color="#C23800"/>
+    </linearGradient>
+    <!-- Prism Core: Golden Amber Radiant Facet -->
+    <linearGradient id="savrivo-facet-light" x1="32" y1="24" x2="38" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="40%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#FF5A1F"/>
+    </linearGradient>
+    <!-- Prism Core: Electric Ember Shadow Facet -->
+    <linearGradient id="savrivo-facet-dark" x1="26" y1="24" x2="32" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF7A33"/>
+      <stop offset="60%" stop-color="#E6450A"/>
+      <stop offset="100%" stop-color="#992600"/>
+    </linearGradient>
+  </defs>
 
+  <!-- Lower Base Contour -->
+  <path d="M21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33"
+        stroke="url(#savrivo-sweep-lower)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Upper Apex Contour -->
+  <path d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48M53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
+        stroke="url(#savrivo-sweep-upper)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Crest Specular Highlight Line -->
+  <path d="M24 16C31 12.8 40 12.5 48 12.8"
+        stroke="#FFC8A3" stroke-width="1.8" stroke-linecap="round" opacity="0.75"/>
+
+  <!-- Precision Cut Central Prism -->
+  <!-- Left/Lower Facet -->
+  <polygon points="32,24 26,32 32,40" fill="url(#savrivo-facet-dark)"/>
+  <!-- Right/Upper Radiant Facet -->
+  <polygon points="32,24 38,32 32,40" fill="url(#savrivo-facet-light)"/>
+  <!-- Central Jewel Facet Spine -->
+  <line x1="32" y1="24" x2="32" y2="40" stroke="#FFF7ED" stroke-width="0.9" opacity="0.85"/>
+  <!-- Diamond Perimeter Accenting -->
+  <polygon points="32,24 38,32 32,40 26,32" fill="none" stroke="#FFA366" stroke-width="0.6" opacity="0.5"/>
+</svg>

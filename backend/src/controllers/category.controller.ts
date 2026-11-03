@@ -41,3 +41,19 @@ export async function updateCategory(req: Request, res: Response, next: NextFunc
     sendSuccess(res, cat, 200, 'Category updated');
   } catch (err) { next(err); }
 }
+
+export async function adminGetCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const cat = await categoryService.getCategoryById(req.params.id);
+    if (!cat) { sendError(res, 'Category not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, cat);
+  } catch (err) { next(err); }
+}
+
+export async function deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const cat = await categoryService.deleteCategory(req.params.id);
+    if (!cat) { sendError(res, 'Category not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, { id: req.params.id }, 200, 'Category deleted');
+  } catch (err) { next(err); }
+}

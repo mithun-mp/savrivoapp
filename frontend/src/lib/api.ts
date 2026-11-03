@@ -81,21 +81,29 @@ export const api = {
 
     categories: {
       list: () => apiRequest<unknown[]>('/admin/categories', { headers: authHeaders() }),
+      get: (id: string) => apiRequest<unknown>(`/admin/categories/${id}`, { headers: authHeaders() }),
       create: (data: unknown) => apiRequest<unknown>('/admin/categories', {
         method: 'POST', body: JSON.stringify(data), headers: authHeaders(),
       }),
       update: (id: string, data: unknown) => apiRequest<unknown>(`/admin/categories/${id}`, {
         method: 'PATCH', body: JSON.stringify(data), headers: authHeaders(),
       }),
+      delete: (id: string) => apiRequest<unknown>(`/admin/categories/${id}`, {
+        method: 'DELETE', headers: authHeaders(),
+      }),
     },
 
     merchants: {
       list: () => apiRequest<unknown[]>('/admin/merchants', { headers: authHeaders() }),
+      get: (id: string) => apiRequest<unknown>(`/admin/merchants/${id}`, { headers: authHeaders() }),
       create: (data: unknown) => apiRequest<unknown>('/admin/merchants', {
         method: 'POST', body: JSON.stringify(data), headers: authHeaders(),
       }),
       update: (id: string, data: unknown) => apiRequest<unknown>(`/admin/merchants/${id}`, {
         method: 'PATCH', body: JSON.stringify(data), headers: authHeaders(),
+      }),
+      delete: (id: string) => apiRequest<unknown>(`/admin/merchants/${id}`, {
+        method: 'DELETE', headers: authHeaders(),
       }),
       toggle: (id: string) => apiRequest<unknown>(`/admin/merchants/${id}/toggle`, {
         method: 'POST', headers: authHeaders(),
@@ -104,11 +112,15 @@ export const api = {
 
     offers: {
       list: (params = '') => apiRequest<unknown[]>(`/admin/offers${params ? `?${params}` : ''}`, { headers: authHeaders() }),
+      get: (id: string) => apiRequest<unknown>(`/admin/offers/${id}`, { headers: authHeaders() }),
       create: (data: unknown) => apiRequest<unknown>('/admin/offers', {
         method: 'POST', body: JSON.stringify(data), headers: authHeaders(),
       }),
       update: (id: string, data: unknown) => apiRequest<unknown>(`/admin/offers/${id}`, {
         method: 'PATCH', body: JSON.stringify(data), headers: authHeaders(),
+      }),
+      delete: (id: string) => apiRequest<unknown>(`/admin/offers/${id}`, {
+        method: 'DELETE', headers: authHeaders(),
       }),
       expire: (id: string) => apiRequest<unknown>(`/admin/offers/${id}/expire`, {
         method: 'POST', headers: authHeaders(),
@@ -117,11 +129,15 @@ export const api = {
 
     guides: {
       list: (params = '') => apiRequest<unknown[]>(`/admin/guides${params ? `?${params}` : ''}`, { headers: authHeaders() }),
+      get: (id: string) => apiRequest<unknown>(`/admin/guides/${id}`, { headers: authHeaders() }),
       create: (data: unknown) => apiRequest<unknown>('/admin/guides', {
         method: 'POST', body: JSON.stringify(data), headers: authHeaders(),
       }),
       update: (id: string, data: unknown) => apiRequest<unknown>(`/admin/guides/${id}`, {
         method: 'PATCH', body: JSON.stringify(data), headers: authHeaders(),
+      }),
+      delete: (id: string) => apiRequest<unknown>(`/admin/guides/${id}`, {
+        method: 'DELETE', headers: authHeaders(),
       }),
     },
 

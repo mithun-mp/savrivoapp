@@ -4,6 +4,7 @@ import SearchBar from '../components/search/SearchBar';
 import ProductGrid from '../components/product/ProductGrid';
 import GuideCard from '../components/guide/GuideCard';
 import AffiliateDisclosure from '../components/ui/AffiliateDisclosure';
+import BrandLogo from '../components/ui/BrandLogo';
 import { url } from '../lib/paths';
 import { API_BASE, formatINR } from '../lib/api';
 import type { Category, Product, Guide, Offer } from '../types';
@@ -455,16 +456,7 @@ const categoryIcons: Record<string, any> = {
 
         <!-- Precision S Aperture Graphic -->
         <div class="mx-auto mb-6 w-16 h-16 flex items-center justify-center">
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <path
-              d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
-              stroke="var(--color-accent)"
-              stroke-width="5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <polygon points="32,24 38,32 32,40 26,32" fill="var(--color-accent)" />
-          </svg>
+          <BrandLogo client:load size={56} showWordmark={false} />
         </div>
 
         <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: var(--color-accent)">

@@ -16,7 +16,7 @@ export const createProductSchema = z.object({
   shortDescription: z.string().max(500).optional(),
   fullDescription: z.string().optional(),
   brand: z.string().max(100).optional(),
-  categoryId: z.string().optional(),
+  categoryId: z.union([z.string(), z.literal(''), z.null()]).optional().transform(v => v || undefined),
   subcategory: z.string().optional(),
   images: z.array(imageSchema).optional().default([]),
   specifications: z.array(specSchema).optional().default([]),
@@ -27,7 +27,7 @@ export const createProductSchema = z.object({
   status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
   seoTitle: z.string().max(70).optional(),
   seoDescription: z.string().max(160).optional(),
-  canonicalUrl: z.string().url().optional(),
+  canonicalUrl: z.union([z.string().url(), z.literal(''), z.null()]).optional().transform(v => v || undefined),
 });
 
 export const updateProductSchema = createProductSchema.partial();

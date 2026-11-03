@@ -41,3 +41,19 @@ export async function updateGuide(req: Request, res: Response, next: NextFunctio
     sendSuccess(res, guide, 200, 'Guide updated');
   } catch (err) { next(err); }
 }
+
+export async function adminGetGuide(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const guide = await guideService.getGuideById(req.params.id);
+    if (!guide) { sendError(res, 'Guide not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, guide);
+  } catch (err) { next(err); }
+}
+
+export async function deleteGuide(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const guide = await guideService.deleteGuide(req.params.id);
+    if (!guide) { sendError(res, 'Guide not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, { id: req.params.id }, 200, 'Guide deleted');
+  } catch (err) { next(err); }
+}

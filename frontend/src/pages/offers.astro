@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import Breadcrumb from '../components/ui/Breadcrumb';
+import BrandLogo from '../components/ui/BrandLogo';
 import { url } from '../lib/paths';
 import { ArrowRight, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 ---
@@ -27,16 +28,7 @@ import { ArrowRight, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
         {/* Precision S Brand Symbol */}
         <div class="mx-auto mb-8 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-3xl border shadow-sv-sm"
           style="background: var(--color-surface); border-color: var(--color-border);">
-          <svg width="48" height="48" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <path
-              d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
-              stroke="var(--color-accent)"
-              stroke-width="5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <polygon points="32,24 38,32 32,40 26,32" fill="var(--color-accent)" />
-          </svg>
+          <BrandLogo client:load size={48} showWordmark={false} />
         </div>
 
         <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4"

@@ -16,15 +16,18 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         style="background: var(--color-accent)"
       >
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Add Merchant</span>
+        <span id="add-btn-label">Add Merchant</span>
       </button>
     </div>
 
-    <!-- Merchant Form -->
+    <!-- Merchant Form (Create / Edit) -->
     <div id="merchant-form-box" class="hidden p-6 sm:p-7 rounded-2xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
-      <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
-        <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>
-        <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Add New Merchant</h2>
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--color-border)">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>
+          <h2 id="m-form-title" class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Add New Merchant</h2>
+        </div>
+        <input type="hidden" id="m-edit-id" value="" />
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -50,16 +53,30 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         </div>
       </div>
 
-      <div>
-        <label for="m-program" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Affiliate Programme Name</label>
-        <input
-          type="text"
-          id="m-program"
-          placeholder="e.g. Amazon Associates India"
-          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
-          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
-        />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="m-program" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Affiliate Programme Name</label>
+          <input
+            type="text"
+            id="m-program"
+            placeholder="e.g. Amazon Associates India"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
+        </div>
+        <div>
+          <label for="m-logo" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Logo URL (Optional)</label>
+          <input
+            type="url"
+            id="m-logo"
+            placeholder="https://images.unsplash.com/..."
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
+        </div>
       </div>
+
+      <div id="m-error-msg" class="hidden text-xs p-3 rounded-xl font-medium" style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.25); color: var(--color-error)"></div>
 
       <div class="flex gap-2 pt-2">
         <button
@@ -76,6 +93,20 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         >
           Cancel
         </button>
+      </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="flex items-center gap-3 p-4 rounded-2xl border" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+      <div class="relative flex-1 min-w-[200px]">
+        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--color-text-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          id="merchant-search"
+          placeholder="Filter merchants by name or programme..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
       </div>
     </div>
 
@@ -111,84 +142,225 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 <script>
   import { api } from '../../../lib/api';
 
+  let rawMerchants: any[] = [];
+
+  function renderTable(list: any[]) {
+    const tbody = document.getElementById('merchants-tbody');
+    if (!tbody) return;
+
+    if (list.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="p-12 text-center">
+            <div class="flex flex-col items-center justify-center gap-2">
+              <p class="text-sm font-medium" style="color: var(--color-text-2)">No merchants match criteria</p>
+              <p class="text-xs" style="color: var(--color-text-3)">Click "+ Add Merchant" to register an approved external partner.</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = list.map((m: any) => `
+      <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
+        <td class="py-3.5 px-5 font-semibold text-sm" style="color: var(--color-text-1)">${m.name}</td>
+        <td class="py-3.5 px-4 text-xs">
+          <a href="${m.websiteUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-accent)] inline-flex items-center gap-1 group break-all font-mono" style="color: var(--color-accent)">
+            <span>${m.websiteUrl}</span>
+            <svg class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </td>
+        <td class="py-3.5 px-4 text-xs font-medium" style="color: var(--color-text-2)">${m.affiliateProgramName || '—'}</td>
+        <td class="py-3.5 px-4">
+          <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="${m.enabled ? 'background: rgba(5, 150, 105, 0.12); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.25)' : 'background: rgba(100, 116, 139, 0.12); color: var(--color-text-3); border: 1px solid rgba(100, 116, 139, 0.25)'}">
+            ${m.enabled ? 'Enabled' : 'Disabled'}
+          </span>
+        </td>
+        <td class="py-3.5 px-5 text-right space-x-2">
+          <button
+            data-edit-id="${m._id}"
+            class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-[var(--color-overlay)]"
+            style="border-color: var(--color-border); color: var(--color-accent)"
+            title="Edit merchant details"
+          >
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            <span>Edit</span>
+          </button>
+          <button
+            data-toggle-id="${m._id}"
+            class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-[var(--color-overlay)]"
+            style="border-color: var(--color-border); color: ${m.enabled ? 'var(--color-text-2)' : 'var(--color-success)'}"
+          >
+            ${m.enabled ? 'Disable' : 'Enable'}
+          </button>
+          <button
+            data-delete-id="${m._id}"
+            class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-red-500/10"
+            style="border-color: var(--color-border); color: var(--color-error)"
+            title="Delete merchant"
+          >
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            <span>Delete</span>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    // Wire edit buttons
+    document.querySelectorAll('[data-edit-id]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-edit-id');
+        const m = rawMerchants.find(item => item._id === id);
+        if (!m) return;
+
+        (document.getElementById('m-edit-id') as HTMLInputElement).value = m._id;
+        (document.getElementById('m-name') as HTMLInputElement).value = m.name || '';
+        (document.getElementById('m-url') as HTMLInputElement).value = m.websiteUrl || '';
+        (document.getElementById('m-program') as HTMLInputElement).value = m.affiliateProgramName || '';
+        (document.getElementById('m-logo') as HTMLInputElement).value = m.logoUrl || '';
+
+        const titleEl = document.getElementById('m-form-title');
+        if (titleEl) titleEl.textContent = 'Edit Merchant: ' + m.name;
+        const saveBtn = document.getElementById('m-save-btn');
+        if (saveBtn) saveBtn.textContent = 'Update Merchant';
+
+        box?.classList.remove('hidden');
+        box?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Wire toggle buttons
+    document.querySelectorAll('[data-toggle-id]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-toggle-id');
+        if (id) {
+          await api.admin.merchants.toggle(id);
+          load();
+        }
+      });
+    });
+
+    // Wire delete buttons
+    document.querySelectorAll('[data-delete-id]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-delete-id');
+        const m = rawMerchants.find(item => item._id === id);
+        const name = m ? m.name : 'this merchant';
+        if (id && confirm(`Delete merchant "${name}"? This action cannot be undone.`)) {
+          try {
+            await api.admin.merchants.delete(id);
+            load();
+          } catch (err: any) {
+            alert('Failed to delete merchant: ' + (err.message || 'Error'));
+          }
+        }
+      });
+    });
+  }
+
   async function load() {
     const tbody = document.getElementById('merchants-tbody');
     try {
       const res: any = await api.admin.merchants.list();
-      const list = res.data || [];
-      if (!tbody) return;
-      if (list.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-12 text-center">
-              <div class="flex flex-col items-center justify-center gap-2">
-                <p class="text-sm font-medium" style="color: var(--color-text-2)">No merchants configured yet</p>
-                <p class="text-xs" style="color: var(--color-text-3)">Click "+ Add Merchant" to register an approved external partner.</p>
-              </div>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-      tbody.innerHTML = list.map((m: any) => `
-        <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
-          <td class="py-3.5 px-5 font-semibold text-sm" style="color: var(--color-text-1)">${m.name}</td>
-          <td class="py-3.5 px-4 text-xs">
-            <a href="${m.websiteUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-accent)] inline-flex items-center gap-1 group break-all font-mono" style="color: var(--color-accent)">
-              <span>${m.websiteUrl}</span>
-              <svg class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </td>
-          <td class="py-3.5 px-4 text-xs font-medium" style="color: var(--color-text-2)">${m.affiliateProgramName || '—'}</td>
-          <td class="py-3.5 px-4">
-            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="${m.enabled ? 'background: rgba(5, 150, 105, 0.12); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.25)' : 'background: rgba(100, 116, 139, 0.12); color: var(--color-text-3); border: 1px solid rgba(100, 116, 139, 0.25)'}">
-              ${m.enabled ? 'Enabled' : 'Disabled'}
-            </span>
-          </td>
-          <td class="py-3.5 px-5 text-right">
-            <button
-              data-toggle-id="${m._id}"
-              class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-[var(--color-overlay)]"
-              style="border-color: var(--color-border); color: ${m.enabled ? 'var(--color-error)' : 'var(--color-success)'}"
-            >
-              ${m.enabled ? 'Disable' : 'Enable'}
-            </button>
-          </td>
-        </tr>
-      `).join('');
-
-      document.querySelectorAll('[data-toggle-id]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const id = (e.currentTarget as HTMLElement).getAttribute('data-toggle-id');
-          if (id) {
-            await api.admin.merchants.toggle(id);
-            load();
-          }
-        });
-      });
+      rawMerchants = res.data || [];
+      renderTable(rawMerchants);
     } catch {
       if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-xs" style="color: var(--color-error)">Failed to load merchants. Check server connection.</td></tr>';
     }
   }
 
+  // Filter search
+  const searchInput = document.getElementById('merchant-search') as HTMLInputElement;
+  searchInput?.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase().trim();
+    if (!q) {
+      renderTable(rawMerchants);
+      return;
+    }
+    const filtered = rawMerchants.filter(m =>
+      (m.name && m.name.toLowerCase().includes(q)) ||
+      (m.affiliateProgramName && m.affiliateProgramName.toLowerCase().includes(q)) ||
+      (m.websiteUrl && m.websiteUrl.toLowerCase().includes(q))
+    );
+    renderTable(filtered);
+  });
+
   const box = document.getElementById('merchant-form-box');
-  document.getElementById('add-merchant-btn')?.addEventListener('click', () => box?.classList.remove('hidden'));
-  document.getElementById('m-cancel-btn')?.addEventListener('click', () => box?.classList.add('hidden'));
+  const errorEl = document.getElementById('m-error-msg');
+  const saveBtn = document.getElementById('m-save-btn') as HTMLButtonElement;
 
-  document.getElementById('m-save-btn')?.addEventListener('click', async () => {
-    const name = (document.getElementById('m-name') as HTMLInputElement).value;
-    const websiteUrl = (document.getElementById('m-url') as HTMLInputElement).value;
-    const affiliateProgramName = (document.getElementById('m-program') as HTMLInputElement).value;
-    if (!name || !websiteUrl) return;
-
-    await api.admin.merchants.create({ name, websiteUrl, affiliateProgramName });
-    box?.classList.add('hidden');
+  function resetForm() {
+    (document.getElementById('m-edit-id') as HTMLInputElement).value = '';
     (document.getElementById('m-name') as HTMLInputElement).value = '';
     (document.getElementById('m-url') as HTMLInputElement).value = '';
     (document.getElementById('m-program') as HTMLInputElement).value = '';
-    load();
+    (document.getElementById('m-logo') as HTMLInputElement).value = '';
+    const titleEl = document.getElementById('m-form-title');
+    if (titleEl) titleEl.textContent = 'Add New Merchant';
+    if (saveBtn) saveBtn.textContent = 'Save Merchant';
+    if (errorEl) {
+      errorEl.classList.add('hidden');
+      errorEl.textContent = '';
+    }
+  }
+
+  document.getElementById('add-merchant-btn')?.addEventListener('click', () => {
+    resetForm();
+    box?.classList.toggle('hidden');
+  });
+
+  document.getElementById('m-cancel-btn')?.addEventListener('click', () => {
+    resetForm();
+    box?.classList.add('hidden');
+  });
+
+  saveBtn?.addEventListener('click', async () => {
+    const editId = (document.getElementById('m-edit-id') as HTMLInputElement).value;
+    const name = (document.getElementById('m-name') as HTMLInputElement).value.trim();
+    const websiteUrl = (document.getElementById('m-url') as HTMLInputElement).value.trim();
+    const affiliateProgramName = (document.getElementById('m-program') as HTMLInputElement).value.trim();
+    const logoUrl = (document.getElementById('m-logo') as HTMLInputElement).value.trim();
+
+    if (!name || !websiteUrl) {
+      if (errorEl) {
+        errorEl.textContent = 'Merchant Name and Official Website URL are required.';
+        errorEl.classList.remove('hidden');
+      }
+      return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = editId ? 'Updating...' : 'Saving...';
+    if (errorEl) errorEl.classList.add('hidden');
+
+    try {
+      const payload: Record<string, unknown> = {
+        name,
+        websiteUrl,
+        affiliateProgramName: affiliateProgramName || undefined,
+        logoUrl: logoUrl || undefined,
+      };
+
+      if (editId) {
+        await api.admin.merchants.update(editId, payload);
+      } else {
+        await api.admin.merchants.create(payload);
+      }
+
+      resetForm();
+      box?.classList.add('hidden');
+      load();
+    } catch (err: any) {
+      if (errorEl) {
+        errorEl.textContent = err.message || 'Failed to save merchant.';
+        errorEl.classList.remove('hidden');
+      }
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = editId ? 'Update Merchant' : 'Save Merchant';
+    }
   });
 
   load();
 </script>
-

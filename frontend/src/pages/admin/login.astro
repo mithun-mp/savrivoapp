@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import BrandLogo from '../../components/ui/BrandLogo';
 import { url } from '../../lib/paths';
 ---
 
@@ -10,18 +11,8 @@ import { url } from '../../lib/paths';
       style="background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: var(--shadow-lg)"
     >
       <div class="text-center mb-8">
-        <a href={url('/')} class="inline-flex items-center gap-2.5 font-bold tracking-[0.2em] text-base mb-4 group" style="color: var(--color-accent)">
-          <svg width="32" height="32" viewBox="0 0 64 64" fill="none" aria-hidden="true" class="shrink-0 transition-transform group-hover:scale-105">
-            <path
-              d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
-              stroke="var(--color-accent)"
-              stroke-width="6.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <polygon points="32,24 38,32 32,40 26,32" fill="var(--color-accent)" />
-          </svg>
-          <span class="font-display tracking-[0.22em] font-extrabold text-xl" style="color: var(--color-text-1)">SAVRIVO</span>
+        <a href={url('/')} class="inline-flex items-center gap-2.5 mb-4 group">
+          <BrandLogo client:load size={32} />
         </a>
         <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Editorial Portal</h1>
         <p class="text-xs mt-1.5" style="color: var(--color-text-2)">Authorized editorial personnel only. Multi-factor protected.</p>

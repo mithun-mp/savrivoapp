@@ -40,3 +40,11 @@ export async function getAdminGuides(query: Request['query']) {
   ]);
   return { guides, total, page, limit };
 }
+
+export async function getGuideById(id: string) {
+  return Guide.findById(id).lean();
+}
+
+export async function deleteGuide(id: string) {
+  return Guide.findByIdAndDelete(id);
+}

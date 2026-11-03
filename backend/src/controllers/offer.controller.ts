@@ -37,10 +37,26 @@ export async function updateOffer(req: Request, res: Response, next: NextFunctio
   } catch (err) { next(err); }
 }
 
+export async function getOffer(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const offer = await offerService.getOfferById(req.params.id);
+    if (!offer) { sendError(res, 'Offer not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, offer);
+  } catch (err) { next(err); }
+}
+
 export async function expireOffer(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const offer = await offerService.expireOffer(req.params.id);
     if (!offer) { sendError(res, 'Offer not found', 404, 'NOT_FOUND'); return; }
     sendSuccess(res, offer, 200, 'Offer expired');
+  } catch (err) { next(err); }
+}
+
+export async function deleteOffer(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const offer = await offerService.deleteOffer(req.params.id);
+    if (!offer) { sendError(res, 'Offer not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, { id: req.params.id }, 200, 'Offer deleted');
   } catch (err) { next(err); }
 }

@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import { url } from '../lib/paths';
+import BrandLogo from '../components/ui/BrandLogo';
 
 export interface Props {
   title: string;
@@ -16,23 +17,9 @@ const loginUrl = url('/admin/login');
     <aside class="hidden lg:flex flex-col w-64 shrink-0 border-r" style="background: var(--color-surface); border-color: var(--color-border)">
       {/* Brand Header */}
       <div class="p-6 border-b flex items-center justify-between" style="border-color: var(--color-border)">
-        <a href={url('/admin')} class="flex items-center gap-2.5 font-bold tracking-widest text-base" style="color: var(--color-accent)">
-          <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true" class="shrink-0">
-            <path
-              d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
-              stroke="var(--color-accent)"
-              stroke-width="6.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <polygon points="32,24 38,32 32,40 26,32" fill="var(--color-accent)" />
-          </svg>
-          <span class="font-display">SAVRIVO</span>
+        <a href={url('/admin')} class="flex items-center gap-2.5">
+          <BrandLogo client:load size={26} badge="ADMIN" />
         </a>
-        <span class="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full border"
-          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border-color: var(--color-border)">
-          ADMIN
-        </span>
       </div>
 
       {/* Navigation Links */}
@@ -81,18 +68,8 @@ const loginUrl = url('/admin/login');
       <div id="admin-mobile-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
       <aside class="relative flex flex-col w-72 max-w-[85vw] h-full shadow-2xl z-10" style="background: var(--color-surface); border-right: 1px solid var(--color-border)">
         <div class="p-5 border-b flex items-center justify-between" style="border-color: var(--color-border)">
-          <a href={url('/admin')} class="flex items-center gap-2 font-bold tracking-widest text-base" style="color: var(--color-accent)">
-            <svg width="24" height="24" viewBox="0 0 64 64" fill="none" aria-hidden="true" class="shrink-0">
-              <path
-                d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
-                stroke="var(--color-accent)"
-                stroke-width="6.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <polygon points="32,24 38,32 32,40 26,32" fill="var(--color-accent)" />
-            </svg>
-            <span class="font-display">SAVRIVO</span>
+          <a href={url('/admin')} class="flex items-center gap-2">
+            <BrandLogo client:load size={24} badge="ADMIN" />
           </a>
           <button id="admin-drawer-close" class="p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center hover:opacity-75" style="color: var(--color-text-2)" aria-label="Close menu">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

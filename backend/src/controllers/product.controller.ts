@@ -20,6 +20,14 @@ export async function getProduct(req: Request, res: Response, next: NextFunction
   } catch (err) { next(err); }
 }
 
+export async function adminGetProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const product = await productService.getProductById(req.params.id);
+    if (!product) { sendError(res, 'Product not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, product);
+  } catch (err) { next(err); }
+}
+
 export async function adminListProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { products, total, page, limit } = await productService.getAdminProducts(req.query);

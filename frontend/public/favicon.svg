@@ -1,8 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="SAVRIVO favicon">
+  <defs>
+    <linearGradient id="fav-sweep-up" x1="26.5" y1="7" x2="10.5" y2="19.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="50%" stop-color="#FF5A1F"/>
+      <stop offset="100%" stop-color="#E6450A"/>
+    </linearGradient>
+    <linearGradient id="fav-sweep-low" x1="10.5" y1="19.5" x2="24" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF5A1F"/>
+      <stop offset="60%" stop-color="#E6450A"/>
+      <stop offset="100%" stop-color="#C23800"/>
+    </linearGradient>
+    <linearGradient id="fav-facet-l" x1="16" y1="12.5" x2="19" y2="19.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#FF5A1F"/>
+    </linearGradient>
+    <linearGradient id="fav-facet-d" x1="13" y1="12.5" x2="16" y2="19.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF7A33"/>
+      <stop offset="100%" stop-color="#992600"/>
+    </linearGradient>
+  </defs>
   <rect width="32" height="32" rx="7" fill="#101116"/>
-  <!-- Precision S Contour scaled for 32x32 -->
-  <path d="M24 7L26.5 9.5C26.5 9.5 25.5 14 21.5 15.5L10.5 19.5C6.5 21 5.5 25.5 5.5 25.5L8 28C12 28 17.5 28 22.5 25C26.5 22.5 26.5 18 26.5 18M8 28L5.5 25.5C5.5 25.5 6.5 21 10.5 19.5L21.5 15.5C25.5 14 26.5 9.5 26.5 9.5L24 7C20 7 14.5 7 9.5 10C5.5 12.5 5.5 17 5.5 17"
-        stroke="#FF5A1F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lower Base Contour -->
+  <path d="M10.5 19.5C6.5 21 5.5 25.5 5.5 25.5L8 28C12 28 17.5 28 22.5 25C26.5 22.5 26.5 18 26.5 18"
+        stroke="url(#fav-sweep-low)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Upper Apex Contour -->
+  <path d="M24 7L26.5 9.5C26.5 9.5 25.5 14 21.5 15.5L10.5 19.5C6.5 21 5.5 25.5 5.5 25.5M26.5 9.5L24 7C20 7 14.5 7 9.5 10C5.5 12.5 5.5 17 5.5 17"
+        stroke="url(#fav-sweep-up)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Central Diamond Prism Core -->
-  <polygon points="16,12.5 19,16 16,19.5 13,16" fill="#FF5A1F"/>
+  <polygon points="16,12.5 13,16 16,19.5" fill="url(#fav-facet-d)"/>
+  <polygon points="16,12.5 19,16 16,19.5" fill="url(#fav-facet-l)"/>
+  <line x1="16" y1="12.5" x2="16" y2="19.5" stroke="#FFF7ED" stroke-width="0.5" opacity="0.8"/>
 </svg>

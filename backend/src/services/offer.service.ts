@@ -27,3 +27,14 @@ export async function getAllOffers(query: Record<string, unknown>) {
     .sort({ createdAt: -1 })
     .lean();
 }
+
+export async function getOfferById(id: string) {
+  return Offer.findById(id)
+    .populate('productId', 'title slug')
+    .populate('merchantId', 'name slug')
+    .lean();
+}
+
+export async function deleteOffer(id: string) {
+  return Offer.findByIdAndDelete(id);
+}

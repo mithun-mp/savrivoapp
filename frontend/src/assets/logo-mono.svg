@@ -1,8 +1,15 @@
 <svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SAVRIVO Monochrome">
   <g transform="translate(4, 4) scale(0.625)">
-    <path d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
-          stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    <polygon points="32,24 38,32 32,40 26,32" fill="currentColor"/>
+    <!-- Lower Base Contour -->
+    <path d="M21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33"
+          stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.82"/>
+    <!-- Upper Apex Contour -->
+    <path d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48M53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
+          stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    <!-- Faceted Prism Core -->
+    <polygon points="32,24 26,32 32,40" fill="currentColor" opacity="0.6"/>
+    <polygon points="32,24 38,32 32,40" fill="currentColor" opacity="0.95"/>
+    <line x1="32" y1="24" x2="32" y2="40" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
   </g>
   <text x="56" y="32" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="18" font-weight="800" letter-spacing="0.22em" fill="currentColor">SAVRIVO</text>
 </svg>

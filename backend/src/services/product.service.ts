@@ -37,6 +37,12 @@ export async function getProductBySlug(slug: string) {
     .lean();
 }
 
+export async function getProductById(id: string) {
+  return Product.findById(id)
+    .populate('categoryId', 'name slug')
+    .lean();
+}
+
 export async function createProduct(data: Record<string, unknown>) {
   if (!data.slug && data.title) {
     data.slug = slugify(String(data.title));

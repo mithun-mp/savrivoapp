@@ -1,4 +1,5 @@
 import { Merchant } from '../models/Merchant.model';
+import { Offer } from '../models/Offer.model';
 import { slugify } from '../utils/slugify';
 
 export async function getMerchants(enabledOnly = true) {
@@ -27,4 +28,15 @@ export async function toggleMerchant(id: string) {
   if (!merchant) throw new Error('Merchant not found');
   merchant.enabled = !merchant.enabled;
   return merchant.save();
+}
+
+export async function deleteMerchant(id: string) {
+  const offerCount = await Offer.countDocuments({ merchantId: id });
+  if (offerCount > 0) {
+    const err = new Error(`Cannot delete merchant: ${offerCount} offer(s) are associated with this merchant. Please remove associated offers first.`);
+    (err as unknown as Record<string, unknown>).statusCode = 409;
+    (err as unknown as Record<string, unknown>).code = 'RELATIONAL_RESTRICTION';
+    throw err;
+  }
+  return Merchant.findByIdAndDelete(id);
 }

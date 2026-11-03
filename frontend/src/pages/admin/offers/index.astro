@@ -7,7 +7,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
       <div>
-        <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Product Offers</h1>
+        <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Product Offers & Retailer Links</h1>
         <p class="text-xs mt-1" style="color: var(--color-text-2)">Manage affiliate links, verified external retailer destinations, and pricing for products.</p>
       </div>
       <button
@@ -16,15 +16,18 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         style="background: var(--color-accent)"
       >
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Add Offer</span>
+        <span id="add-offer-btn-label">Add Offer</span>
       </button>
     </div>
 
-    <!-- Add Offer Modal/Box -->
+    <!-- Offer Form Box (Create / Edit) -->
     <div id="offer-form-box" class="hidden p-6 sm:p-7 rounded-2xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
-      <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
-        <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Add Product Destination Offer</h2>
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--color-border)">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <h2 id="o-form-title" class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Add Product Destination Offer</h2>
+        </div>
+        <input type="hidden" id="o-edit-id" value="" />
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -62,7 +65,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       </div>
 
       <div>
-        <label for="o-aff-url" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Affiliate Tracking URL *</label>
+        <label for="o-aff-url" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Affiliate Tracking URL (Optional, defaults to product URL)</label>
         <input
           type="url"
           id="o-aff-url"
@@ -72,9 +75,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         />
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label for="o-price" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Current Indicative Price (₹)</label>
+          <label for="o-price" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Current Price (₹)</label>
           <input
             type="number"
             id="o-price"
@@ -90,12 +93,26 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] cursor-pointer"
             style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
           >
-            <option value="unknown">Check at Retailer</option>
             <option value="in_stock">In Stock</option>
             <option value="out_of_stock">Out of Stock</option>
+            <option value="unknown">Check at Retailer</option>
+          </select>
+        </div>
+        <div>
+          <label for="o-status" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Offer Status</label>
+          <select
+            id="o-status"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] cursor-pointer"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          >
+            <option value="active">Active</option>
+            <option value="expired">Expired</option>
+            <option value="disabled">Disabled</option>
           </select>
         </div>
       </div>
+
+      <div id="o-error-msg" class="hidden text-xs p-3 rounded-xl font-medium" style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.25); color: var(--color-error)"></div>
 
       <div class="flex gap-2 pt-2">
         <button
@@ -115,10 +132,24 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       </div>
     </div>
 
+    <!-- Search & Filter Bar -->
+    <div class="flex items-center gap-3 p-4 rounded-2xl border" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+      <div class="relative flex-1 min-w-[200px]">
+        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--color-text-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          id="offer-search"
+          placeholder="Filter offers by product or merchant..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
+      </div>
+    </div>
+
     <!-- Table -->
     <div class="rounded-2xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm min-w-[650px]">
+        <table class="w-full text-left text-sm min-w-[700px]">
           <thead>
             <tr class="border-b text-[11px] font-bold uppercase tracking-wider" style="background: var(--color-overlay); border-color: var(--color-border); color: var(--color-text-2)">
               <th class="py-3.5 px-5">Product</th>
@@ -147,120 +178,269 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 <script>
   import { api } from '../../../lib/api';
 
+  let rawOffers: any[] = [];
+  let prodsList: any[] = [];
+  let merchList: any[] = [];
+
+  function renderTable(list: any[]) {
+    const tbody = document.getElementById('offers-tbody');
+    if (!tbody) return;
+
+    if (list.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="p-12 text-center">
+            <div class="flex flex-col items-center justify-center gap-2">
+              <p class="text-sm font-medium" style="color: var(--color-text-2)">No offers found</p>
+              <p class="text-xs" style="color: var(--color-text-3)">Click "+ Add Offer" to link a product to an external retailer.</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = list.map((o: any) => {
+      const priceDisplay = o.currentPrice
+        ? `<span class="tabular-nums font-semibold" style="color: var(--color-text-1)">₹${Number(o.currentPrice).toLocaleString('en-IN')}</span>`
+        : '<span class="text-xs" style="color: var(--color-text-3)">At retailer</span>';
+
+      const isActive = o.status === 'active';
+      return `
+        <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
+          <td class="py-3.5 px-5 font-semibold text-sm" style="color: var(--color-text-1)">${o.productId?.title || '—'}</td>
+          <td class="py-3.5 px-4 text-xs font-semibold" style="color: var(--color-accent)">${o.merchantId?.name || '—'}</td>
+          <td class="py-3.5 px-4 text-sm">${priceDisplay}</td>
+          <td class="py-3.5 px-4">
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="${isActive ? 'background: rgba(5, 150, 105, 0.12); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.25)' : 'background: rgba(220, 38, 38, 0.1); color: var(--color-error); border: 1px solid rgba(220, 38, 38, 0.25)'}">
+              ${o.status}
+            </span>
+          </td>
+          <td class="py-3.5 px-5 text-right space-x-2">
+            <button
+              data-edit-id="${o._id}"
+              class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-[var(--color-overlay)]"
+              style="border-color: var(--color-border); color: var(--color-accent)"
+              title="Edit offer details"
+            >
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+              <span>Edit</span>
+            </button>
+            ${isActive ? `
+              <button
+                data-expire-id="${o._id}"
+                class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-amber-500/10"
+                style="border-color: var(--color-border); color: #D97706"
+                title="Expire offer"
+              >
+                Expire
+              </button>
+            ` : ''}
+            <button
+              data-delete-id="${o._id}"
+              class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-red-500/10"
+              style="border-color: var(--color-border); color: var(--color-error)"
+              title="Delete offer"
+            >
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              <span>Delete</span>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Wire edit buttons
+    document.querySelectorAll('[data-edit-id]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-edit-id');
+        const o = rawOffers.find(item => item._id === id);
+        if (!o) return;
+
+        (document.getElementById('o-edit-id') as HTMLInputElement).value = o._id;
+        (document.getElementById('o-product') as HTMLSelectElement).value = o.productId?._id || o.productId || '';
+        (document.getElementById('o-merchant') as HTMLSelectElement).value = o.merchantId?._id || o.merchantId || '';
+        (document.getElementById('o-url') as HTMLInputElement).value = o.productUrl || '';
+        (document.getElementById('o-aff-url') as HTMLInputElement).value = o.affiliateUrl || '';
+        (document.getElementById('o-price') as HTMLInputElement).value = o.currentPrice ? String(o.currentPrice) : '';
+        (document.getElementById('o-avail') as HTMLSelectElement).value = o.availability || 'in_stock';
+        (document.getElementById('o-status') as HTMLSelectElement).value = o.status || 'active';
+
+        const titleEl = document.getElementById('o-form-title');
+        if (titleEl) titleEl.textContent = 'Edit Retailer Offer';
+        const saveBtn = document.getElementById('o-save-btn');
+        if (saveBtn) saveBtn.textContent = 'Update Offer';
+
+        box?.classList.remove('hidden');
+        box?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Wire expire buttons
+    document.querySelectorAll('[data-expire-id]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-expire-id');
+        if (id && confirm('Expire this affiliate offer?')) {
+          try {
+            await api.admin.offers.expire(id);
+            loadData();
+          } catch (err: any) {
+            alert('Failed to expire offer: ' + (err.message || 'Error'));
+          }
+        }
+      });
+    });
+
+    // Wire delete buttons
+    document.querySelectorAll('[data-delete-id]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-delete-id');
+        if (id && confirm('Delete this affiliate offer permanently?')) {
+          try {
+            await api.admin.offers.delete(id);
+            loadData();
+          } catch (err: any) {
+            alert('Failed to delete offer: ' + (err.message || 'Error'));
+          }
+        }
+      });
+    });
+  }
+
   async function loadData() {
     try {
       const [prodsRes, merchRes]: any = await Promise.all([
         api.admin.products.list('limit=100'),
         api.admin.merchants.list(),
       ]);
+      prodsList = prodsRes.data || [];
+      merchList = merchRes.data || [];
+
       const pSelect = document.getElementById('o-product') as HTMLSelectElement;
       const mSelect = document.getElementById('o-merchant') as HTMLSelectElement;
 
-      if (pSelect && prodsRes.data) {
+      if (pSelect && prodsList.length > 0) {
         pSelect.innerHTML = '<option value="">Select Product</option>' +
-          prodsRes.data.map((p: any) => `<option value="${p._id}">${p.title}</option>`).join('');
+          prodsList.map((p: any) => `<option value="${p._id}">${p.title}</option>`).join('');
       }
-      if (mSelect && merchRes.data) {
+      if (mSelect && merchList.length > 0) {
         mSelect.innerHTML = '<option value="">Select Merchant</option>' +
-          merchRes.data.map((m: any) => `<option value="${m._id}">${m.name}</option>`).join('');
+          merchList.map((m: any) => `<option value="${m._id}">${m.name}</option>`).join('');
       }
     } catch {}
 
     const tbody = document.getElementById('offers-tbody');
     try {
       const res: any = await api.admin.offers.list();
-      const list = res.data || [];
-      if (!tbody) return;
-      if (list.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-12 text-center">
-              <div class="flex flex-col items-center justify-center gap-2">
-                <p class="text-sm font-medium" style="color: var(--color-text-2)">No offers linked yet</p>
-                <p class="text-xs" style="color: var(--color-text-3)">Click "+ Add Offer" to link a product to an external retailer.</p>
-              </div>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-      tbody.innerHTML = list.map((o: any) => {
-        const priceDisplay = o.currentPrice
-          ? `<span class="tabular-nums font-semibold" style="color: var(--color-text-1)">₹${Number(o.currentPrice).toLocaleString('en-IN')}</span>`
-          : '<span class="text-xs" style="color: var(--color-text-3)">At retailer</span>';
-
-        return `
-          <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
-            <td class="py-3.5 px-5 font-semibold text-sm" style="color: var(--color-text-1)">${o.productId?.title || '—'}</td>
-            <td class="py-3.5 px-4 text-xs font-semibold" style="color: var(--color-accent)">${o.merchantId?.name || '—'}</td>
-            <td class="py-3.5 px-4 text-sm">${priceDisplay}</td>
-            <td class="py-3.5 px-4">
-              <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="${o.status === 'active' ? 'background: rgba(5, 150, 105, 0.12); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.25)' : 'background: rgba(220, 38, 38, 0.1); color: var(--color-error); border: 1px solid rgba(220, 38, 38, 0.25)'}">
-                ${o.status}
-              </span>
-            </td>
-            <td class="py-3.5 px-5 text-right">
-              ${o.status === 'active' ? `
-                <button
-                  data-expire-id="${o._id}"
-                  class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-red-500/10"
-                  style="border-color: var(--color-border); color: var(--color-error)"
-                >
-                  Expire
-                </button>
-              ` : '<span class="text-xs" style="color: var(--color-text-3)">—</span>'}
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      document.querySelectorAll('[data-expire-id]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const id = (e.currentTarget as HTMLElement).getAttribute('data-expire-id');
-          if (id && confirm('Expire this affiliate offer?')) {
-            await api.admin.offers.expire(id);
-            loadData();
-          }
-        });
-      });
+      rawOffers = res.data || [];
+      renderTable(rawOffers);
     } catch {
       if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-xs" style="color: var(--color-error)">Failed to load offers. Check server connection.</td></tr>';
     }
   }
 
-  const box = document.getElementById('offer-form-box');
-  document.getElementById('add-offer-btn')?.addEventListener('click', () => box?.classList.remove('hidden'));
-  document.getElementById('o-cancel-btn')?.addEventListener('click', () => box?.classList.add('hidden'));
-
-  document.getElementById('o-save-btn')?.addEventListener('click', async () => {
-    const productId = (document.getElementById('o-product') as HTMLSelectElement).value;
-    const merchantId = (document.getElementById('o-merchant') as HTMLSelectElement).value;
-    const productUrl = (document.getElementById('o-url') as HTMLInputElement).value;
-    const affiliateUrl = (document.getElementById('o-aff-url') as HTMLInputElement).value;
-    const priceVal = (document.getElementById('o-price') as HTMLInputElement).value;
-    const availability = (document.getElementById('o-avail') as HTMLSelectElement).value;
-
-    if (!productId || !merchantId || !productUrl || !affiliateUrl) {
-      alert('Please fill all required fields');
+  // Filter search
+  const searchInput = document.getElementById('offer-search') as HTMLInputElement;
+  searchInput?.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase().trim();
+    if (!q) {
+      renderTable(rawOffers);
       return;
     }
+    const filtered = rawOffers.filter(o =>
+      (o.productId?.title && o.productId.title.toLowerCase().includes(q)) ||
+      (o.merchantId?.name && o.merchantId.name.toLowerCase().includes(q)) ||
+      (o.productUrl && o.productUrl.toLowerCase().includes(q))
+    );
+    renderTable(filtered);
+  });
 
-    await api.admin.offers.create({
-      productId,
-      merchantId,
-      productUrl,
-      affiliateUrl,
-      currentPrice: priceVal ? Number(priceVal) : undefined,
-      availability,
-      sourceType: 'manual',
-    });
-    box?.classList.add('hidden');
+  const box = document.getElementById('offer-form-box');
+  const errorEl = document.getElementById('o-error-msg');
+  const saveBtn = document.getElementById('o-save-btn') as HTMLButtonElement;
+
+  function resetForm() {
+    (document.getElementById('o-edit-id') as HTMLInputElement).value = '';
+    (document.getElementById('o-product') as HTMLSelectElement).value = '';
+    (document.getElementById('o-merchant') as HTMLSelectElement).value = '';
     (document.getElementById('o-url') as HTMLInputElement).value = '';
     (document.getElementById('o-aff-url') as HTMLInputElement).value = '';
     (document.getElementById('o-price') as HTMLInputElement).value = '';
-    loadData();
+    (document.getElementById('o-avail') as HTMLSelectElement).value = 'in_stock';
+    (document.getElementById('o-status') as HTMLSelectElement).value = 'active';
+
+    const titleEl = document.getElementById('o-form-title');
+    if (titleEl) titleEl.textContent = 'Add Product Destination Offer';
+    if (saveBtn) saveBtn.textContent = 'Save Offer';
+    if (errorEl) {
+      errorEl.classList.add('hidden');
+      errorEl.textContent = '';
+    }
+  }
+
+  document.getElementById('add-offer-btn')?.addEventListener('click', () => {
+    resetForm();
+    box?.classList.toggle('hidden');
+  });
+
+  document.getElementById('o-cancel-btn')?.addEventListener('click', () => {
+    resetForm();
+    box?.classList.add('hidden');
+  });
+
+  saveBtn?.addEventListener('click', async () => {
+    const editId = (document.getElementById('o-edit-id') as HTMLInputElement).value;
+    const productId = (document.getElementById('o-product') as HTMLSelectElement).value;
+    const merchantId = (document.getElementById('o-merchant') as HTMLSelectElement).value;
+    const productUrl = (document.getElementById('o-url') as HTMLInputElement).value.trim();
+    const affiliateUrl = (document.getElementById('o-aff-url') as HTMLInputElement).value.trim();
+    const priceVal = (document.getElementById('o-price') as HTMLInputElement).value.trim();
+    const availability = (document.getElementById('o-avail') as HTMLSelectElement).value;
+    const status = (document.getElementById('o-status') as HTMLSelectElement).value;
+
+    if (!productId || !merchantId || !productUrl) {
+      if (errorEl) {
+        errorEl.textContent = 'Target Product, Merchant, and Destination URL are required.';
+        errorEl.classList.remove('hidden');
+      }
+      return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = editId ? 'Updating...' : 'Saving...';
+    if (errorEl) errorEl.classList.add('hidden');
+
+    try {
+      const payload: Record<string, unknown> = {
+        productId,
+        merchantId,
+        productUrl,
+        affiliateUrl: affiliateUrl || productUrl,
+        currentPrice: priceVal ? Number(priceVal) : undefined,
+        availability,
+        status,
+        sourceType: 'manual',
+      };
+
+      if (editId) {
+        await api.admin.offers.update(editId, payload);
+      } else {
+        await api.admin.offers.create(payload);
+      }
+
+      resetForm();
+      box?.classList.add('hidden');
+      loadData();
+    } catch (err: any) {
+      if (errorEl) {
+        errorEl.textContent = err.message || 'Failed to save offer.';
+        errorEl.classList.remove('hidden');
+      }
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = editId ? 'Update Offer' : 'Save Offer';
+    }
   });
 
   loadData();
 </script>
-

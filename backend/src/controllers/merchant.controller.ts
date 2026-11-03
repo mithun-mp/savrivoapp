@@ -34,9 +34,25 @@ export async function updateMerchant(req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 }
 
+export async function getMerchant(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const merchant = await merchantService.getMerchantById(req.params.id);
+    if (!merchant) { sendError(res, 'Merchant not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, merchant);
+  } catch (err) { next(err); }
+}
+
 export async function toggleMerchant(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const merchant = await merchantService.toggleMerchant(req.params.id);
     sendSuccess(res, merchant, 200, 'Merchant status updated');
+  } catch (err) { next(err); }
+}
+
+export async function deleteMerchant(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const merchant = await merchantService.deleteMerchant(req.params.id);
+    if (!merchant) { sendError(res, 'Merchant not found', 404, 'NOT_FOUND'); return; }
+    sendSuccess(res, { id: req.params.id }, 200, 'Merchant deleted');
   } catch (err) { next(err); }
 }
