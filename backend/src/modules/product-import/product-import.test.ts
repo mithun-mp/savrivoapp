@@ -1,6 +1,16 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateUrlSsrf, isForbiddenIp, SsrfError } from './ssrf-guard';
+import dns from 'node:dns/promises';
+import http from 'node:http';
+import {
+  validateUrlSsrf,
+  safeFetchHtml,
+  isForbiddenIp,
+  isForbiddenIpv4,
+  isForbiddenIpv6,
+  parseIpv6ToIpv4,
+  SsrfError,
+} from './ssrf-guard';
 import {
   detectMerchant,
   extractAmazonAsin,
@@ -31,16 +41,51 @@ describe('SSRF Guard', () => {
     assert.equal(isForbiddenIp('192.168.1.1'), true, '192.168.x private IP should be forbidden');
     assert.equal(isForbiddenIp('169.254.169.254'), true, 'AWS metadata IP should be forbidden');
     assert.equal(isForbiddenIp('0.0.0.0'), true, '0.0.0.0 should be forbidden');
+    assert.equal(isForbiddenIp('100.64.0.1'), true, 'Carrier-grade NAT should be forbidden');
+    assert.equal(isForbiddenIp('192.0.2.1'), true, 'TEST-NET-1 should be forbidden');
+    assert.equal(isForbiddenIp('198.51.100.1'), true, 'TEST-NET-2 should be forbidden');
+    assert.equal(isForbiddenIp('203.0.113.1'), true, 'TEST-NET-3 should be forbidden');
+    assert.equal(isForbiddenIp('224.0.0.1'), true, 'Multicast should be forbidden');
+    assert.equal(isForbiddenIp('240.0.0.1'), true, 'Reserved Class E should be forbidden');
+    assert.equal(isForbiddenIp('255.255.255.255'), true, 'Broadcast should be forbidden');
     assert.equal(isForbiddenIp('8.8.8.8'), false, 'Public IP should be allowed');
     assert.equal(isForbiddenIp('1.1.1.1'), false, 'Public IP should be allowed');
+    assert.equal(isForbiddenIp('18.161.239.140'), false, 'Amazon CloudFront public IP should be allowed');
   });
 
   it('correctly identifies forbidden IPv6 ranges', () => {
     assert.equal(isForbiddenIp('::1'), true, 'IPv6 loopback should be forbidden');
     assert.equal(isForbiddenIp('::'), true, 'IPv6 unspecified should be forbidden');
     assert.equal(isForbiddenIp('fc00::1'), true, 'IPv6 unique local should be forbidden');
+    assert.equal(isForbiddenIp('fd12:3456:789a::1'), true, 'IPv6 ULA fd00 should be forbidden');
     assert.equal(isForbiddenIp('fe80::1'), true, 'IPv6 link-local should be forbidden');
+    assert.equal(isForbiddenIp('ff02::1'), true, 'IPv6 multicast should be forbidden');
+    assert.equal(isForbiddenIp('100::1'), true, 'IPv6 discard-only prefix should be forbidden');
+    assert.equal(isForbiddenIp('2001:db8::1'), true, 'IPv6 documentation prefix should be forbidden');
+    assert.equal(isForbiddenIp('2607:f8b0:4005:805::200e'), false, 'Public IPv6 should be allowed');
+  });
+
+  it('identifies IPv4-mapped and translated IPv6 addresses in dot-decimal and hex', () => {
     assert.equal(isForbiddenIp('::ffff:127.0.0.1'), true, 'IPv4-mapped loopback should be forbidden');
+    assert.equal(isForbiddenIp('::ffff:10.0.0.1'), true, 'IPv4-mapped 10.x private IP should be forbidden');
+    assert.equal(isForbiddenIp('::ffff:169.254.169.254'), true, 'IPv4-mapped cloud metadata should be forbidden');
+    assert.equal(isForbiddenIp('::ffff:7f00:1'), true, 'IPv4-mapped hex 127.0.0.1 should be forbidden');
+    assert.equal(isForbiddenIp('::ffff:c0a8:0101'), true, 'IPv4-mapped hex 192.168.1.1 should be forbidden');
+    assert.equal(isForbiddenIp('64:ff9b::127.0.0.1'), true, 'NAT64 translated loopback should be forbidden');
+    assert.equal(isForbiddenIp('::ffff:8.8.8.8'), false, 'IPv4-mapped public IP should be allowed');
+    assert.equal(isForbiddenIp('::ffff:0808:0808'), false, 'IPv4-mapped hex public IP should be allowed');
+  });
+
+  it('permits legitimate public domains including www.amazon.in', async () => {
+    assert.equal(isForbiddenIp('www.amazon.in'), false, 'Domain name should not be treated as forbidden IP');
+    assert.equal(isForbiddenIp('amazon.in'), false, 'Domain name should not be treated as forbidden IP');
+    assert.equal(isForbiddenIp('flipkart.com'), false, 'Domain name should not be treated as forbidden IP');
+
+    const amazonUrl = await validateUrlSsrf('https://www.amazon.in/dp/B0BDK62PDX');
+    assert.equal(amazonUrl.hostname, 'www.amazon.in');
+
+    const flipkartUrl = await validateUrlSsrf('https://www.flipkart.com/apple-iphone-15/p/itm6ac6485515ae4');
+    assert.equal(flipkartUrl.hostname, 'www.flipkart.com');
   });
 
   it('blocks dangerous URL schemes and local addresses', async () => {
@@ -60,6 +105,16 @@ describe('SSRF Guard', () => {
     );
 
     await assert.rejects(
+      async () => validateUrlSsrf('http://[::1]:8080/admin'),
+      (err: Error) => err instanceof SsrfError && err.message.includes('private/internal IP')
+    );
+
+    await assert.rejects(
+      async () => validateUrlSsrf('http://[::ffff:127.0.0.1]/'),
+      (err: Error) => err instanceof SsrfError && err.message.includes('private/internal IP')
+    );
+
+    await assert.rejects(
       async () => validateUrlSsrf('http://localhost:3000'),
       (err: Error) => err instanceof SsrfError && err.message.includes('localhost')
     );
@@ -68,6 +123,82 @@ describe('SSRF Guard', () => {
       async () => validateUrlSsrf('http://user:pass@example.com'),
       (err: Error) => err instanceof SsrfError && err.message.includes('Credentials in URL')
     );
+  });
+
+  it('blocks domains that resolve to mixed public and private IP addresses', async () => {
+    const origLookup = dns.lookup;
+    try {
+      (dns as any).lookup = async (hostname: string, options?: any) => {
+        if (hostname === 'mixed-threat.example.com') {
+          return [
+            { address: '93.184.216.34', family: 4 }, // Public
+            { address: '127.0.0.1', family: 4 },    // Private
+          ];
+        }
+        return origLookup(hostname, options);
+      };
+
+      await assert.rejects(
+        async () => validateUrlSsrf('https://mixed-threat.example.com/item'),
+        (err: Error) =>
+          err instanceof SsrfError &&
+          err.message.includes('resolved to forbidden internal/private address (127.0.0.1)')
+      );
+    } finally {
+      (dns as any).lookup = origLookup;
+    }
+  });
+
+  it('blocks redirects to private or internal destinations', async () => {
+    const server = http.createServer((_req, res) => {
+      res.writeHead(302, { Location: 'http://127.0.0.1:8080/admin/dump' });
+      res.end();
+    });
+
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const port = (server.address() as any).port;
+
+    try {
+      await assert.rejects(
+        async () => safeFetchHtml(`http://127.0.0.1:${port}/redirect`),
+        (err: Error) => err instanceof SsrfError
+      );
+    } finally {
+      server.close();
+    }
+  });
+
+  it('detects and prevents DNS rebinding during connection phase', async () => {
+    const origLookup = dns.lookup;
+    try {
+      (dns as any).lookup = async (hostname: string, options?: any) => {
+        if (hostname === 'rebind-test.example.com') {
+          return [{ address: '169.254.169.254', family: 4 }];
+        }
+        return origLookup(hostname, options);
+      };
+
+      await assert.rejects(
+        async () => safeFetchHtml('https://rebind-test.example.com/metadata'),
+        (err: Error) => err instanceof SsrfError && err.message.includes('169.254.169.254')
+      );
+    } finally {
+      (dns as any).lookup = origLookup;
+    }
+  });
+
+  it('fetches legitimate Amazon India product page via safeFetchHtml without SSRF block', async () => {
+    const url = 'https://www.amazon.in/dp/B0BDK62PDX';
+    const fetchRes = await safeFetchHtml(url);
+    assert.equal(fetchRes.statusCode, 200);
+    assert.ok(fetchRes.html.length > 1000);
+    assert.ok(fetchRes.finalUrl.includes('amazon.in'));
+
+    const merchantInfo = detectMerchant(url);
+    const extracted = extractAmazonProduct(fetchRes.html, merchantInfo, url);
+    assert.equal(extracted.skuOrAsin, 'B0BDK62PDX');
+    assert.equal(extracted.merchantType, 'amazon');
+    assert.ok(extracted.canonicalUrl.includes('B0BDK62PDX'));
   });
 });
 
