@@ -1,7 +1,7 @@
 import type { ApiResponse } from '@/types';
 
 const isProd = import.meta.env.PROD;
-const DEFAULT_API = isProd ? 'https://savrivo-backend.onrender.com/api' : 'http://localhost:4000/api';
+const DEFAULT_API = isProd ? 'https://savrivo-api.onrender.com/api' : 'http://localhost:4000/api';
 export const API_BASE = (import.meta as unknown as { env: Record<string, string> }).env?.PUBLIC_API_URL || DEFAULT_API;
 
 async function apiRequest<T>(path: string, options?: RequestInit): Promise<ApiResponse<T>> {

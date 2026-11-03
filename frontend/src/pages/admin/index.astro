@@ -1,89 +1,196 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { url } from '../../lib/paths';
+import { Package, CheckCircle2, FileEdit, Tags, Store, AlertTriangle, PlusCircle, ArrowRight, ExternalLink } from 'lucide-react';
 ---
 
-<AdminLayout title="Dashboard">
+<AdminLayout title="System Overview">
   <div class="space-y-8">
-    <!-- Stat cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3.5 sm:gap-4" id="stats-grid">
-      <div class="p-4 sm:p-5 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-        <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--color-text-2)">Total Products</p>
-        <p class="text-2xl font-bold mt-2" id="stat-total" style="color: var(--color-text-1)">—</p>
+    {/* Welcome & Overview Header */}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
+      <div>
+        <h2 class="font-display text-xl sm:text-2xl font-bold" style="color: var(--color-text-1)">
+          Dashboard & Performance
+        </h2>
+        <p class="text-xs sm:text-sm mt-0.5" style="color: var(--color-text-2)">
+          Real-time catalog metrics and affiliate operation health.
+        </p>
       </div>
-      <div class="p-4 sm:p-5 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-        <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--color-text-2)">Published</p>
-        <p class="text-2xl font-bold mt-2 text-emerald-600" id="stat-published">—</p>
-      </div>
-      <div class="p-4 sm:p-5 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-        <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--color-text-2)">Drafts</p>
-        <p class="text-2xl font-bold mt-2 text-amber-600" id="stat-drafts">—</p>
-      </div>
-      <div class="p-4 sm:p-5 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-        <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--color-text-2)">Categories</p>
-        <p class="text-2xl font-bold mt-2" id="stat-categories" style="color: var(--color-text-1)">—</p>
-      </div>
-      <div class="p-4 sm:p-5 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-        <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--color-text-2)">Active Merchants</p>
-        <p class="text-2xl font-bold mt-2" id="stat-merchants" style="color: var(--color-accent)">—</p>
-      </div>
-      <div class="p-4 sm:p-5 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-        <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--color-text-2)">Expired Offers</p>
-        <p class="text-2xl font-bold mt-2 text-red-500" id="stat-expired">—</p>
+
+      <div class="flex items-center gap-2.5">
+        <a
+          href={url('/admin/products/new')}
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition-all duration-150 hover:brightness-105 active:scale-95 shadow-sv-sm min-h-[44px]"
+          style="background: var(--color-accent)"
+        >
+          <PlusCircle size={16} />
+          <span>New Product</span>
+        </a>
       </div>
     </div>
 
-    <!-- Quick Actions -->
+    {/* Metric Stat Cards Grid */}
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3.5 sm:gap-4" id="stats-grid">
+      {/* Total Products */}
+      <div
+        class="p-4 sm:p-5 rounded-2xl border transition-all duration-150 hover:shadow-sv-sm"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs uppercase tracking-wider font-bold" style="color: var(--color-text-2)">Total</p>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: var(--color-overlay); color: var(--color-text-2)">
+            <Package size={15} />
+          </div>
+        </div>
+        <p class="text-2xl sm:text-3xl font-extrabold font-display tabular-nums" id="stat-total" style="color: var(--color-text-1)">—</p>
+        <span class="text-[11px] font-medium" style="color: var(--color-text-2)">Active items</span>
+      </div>
+
+      {/* Published */}
+      <div
+        class="p-4 sm:p-5 rounded-2xl border transition-all duration-150 hover:shadow-sv-sm"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs uppercase tracking-wider font-bold" style="color: var(--color-text-2)">Published</p>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(5, 150, 105, 0.12); color: var(--color-success)">
+            <CheckCircle2 size={15} />
+          </div>
+        </div>
+        <p class="text-2xl sm:text-3xl font-extrabold font-display tabular-nums" id="stat-published" style="color: var(--color-success)">—</p>
+        <span class="text-[11px] font-medium" style="color: var(--color-text-2)">Live on site</span>
+      </div>
+
+      {/* Drafts */}
+      <div
+        class="p-4 sm:p-5 rounded-2xl border transition-all duration-150 hover:shadow-sv-sm"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs uppercase tracking-wider font-bold" style="color: var(--color-text-2)">Drafts</p>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(217, 119, 6, 0.12); color: #D97706">
+            <FileEdit size={15} />
+          </div>
+        </div>
+        <p class="text-2xl sm:text-3xl font-extrabold font-display tabular-nums" id="stat-drafts" style="color: #D97706">—</p>
+        <span class="text-[11px] font-medium" style="color: var(--color-text-2)">Under review</span>
+      </div>
+
+      {/* Categories */}
+      <div
+        class="p-4 sm:p-5 rounded-2xl border transition-all duration-150 hover:shadow-sv-sm"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs uppercase tracking-wider font-bold" style="color: var(--color-text-2)">Categories</p>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: var(--color-overlay); color: var(--color-text-2)">
+            <Tags size={15} />
+          </div>
+        </div>
+        <p class="text-2xl sm:text-3xl font-extrabold font-display tabular-nums" id="stat-categories" style="color: var(--color-text-1)">—</p>
+        <span class="text-[11px] font-medium" style="color: var(--color-text-2)">Taxonomies</span>
+      </div>
+
+      {/* Active Merchants */}
+      <div
+        class="p-4 sm:p-5 rounded-2xl border transition-all duration-150 hover:shadow-sv-sm"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs uppercase tracking-wider font-bold" style="color: var(--color-text-2)">Merchants</p>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: var(--color-accent-badge); color: var(--color-accent)">
+            <Store size={15} />
+          </div>
+        </div>
+        <p class="text-2xl sm:text-3xl font-extrabold font-display tabular-nums" id="stat-merchants" style="color: var(--color-accent)">—</p>
+        <span class="text-[11px] font-medium" style="color: var(--color-text-2)">Connected feeds</span>
+      </div>
+
+      {/* Expired Offers */}
+      <div
+        class="p-4 sm:p-5 rounded-2xl border transition-all duration-150 hover:shadow-sv-sm"
+        style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs uppercase tracking-wider font-bold" style="color: var(--color-text-2)">Expired</p>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(220, 38, 38, 0.1); color: var(--color-error)">
+            <AlertTriangle size={15} />
+          </div>
+        </div>
+        <p class="text-2xl sm:text-3xl font-extrabold font-display tabular-nums" id="stat-expired" style="color: var(--color-error)">—</p>
+        <span class="text-[11px] font-medium" style="color: var(--color-text-2)">Requires attention</span>
+      </div>
+    </div>
+
+    {/* Quick Action Navigation Bar */}
     <div class="flex flex-wrap gap-2.5 sm:gap-3">
       <a
         href={url('/admin/products/new')}
-        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 min-h-[44px]"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition-opacity hover:opacity-90 min-h-[44px]"
         style="background: var(--color-accent)"
       >
-        + Add New Product
+        <PlusCircle size={15} />
+        <span>Create Product</span>
       </a>
       <a
         href={url('/admin/categories')}
-        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border transition-colors hover:opacity-80 min-h-[44px]"
-        style="border-color: var(--color-border); color: var(--color-text-1)"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-colors hover:bg-[var(--color-overlay)] min-h-[44px]"
+        style="border-color: var(--color-border); color: var(--color-text-1); background: var(--color-surface)"
       >
-        Manage Categories
+        <Tags size={15} className="text-[var(--color-accent)]" />
+        <span>Manage Categories</span>
       </a>
       <a
         href={url('/admin/merchants')}
-        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border transition-colors hover:opacity-80 min-h-[44px]"
-        style="border-color: var(--color-border); color: var(--color-text-1)"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-colors hover:bg-[var(--color-overlay)] min-h-[44px]"
+        style="border-color: var(--color-border); color: var(--color-text-1); background: var(--color-surface)"
       >
-        Manage Merchants
+        <Store size={15} className="text-[var(--color-accent)]" />
+        <span>Manage Merchants</span>
       </a>
       <a
         href={url('/admin/offers')}
-        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border transition-colors hover:opacity-80 min-h-[44px]"
-        style="border-color: var(--color-border); color: var(--color-text-1)"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-colors hover:bg-[var(--color-overlay)] min-h-[44px]"
+        style="border-color: var(--color-border); color: var(--color-text-1); background: var(--color-surface)"
       >
-        Manage Offers
+        <span class="font-bold text-xs" style="color: var(--color-accent)">%</span>
+        <span>Manage Offers</span>
       </a>
     </div>
 
-    <!-- Recent Products Table -->
-    <div class="rounded-xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border)">
+    {/* Recent Products Table */}
+    <div
+      class="rounded-2xl border overflow-hidden"
+      style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+    >
       <div class="p-5 border-b flex items-center justify-between" style="border-color: var(--color-border)">
-        <h2 class="text-sm font-semibold" style="color: var(--color-text-1)">Recent Products</h2>
-        <a href={url('/admin/products')} class="text-xs font-medium hover:underline" style="color: var(--color-accent)">View All →</a>
+        <div class="flex items-center gap-2">
+          <Package size={17} className="text-[var(--color-accent)]" />
+          <h3 class="text-sm sm:text-base font-bold font-display" style="color: var(--color-text-1)">
+            Recently Added Products
+          </h3>
+        </div>
+        <a href={url('/admin/products')} class="inline-flex items-center gap-1 text-xs font-bold hover:underline" style="color: var(--color-accent)">
+          <span>View Catalog</span>
+          <ArrowRight size={13} />
+        </a>
       </div>
+
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm min-w-[540px]">
           <thead>
-            <tr class="border-b text-xs uppercase tracking-wider" style="border-color: var(--color-border); color: var(--color-text-2)">
-              <th class="p-4">Title</th>
-              <th class="p-4">Status</th>
-              <th class="p-4">Created</th>
-              <th class="p-4 text-right">Actions</th>
+            <tr class="border-b text-[11px] uppercase tracking-wider" style="border-color: var(--color-border); color: var(--color-text-2); background: var(--color-overlay)">
+              <th class="p-4 font-bold">Product Title</th>
+              <th class="p-4 font-bold">Status</th>
+              <th class="p-4 font-bold">Date Created</th>
+              <th class="p-4 text-right font-bold">Actions</th>
             </tr>
           </thead>
           <tbody id="recent-products-tbody">
             <tr>
-              <td colspan="4" class="p-4 text-center" style="color: var(--color-text-2)">Loading dashboard data...</td>
+              <td colspan="4" class="p-8 text-center text-xs" style="color: var(--color-text-2)">
+                Loading real-time catalog records...
+              </td>
             </tr>
           </tbody>
         </table>
@@ -116,19 +223,29 @@ import { url } from '../../lib/paths';
         if (tbody) {
           const recents = res.data.recentProducts || [];
           if (recents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-xs" style="color: var(--color-text-2)">No products yet. Click "+ Add New Product" to start.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-xs" style="color: var(--color-text-2)">No products found. Click "+ Create Product" to begin cataloging.</td></tr>';
           } else {
             tbody.innerHTML = recents.map((p: any) => `
-              <tr class="border-b" style="border-color: var(--color-border)">
-                <td class="p-4 font-medium" style="color: var(--color-text-1)">${p.title}</td>
+              <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
+                <td class="p-4 font-medium" style="color: var(--color-text-1)">
+                  <div class="line-clamp-1">${p.title}</div>
+                </td>
                 <td class="p-4">
-                  <span class="text-xs px-2 py-0.5 rounded-full ${p.status === 'published' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  <span class="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border" style="${
+                    p.status === 'published'
+                      ? 'background: rgba(5, 150, 105, 0.12); color: var(--color-success); border-color: rgba(5, 150, 105, 0.25);'
+                      : 'background: rgba(217, 119, 6, 0.12); color: #D97706; border-color: rgba(217, 119, 6, 0.25);'
+                  }">
                     ${p.status}
                   </span>
                 </td>
-                <td class="p-4 text-xs" style="color: var(--color-text-2)">${new Date(p.createdAt).toLocaleDateString()}</td>
+                <td class="p-4 text-xs tabular-nums" style="color: var(--color-text-2)">
+                  ${new Date(p.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </td>
                 <td class="p-4 text-right">
-                  <a href="${url('/admin/products/' + p._id)}" class="text-xs font-medium hover:underline" style="color: var(--color-accent)">Edit</a>
+                  <a href="${url('/admin/products/' + p._id)}" class="text-xs font-bold hover:underline" style="color: var(--color-accent)">
+                    Edit Product
+                  </a>
                 </td>
               </tr>
             `).join('');

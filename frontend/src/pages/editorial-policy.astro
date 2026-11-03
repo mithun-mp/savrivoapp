@@ -1,28 +1,139 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import { url } from '../lib/paths';
+import { BookOpen, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
 ---
 
-<MainLayout title="Editorial Policy — SAVRIVO" description="SAVRIVO's editorial policy. How we select and review products." canonicalUrl="https://savrivo.in/editorial-policy">
-  <div class="section">
-    <div class="container-content max-w-3xl">
-      <nav class="text-xs mb-6" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">Editorial Policy</span>
-      </nav>
-      <h1 class="font-display text-3xl font-bold mb-8" style="color: var(--color-text-1)">Editorial Policy</h1>
-      <div class="prose prose-base max-w-none space-y-5" style="color: var(--color-text-2)">
-        <p><strong style="color: var(--color-text-1)">Last updated: November 2024</strong></p>
-        <h2 style="color: var(--color-text-1)">How We Select Products</h2>
-        <p>Products on SAVRIVO are selected by our editorial team based on category relevance, usefulness, and quality of available information. We do not accept payment for editorial product placement.</p>
-        <h2 style="color: var(--color-text-1)">Buying Guides</h2>
-        <p>Buying guides are written to provide genuinely useful purchase guidance. They are based on publicly available specifications and feature information. We do not fabricate test results.</p>
-        <h2 style="color: var(--color-text-1)">Affiliate Relationships and Independence</h2>
-        <p>While SAVRIVO earns affiliate commissions, our editorial decisions are independent. Affiliate commission rates do not influence which products we feature or how we describe them.</p>
-        <h2 style="color: var(--color-text-1)">Accuracy</h2>
-        <p>We aim for accuracy in all product information. Where information may be outdated, we indicate when it was last verified. We do not invent specifications, ratings, or prices.</p>
-        <h2 style="color: var(--color-text-1)">Corrections</h2>
-        <p>If you spot an error, please <a href={url('/contact')} style="color: var(--color-accent)">contact us</a>. We will review and correct factual errors promptly.</p>
+<MainLayout
+  title="Editorial Policy & Research Standards — SAVRIVO"
+  description="How SAVRIVO independently tests, evaluates, and selects products for the Indian market. Our strict research guidelines and verification process."
+  canonicalUrl="https://savrivo.in/editorial-policy"
+>
+  <div class="section py-8 sm:py-14">
+    <div class="container-content max-w-4xl">
+      {/* Breadcrumb Navigation */}
+      <div class="mb-8">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Editorial Policy' },
+          ]}
+        />
+      </div>
+
+      {/* Hero Header */}
+      <div class="mb-10 pb-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <BookOpen size={13} />
+          <span>Research Standards</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3" style="color: var(--color-text-1)">
+          Editorial Policy
+        </h1>
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-2)">
+          Last updated: November 2024 · Independent research & verification standards
+        </p>
+      </div>
+
+      <div class="space-y-8">
+        <div
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            At SAVRIVO, our mission is to empower Indian consumers with trustworthy, honest product guidance. This editorial policy governs how our team selects products, authors guides, and protects our independent voice.
+          </p>
+        </div>
+
+        {/* How We Select Products */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <div class="flex items-center gap-2 mb-3 font-display font-bold text-lg sm:text-xl" style="color: var(--color-text-1)">
+            <ShieldCheck size={20} class="text-[var(--color-accent)]" />
+            <h2>How We Select Products</h2>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            Products featured on SAVRIVO are chosen independently by our editorial team based on category relevance, real-world utility, build quality, and verified post-purchase owner feedback in India.
+          </p>
+          <div class="p-4 rounded-xl border text-xs sm:text-sm" style="background: var(--color-overlay); border-color: var(--color-border); color: var(--color-text-1)">
+            <strong>No Paid Placement Rule:</strong> We do not accept payment, free review samples with strings attached, or commercial compensation to feature or positively rate any product.
+          </div>
+        </section>
+
+        {/* Buying Guides */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            Buying Guides & Testing Methodology
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            Our buying guides are formulated to solve real purchasing dilemmas. We synthesize official manufacturer engineering specifications, independent benchmarks, authorized service network availability in India, and collective long-term owner reviews.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            We strictly forbid fabricated lab benchmarks, simulated battery life claims, or unverified marketing statements.
+          </p>
+        </section>
+
+        {/* Independence & Commissions */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            Affiliate Relationships and Editorial Independence
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            While SAVRIVO earns affiliate commissions from qualifying purchases made via outbound retailer links, affiliate commercial terms do not dictate which products are recommended or how they are critiqued.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            Our writers and editors are never evaluated or compensated based on affiliate click conversions or retailer payout percentages.
+          </p>
+        </section>
+
+        {/* Accuracy and Corrections */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            Accuracy, Verification & Corrections
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-4" style="color: var(--color-text-2)">
+            We aim for precision in all specifications and pricing indicators. Whenever product specifications change or a model is discontinued, we update our guides and catalog entries accordingly.
+          </p>
+          <div
+            class="p-5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            style="background: var(--color-overlay); border-color: var(--color-border);"
+          >
+            <div>
+              <h4 class="font-bold text-sm mb-1" style="color: var(--color-text-1)">Notice a factual inaccuracy?</h4>
+              <p class="text-xs sm:text-sm" style="color: var(--color-text-2)">We review and correct factual feedback promptly.</p>
+            </div>
+            <a
+              href={url('/contact')}
+              class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold underline underline-offset-4"
+              style="color: var(--color-accent)"
+            >
+              Submit a correction →
+            </a>
+          </div>
+        </section>
+
+        {/* Cross-Policy Navigation Strip */}
+        <div class="pt-8 border-t flex flex-wrap gap-4 text-xs font-semibold" style={{ borderColor: 'var(--color-border)' }}>
+          <a href={url('/terms')} class="hover:underline" style="color: var(--color-text-2)">Terms of Use →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/privacy-policy')} class="hover:underline" style="color: var(--color-text-2)">Privacy Policy →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/affiliate-disclosure')} class="hover:underline" style="color: var(--color-text-2)">Affiliate Disclosure →</a>
+        </div>
       </div>
     </div>
   </div>

@@ -1,22 +1,23 @@
 import React from 'react';
 import { url } from '@/lib/paths';
+import BrandLogo from '../ui/BrandLogo';
 
 const footerLinks = {
   discover: [
     { href: '/products', label: 'All Products' },
-    { href: '/categories', label: 'Categories' },
+    { href: '/categories', label: 'Browse Categories' },
     { href: '/guides', label: 'Buying Guides' },
-    { href: '/offers', label: 'Live Offers' },
+    { href: '/offers', label: 'Deals & Offers' },
   ],
   company: [
     { href: '/about', label: 'About SAVRIVO' },
-    { href: '/contact', label: 'Contact' },
     { href: '/editorial-policy', label: 'Editorial Policy' },
+    { href: '/contact', label: 'Contact Us' },
   ],
   legal: [
     { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
     { href: '/privacy-policy', label: 'Privacy Policy' },
-    { href: '/terms', label: 'Terms of Use' },
+    { href: '/terms', label: 'Terms of Service' },
   ],
 };
 
@@ -25,36 +26,34 @@ export default function Footer() {
 
   return (
     <footer
-      className="border-t mt-auto"
-      style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+      className="border-t transition-colors duration-200 mt-auto"
+      style={{
+        background: 'var(--color-surface)',
+        borderColor: 'var(--color-border)',
+      }}
     >
-      <div className="container-content py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="container-content py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand column */}
-          <div className="lg:col-span-1">
-            <a
-              href={url('/')}
-              className="inline-flex items-center gap-2 font-bold tracking-[0.2em] text-sm mb-4"
-              style={{ color: 'var(--color-accent)' }}
-            >
-              <svg width="22" height="22" viewBox="0 0 48 56" fill="none" aria-hidden="true">
-                <path
-                  d="M32 6 C22 6 14 11 14 19 C14 25 19 28 26 30 L30 31.5 C38 33.5 44 37 44 44 C44 51 37 50 30 50 C23 50 16 47 14 41"
-                  stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none"
-                />
-                <circle cx="28" cy="19" r="3" fill="var(--color-accent-2)" />
-              </svg>
-              SAVRIVO
+          <div className="lg:col-span-5 space-y-4">
+            <a href={url('/')} className="inline-flex cursor-pointer" aria-label="SAVRIVO — Home">
+              <BrandLogo size={32} />
             </a>
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-2)' }}>
-              Smart Finds. Better Choices.<br />
-              An independent product discovery platform for India.
+            <p className="text-sm leading-relaxed max-w-sm" style={{ color: 'var(--color-text-2)' }}>
+              <strong className="font-semibold" style={{ color: 'var(--color-text-1)' }}>
+                Smart Finds. Better Choices.
+              </strong>
+              <br />
+              An independent multi-retailer product discovery companion for India. We research, compare, and guide so you make confident choices.
             </p>
           </div>
 
           {/* Discover */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-1)' }}>
+          <div className="lg:col-span-2 lg:col-start-7">
+            <h3
+              className="text-xs font-bold uppercase tracking-widest mb-4 select-none"
+              style={{ color: 'var(--color-text-1)' }}
+            >
               Discover
             </h3>
             <ul className="space-y-2.5">
@@ -62,7 +61,7 @@ export default function Footer() {
                 <li key={href}>
                   <a
                     href={url(href)}
-                    className="text-sm transition-colors hover:underline underline-offset-2"
+                    className="text-sm transition-colors hover:text-[var(--color-accent)] hover:underline underline-offset-2"
                     style={{ color: 'var(--color-text-2)' }}
                   >
                     {label}
@@ -73,8 +72,11 @@ export default function Footer() {
           </div>
 
           {/* Company */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-1)' }}>
+          <div className="lg:col-span-2">
+            <h3
+              className="text-xs font-bold uppercase tracking-widest mb-4 select-none"
+              style={{ color: 'var(--color-text-1)' }}
+            >
               Company
             </h3>
             <ul className="space-y-2.5">
@@ -82,7 +84,7 @@ export default function Footer() {
                 <li key={href}>
                   <a
                     href={url(href)}
-                    className="text-sm transition-colors hover:underline underline-offset-2"
+                    className="text-sm transition-colors hover:text-[var(--color-accent)] hover:underline underline-offset-2"
                     style={{ color: 'var(--color-text-2)' }}
                   >
                     {label}
@@ -93,16 +95,19 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-1)' }}>
-              Legal
+          <div className="lg:col-span-2">
+            <h3
+              className="text-xs font-bold uppercase tracking-widest mb-4 select-none"
+              style={{ color: 'var(--color-text-1)' }}
+            >
+              Compliance
             </h3>
             <ul className="space-y-2.5">
               {footerLinks.legal.map(({ href, label }) => (
                 <li key={href}>
                   <a
                     href={url(href)}
-                    className="text-sm transition-colors hover:underline underline-offset-2"
+                    className="text-sm transition-colors hover:text-[var(--color-accent)] hover:underline underline-offset-2"
                     style={{ color: 'var(--color-text-2)' }}
                   >
                     {label}
@@ -115,16 +120,17 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div
-          className="mt-12 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3"
-          style={{ borderColor: 'var(--color-border)' }}
+          className="mt-12 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
+          style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-2)' }}
         >
-          <p className="text-xs" style={{ color: 'var(--color-text-2)' }}>
-            © {year} SAVRIVO. All rights reserved.
-          </p>
-          <p className="text-xs text-center" style={{ color: 'var(--color-text-2)' }}>
-            SAVRIVO earns commissions from qualifying purchases via affiliate links.{' '}
-            <a href={url('/affiliate-disclosure')} className="underline underline-offset-2">
-              Learn more
+          <p>© {year} SAVRIVO. All rights reserved.</p>
+          <p className="text-center sm:text-right max-w-md">
+            SAVRIVO participates in affiliate marketing programs. We may earn a commission from qualifying purchases.{' '}
+            <a
+              href={url('/affiliate-disclosure')}
+              className="underline underline-offset-2 hover:text-[var(--color-accent)] font-medium"
+            >
+              Affiliate Disclosure
             </a>
           </p>
         </div>
@@ -132,4 +138,3 @@ export default function Footer() {
     </footer>
   );
 }
-

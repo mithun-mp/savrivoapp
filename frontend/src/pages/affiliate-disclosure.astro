@@ -1,36 +1,143 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import { url } from '../lib/paths';
+import { Info, ShieldCheck, ShoppingBag, ExternalLink, CheckCircle2 } from 'lucide-react';
 ---
 
-<MainLayout title="Affiliate Disclosure — SAVRIVO" description="SAVRIVO's full affiliate disclosure. We earn commissions through affiliate programmes." canonicalUrl="https://savrivo.in/affiliate-disclosure">
-  <div class="section">
-    <div class="container-content max-w-3xl">
-      <nav class="text-xs mb-6" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">Affiliate Disclosure</span>
-      </nav>
-      <h1 class="font-display text-3xl font-bold mb-8" style="color: var(--color-text-1)">Affiliate Disclosure</h1>
-      <div class="prose prose-base max-w-none space-y-5" style="color: var(--color-text-2)">
-        <p><strong style="color: var(--color-text-1)">Last updated: November 2024</strong></p>
-        <p>SAVRIVO ("we", "us", "our") participates in affiliate marketing programmes. This means that when you click certain links on our site and make a qualifying purchase, we may earn a commission at no additional cost to you.</p>
+<MainLayout
+  title="Affiliate Disclosure & Transparency — SAVRIVO"
+  description="Full affiliate transparency disclosure for SAVRIVO. Learn how we earn commissions through Amazon Associates, Flipkart, and authorized partner networks at no extra cost to you."
+  canonicalUrl="https://savrivo.in/affiliate-disclosure"
+>
+  <div class="section py-8 sm:py-14">
+    <div class="container-content max-w-4xl">
+      {/* Breadcrumb Navigation */}
+      <div class="mb-8">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Affiliate Disclosure' },
+          ]}
+        />
+      </div>
 
-        <h2 style="color: var(--color-text-1)">Programmes We Participate In</h2>
-        <ul>
-          <li><strong style="color: var(--color-text-1)">Amazon Associates:</strong> SAVRIVO is a participant in the Amazon Services LLC Associates Program (and its Indian equivalent), an affiliate advertising programme designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.in.</li>
-          <li><strong style="color: var(--color-text-1)">Flipkart Affiliate Programme:</strong> Where applicable, links to Flipkart may be affiliate links.</li>
-          <li>Other authorized affiliate programmes as we expand.</li>
-        </ul>
+      {/* Hero Header */}
+      <div class="mb-10 pb-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <Info size={13} />
+          <span>Full Transparency</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3" style="color: var(--color-text-1)">
+          Affiliate Disclosure
+        </h1>
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-2)">
+          Last updated: November 2024 · Compliance with FTC & Indian advertising guidelines
+        </p>
+      </div>
 
-        <h2 style="color: var(--color-text-1)">How Affiliate Links Work</h2>
-        <p>Affiliate links contain a tracking parameter (such as an associate tag) that allows the retailer to identify that a visitor came from SAVRIVO. If that visitor makes a qualifying purchase, we receive a commission.</p>
-        <p>Prices and availability are determined by the retailer, not SAVRIVO. We do not set, control, or guarantee prices.</p>
+      <div class="space-y-8">
+        <div
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            SAVRIVO ("we", "us", "our") participates in affiliate marketing programmes. This means that when you click certain outbound links on our site and make a qualifying purchase, we may earn an advertising fee or commission at <strong style="color: var(--color-text-1)">no additional cost to you</strong>.
+          </p>
+        </div>
 
-        <h2 style="color: var(--color-text-1)">Editorial Independence</h2>
-        <p>Our affiliate relationships do not influence our editorial recommendations. Products are selected based on relevance and usefulness, not commission rates. We do not accept paid placements in editorial content.</p>
+        {/* Programmes We Participate In */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <div class="flex items-center gap-2 mb-4 font-display font-bold text-lg sm:text-xl" style="color: var(--color-text-1)">
+            <ShoppingBag size={20} class="text-[var(--color-accent)]" />
+            <h2>Affiliate Programmes We Participate In</h2>
+          </div>
+          <div class="space-y-4 text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            <div class="p-4 rounded-xl" style="background: var(--color-overlay)">
+              <h4 class="font-bold mb-1" style="color: var(--color-text-1)">Amazon Associates Program</h4>
+              <p class="text-xs sm:text-sm">
+                SAVRIVO is a participant in the Amazon Services LLC Associates Program and the Amazon India Associates Program, an affiliate advertising programme designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.in.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl" style="background: var(--color-overlay)">
+              <h4 class="font-bold mb-1" style="color: var(--color-text-1)">Flipkart Affiliate Program</h4>
+              <p class="text-xs sm:text-sm">
+                Where applicable, outbound merchant links to Flipkart.com may include tracking parameters associated with authorized affiliate programmes.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl" style="background: var(--color-overlay)">
+              <h4 class="font-bold mb-1" style="color: var(--color-text-1)">Authorized Merchant Networks</h4>
+              <p class="text-xs sm:text-sm">
+                As we expand, we may partner with other reputable Indian brand direct-to-consumer stores and authorized affiliate aggregators.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        <h2 style="color: var(--color-text-1)">Questions</h2>
-        <p>If you have questions about our affiliate relationships, please <a href={url('/contact')} style="color: var(--color-accent)">contact us</a>.</p>
+        {/* How Affiliate Links Work */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            How Affiliate Links Function
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            Affiliate links contain an encoded tracking parameter that informs the destination merchant that a visitor arrived from SAVRIVO. If you make a qualifying purchase, the merchant pays SAVRIVO a small referral fee out of their own operating margin.
+          </p>
+          <div class="p-4 rounded-xl border text-xs sm:text-sm" style="background: var(--color-overlay); border-color: var(--color-border); color: var(--color-text-1)">
+            <strong>Pricing Guarantee:</strong> You will never pay more by clicking our links. Product prices, shipping fees, return terms, and warranties remain identical to visiting the retailer directly.
+          </div>
+        </section>
+
+        {/* Editorial Independence */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <div class="flex items-center gap-2 mb-3 font-display font-bold text-lg sm:text-xl" style="color: var(--color-text-1)">
+            <ShieldCheck size={20} class="text-[var(--color-accent)]" />
+            <h2>Editorial Independence</h2>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            Our editorial recommendations are entirely independent. Products are researched, selected, and reviewed based on consumer value, build quality, and real-world usefulness — not commission rates.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            We do not accept paid placements, sponsored reviews, or manufacturer compensations to feature products.
+          </p>
+        </section>
+
+        {/* Questions */}
+        <div
+          class="p-6 sm:p-8 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          style="background: var(--color-overlay); border-color: var(--color-border);"
+        >
+          <div>
+            <h3 class="font-bold text-base mb-1" style="color: var(--color-text-1)">Questions about our affiliate relationships?</h3>
+            <p class="text-xs sm:text-sm" style="color: var(--color-text-2)">We welcome any questions regarding our operational model.</p>
+          </div>
+          <a
+            href={url('/contact')}
+            class="inline-flex items-center gap-1.5 text-sm font-bold underline underline-offset-4"
+            style="color: var(--color-accent)"
+          >
+            Contact us →
+          </a>
+        </div>
+
+        {/* Cross-Policy Navigation Strip */}
+        <div class="pt-8 border-t flex flex-wrap gap-4 text-xs font-semibold" style={{ borderColor: 'var(--color-border)' }}>
+          <a href={url('/terms')} class="hover:underline" style="color: var(--color-text-2)">Terms of Use →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/privacy-policy')} class="hover:underline" style="color: var(--color-text-2)">Privacy Policy →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/editorial-policy')} class="hover:underline" style="color: var(--color-text-2)">Editorial Policy →</a>
+        </div>
       </div>
     </div>
   </div>

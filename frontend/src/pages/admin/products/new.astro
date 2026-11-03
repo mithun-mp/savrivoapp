@@ -4,101 +4,191 @@ import { url } from '../../../lib/paths';
 ---
 
 <AdminLayout title="Add Product">
-  <div class="max-w-3xl space-y-8">
+  <div class="max-w-3xl space-y-8 pb-12">
+    <!-- Breadcrumb & Header -->
     <div>
-      <a href={url('/admin/products')} class="text-xs hover:underline" style="color: var(--color-text-2)">← Back to Products</a>
-      <h1 class="text-xl font-bold mt-2" style="color: var(--color-text-1)">Create New Product</h1>
-      <p class="text-xs" style="color: var(--color-text-2)">Fill in verified product information. No fabricated specs or ratings.</p>
+      <a
+        href={url('/admin/products')}
+        class="inline-flex items-center gap-1.5 text-xs font-semibold hover:text-[var(--color-accent)] transition-colors mb-3"
+        style="color: var(--color-text-2)"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        Back to Products
+      </a>
+      <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Create New Product</h1>
+      <p class="text-xs mt-1" style="color: var(--color-text-2)">Fill in verified product information. No fabricated specs or ratings.</p>
     </div>
 
     <form id="product-form" class="space-y-6">
-      <div class="p-6 rounded-xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border)">
-        <h2 class="text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">Core Information</h2>
+      <!-- Section 1: Core Information -->
+      <div class="p-6 sm:p-7 rounded-2xl border space-y-5" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+        <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+          <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M14 12H5M20 12h-2M20 17h-2"/></svg>
+          <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Core Information</h2>
+        </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Product Title *</label>
-          <input type="text" id="title" required placeholder="e.g. Sony WH-1000XM5 Wireless Headphones" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+          <label for="title" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Product Title *</label>
+          <input
+            type="text"
+            id="title"
+            required
+            placeholder="e.g. Sony WH-1000XM5 Wireless Headphones"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Brand *</label>
-            <input type="text" id="brand" required placeholder="e.g. Sony" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+            <label for="brand" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Brand *</label>
+            <input
+              type="text"
+              id="brand"
+              required
+              placeholder="e.g. Sony"
+              class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+              style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+            />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Category</label>
-            <select id="categoryId" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)">
+            <label for="categoryId" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Category</label>
+            <select
+              id="categoryId"
+              class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] cursor-pointer"
+              style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+            >
               <option value="">Select Category</option>
             </select>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Short Description (max 300 chars)</label>
-          <textarea id="shortDescription" rows="2" placeholder="Brief summary of what this product is and who it suits." class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"></textarea>
+          <label for="shortDescription" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Short Description (max 300 chars)</label>
+          <textarea
+            id="shortDescription"
+            rows="2"
+            placeholder="Brief summary of what this product is and who it suits."
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          ></textarea>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Full Editorial Description (HTML supported)</label>
-          <textarea id="fullDescription" rows="5" placeholder="Detailed product overview, features, pros and cons." class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none font-mono text-xs" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"></textarea>
+          <label for="fullDescription" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Full Editorial Description (HTML supported)</label>
+          <textarea
+            id="fullDescription"
+            rows="5"
+            placeholder="Detailed product overview, features, pros and cons."
+            class="w-full px-4 py-2.5 rounded-xl border text-xs font-mono outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          ></textarea>
         </div>
       </div>
 
-      <div class="p-6 rounded-xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border)">
-        <h2 class="text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">Media & Highlights</h2>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Main Image URL</label>
-          <input type="url" id="imageUrl" placeholder="https://..." class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+      <!-- Section 2: Media & Highlights -->
+      <div class="p-6 sm:p-7 rounded-2xl border space-y-5" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+        <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+          <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Media & Highlights</h2>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Key Highlights (one per line)</label>
-          <textarea id="highlights" rows="3" placeholder="Industry-leading noise cancellation&#10;30-hour battery life&#10;Multipoint Bluetooth connection" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"></textarea>
+          <label for="imageUrl" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Main Image URL</label>
+          <input
+            type="url"
+            id="imageUrl"
+            placeholder="https://..."
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="highlights" class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">Key Highlights</label>
+            <span class="text-[11px]" style="color: var(--color-text-3)">One bullet per line</span>
+          </div>
+          <textarea
+            id="highlights"
+            rows="3"
+            placeholder="Industry-leading noise cancellation&#10;30-hour battery life&#10;Multipoint Bluetooth connection"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          ></textarea>
         </div>
       </div>
 
-      <div class="p-6 rounded-xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border)">
-        <h2 class="text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">Publishing & SEO</h2>
+      <!-- Section 3: Publishing & SEO -->
+      <div class="p-6 sm:p-7 rounded-2xl border space-y-5" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+        <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+          <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Publishing & SEO</h2>
+        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
           <div>
-            <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Status</label>
-            <select id="status" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
+            <label for="status" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Status</label>
+            <select
+              id="status"
+              class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] cursor-pointer"
+              style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+            >
+              <option value="draft">Draft (Private)</option>
+              <option value="published">Published (Live)</option>
+              <option value="archived">Archived (Hidden)</option>
             </select>
           </div>
-          <div class="flex items-center gap-2 pt-6">
-            <input type="checkbox" id="featured" class="w-4 h-4 rounded" />
-            <label for="featured" class="text-sm font-medium" style="color: var(--color-text-1)">Feature as Editor's Pick</label>
+          <div class="pt-5 sm:pt-6">
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="featured" class="w-4 h-4 rounded text-[var(--color-accent)] focus:ring-[var(--color-accent)]/20" />
+              <span class="text-sm font-semibold" style="color: var(--color-text-1)">Feature as Editor's Pick</span>
+            </label>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">SEO Meta Title</label>
-          <input type="text" id="seoTitle" placeholder="Leave empty to use Product Title" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+          <label for="seoTitle" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">SEO Meta Title</label>
+          <input
+            type="text"
+            id="seoTitle"
+            placeholder="Leave empty to use Product Title"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">SEO Meta Description</label>
-          <textarea id="seoDescription" rows="2" placeholder="Leave empty to use Short Description" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"></textarea>
+          <label for="seoDescription" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">SEO Meta Description</label>
+          <textarea
+            id="seoDescription"
+            rows="2"
+            placeholder="Leave empty to use Short Description"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          ></textarea>
         </div>
       </div>
 
-      <div id="form-error" class="hidden text-xs p-3 rounded-lg text-red-800 bg-red-50 border border-red-200"></div>
+      <!-- Error banner -->
+      <div id="form-error" class="hidden text-xs p-4 rounded-xl font-medium" style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.25); color: var(--color-error)"></div>
 
-      <div class="flex items-center gap-3">
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3 pt-2">
         <button
           type="submit"
           id="save-btn"
-          class="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-sm min-h-[44px]"
           style="background: var(--color-accent)"
         >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Save Product
         </button>
-        <a href={url('/admin/products')} class="px-5 py-3 rounded-xl border text-sm font-medium" style="border-color: var(--color-border); color: var(--color-text-2)">
+        <a
+          href={url('/admin/products')}
+          class="px-5 py-3 rounded-xl border text-sm font-semibold transition-colors hover:bg-[var(--color-overlay)] min-h-[44px] inline-flex items-center justify-center"
+          style="border-color: var(--color-border); color: var(--color-text-2)"
+        >
           Cancel
         </a>
       </div>
@@ -133,7 +223,7 @@ import { url } from '../../../lib/paths';
         e.preventDefault();
         saveBtn.disabled = true;
         saveBtn.textContent = 'Saving...';
-        errEl.className = 'hidden';
+        if (errEl) errEl.className = 'hidden';
 
         const highlightsText = (document.getElementById('highlights') as HTMLTextAreaElement).value;
         const highlights = highlightsText.split('\n').map(s => s.trim()).filter(Boolean);
@@ -161,8 +251,10 @@ import { url } from '../../../lib/paths';
             throw new Error(res.message || 'Creation failed');
           }
         } catch (err: any) {
-          errEl.className = 'block text-xs p-3 rounded-lg text-red-800 bg-red-50 border border-red-200';
-          errEl.textContent = err.message || 'Error creating product';
+          if (errEl) {
+            errEl.className = 'block text-xs p-4 rounded-xl font-medium';
+            errEl.textContent = err.message || 'Error creating product';
+          }
         } finally {
           saveBtn.disabled = false;
           saveBtn.textContent = 'Save Product';

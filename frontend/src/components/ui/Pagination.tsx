@@ -21,33 +21,57 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
     pages.push(totalPages);
   }
 
-  const btnBase = 'w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-sm font-medium transition-colors';
+  // 44px touch-target compliant
+  const btnBase =
+    'w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer select-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2';
 
   return (
-    <nav className="flex items-center gap-1" aria-label="Pagination">
+    <nav className="flex items-center gap-1.5 flex-wrap justify-center py-2" aria-label="Pagination">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`${btnBase} disabled:opacity-40`}
-        style={{ color: 'var(--color-text-2)', background: 'transparent' }}
+        className={`${btnBase} border disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--color-surface-subtle)]`}
+        style={{
+          color: 'var(--color-text-2)',
+          background: 'var(--color-surface)',
+          borderColor: 'var(--color-border)',
+        }}
         aria-label="Previous page"
       >
-        <ChevronLeft size={16} />
+        <ChevronLeft size={18} />
       </button>
 
       {pages.map((p, i) =>
         p === '...' ? (
-          <span key={`ellipsis-${i}`} className={btnBase} style={{ color: 'var(--color-text-2)' }}>…</span>
+          <span
+            key={`ellipsis-${i}`}
+            className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-sm font-bold select-none"
+            style={{ color: 'var(--color-text-2)' }}
+          >
+            …
+          </span>
         ) : (
           <button
             key={p}
             onClick={() => onPageChange(p as number)}
-            className={btnBase}
+            className={`${btnBase} border ${
+              p === currentPage
+                ? 'shadow-sv-sm'
+                : 'hover:bg-[var(--color-surface-subtle)] hover:border-[var(--color-border-hover)]'
+            }`}
             aria-current={p === currentPage ? 'page' : undefined}
             style={
               p === currentPage
-                ? { background: 'var(--color-accent)', color: '#fff' }
-                : { background: 'transparent', color: 'var(--color-text-2)' }
+                ? {
+                    background: 'var(--color-accent)',
+                    color: '#FFFFFF',
+                    borderColor: 'var(--color-accent)',
+                  }
+                : {
+                    background: 'var(--color-surface)',
+                    color: 'var(--color-text-1)',
+                    borderColor: 'var(--color-border)',
+                  }
             }
           >
             {p}
@@ -58,13 +82,16 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`${btnBase} disabled:opacity-40`}
-        style={{ color: 'var(--color-text-2)', background: 'transparent' }}
+        className={`${btnBase} border disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--color-surface-subtle)]`}
+        style={{
+          color: 'var(--color-text-2)',
+          background: 'var(--color-surface)',
+          borderColor: 'var(--color-border)',
+        }}
         aria-label="Next page"
       >
-        <ChevronRight size={16} />
+        <ChevronRight size={18} />
       </button>
     </nav>
   );
 }
-

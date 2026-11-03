@@ -1,9 +1,10 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import CategoryCard from '../../components/category/CategoryCard';
-import { url } from '../../lib/paths';
+import Breadcrumb from '../../components/ui/Breadcrumb';
 import { API_BASE } from '../../lib/api';
 import type { Category } from '../../types';
+
 let categories: Category[] = [];
 try {
   const res = await fetch(`${API_BASE}/categories`, { signal: AbortSignal.timeout(5000) });
@@ -11,21 +12,50 @@ try {
 } catch {}
 ---
 
-<MainLayout title="Categories — SAVRIVO" description="Browse all product categories on SAVRIVO." canonicalUrl="https://savrivo.in/categories">
-  <div class="section">
+<MainLayout
+  title="All Product Categories — SAVRIVO"
+  description="Explore curated product categories on SAVRIVO — Audio, Computing, Smart Home, Wearables, Lifestyle, and more."
+  canonicalUrl="https://savrivo.in/categories"
+>
+  <div class="section py-8 sm:py-12">
     <div class="container-content">
-      <nav class="text-xs mb-4" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">Categories</span>
-      </nav>
-      <h1 class="font-display text-3xl md:text-4xl font-bold mb-3" style="color: var(--color-text-1)">Categories</h1>
-      <p class="text-base mb-10" style="color: var(--color-text-2)">Browse products by category.</p>
+      {/* Header & Breadcrumbs */}
+      <div class="mb-10 sm:mb-14">
+        <div class="mb-4">
+          <Breadcrumb
+            client:load
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Categories' },
+            ]}
+          />
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+              style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+              <span>Directory</span>
+            </div>
+            <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight" style="color: var(--color-text-1)">
+              Curated Categories
+            </h1>
+          </div>
+
+          <p class="text-sm sm:text-base max-w-md" style="color: var(--color-text-2)">
+            Explore organized collections of hand-picked gear, gadgets, and home essentials.
+          </p>
+        </div>
+      </div>
+
       {categories.length > 0 ? (
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-          {categories.map(cat => <CategoryCard category={cat} />)}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {categories.map(cat => <CategoryCard category={cat} client:visible />)}
         </div>
       ) : (
-        <p class="text-sm" style="color: var(--color-text-2)">Categories are being set up. Check back soon.</p>
+        <div class="p-12 text-center rounded-2xl border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+          <p class="text-sm" style="color: var(--color-text-2)">Categories are currently being curated. Check back shortly.</p>
+        </div>
       )}
     </div>
   </div>

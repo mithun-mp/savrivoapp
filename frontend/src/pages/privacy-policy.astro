@@ -1,39 +1,149 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import { url } from '../lib/paths';
+import { ShieldCheck, Lock, EyeOff, ExternalLink } from 'lucide-react';
 ---
 
-<MainLayout title="Privacy Policy — SAVRIVO" description="SAVRIVO's privacy policy. Learn how we handle your data." canonicalUrl="https://savrivo.in/privacy-policy">
-  <div class="section">
-    <div class="container-content max-w-3xl">
-      <nav class="text-xs mb-6" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">Privacy Policy</span>
-      </nav>
-      <h1 class="font-display text-3xl font-bold mb-8" style="color: var(--color-text-1)">Privacy Policy</h1>
-      <div class="prose prose-base max-w-none space-y-5" style="color: var(--color-text-2)">
-        <p><strong style="color: var(--color-text-1)">Last updated: November 2024</strong></p>
-        <p>SAVRIVO ("we", "us", "our") is committed to protecting your privacy. This policy explains what information we collect, how we use it, and your rights.</p>
+<MainLayout
+  title="Privacy Policy — SAVRIVO"
+  description="SAVRIVO's privacy policy. Learn how we handle your data with respect, transparency, and zero invasive tracking."
+  canonicalUrl="https://savrivo.in/privacy-policy"
+>
+  <div class="section py-8 sm:py-14">
+    <div class="container-content max-w-4xl">
+      {/* Breadcrumb Navigation */}
+      <div class="mb-8">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Privacy Policy' },
+          ]}
+        />
+      </div>
 
-        <h2 style="color: var(--color-text-1)">Information We Collect</h2>
-        <ul>
-          <li><strong style="color: var(--color-text-1)">Contact form submissions:</strong> If you use our contact form, we collect your name, email address, and message. We use this only to respond to your enquiry.</li>
-          <li><strong style="color: var(--color-text-1)">Theme preference:</strong> We store your light/dark theme preference in your browser's localStorage. This stays on your device.</li>
-          <li><strong style="color: var(--color-text-1)">Analytics (if applicable):</strong> We may use privacy-respecting analytics to understand aggregate page traffic. We do not use Google Analytics or other invasive tracking tools without disclosure.</li>
-        </ul>
+      {/* Hero Header */}
+      <div class="mb-10 pb-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <Lock size={13} />
+          <span>Legal & Compliance</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3" style="color: var(--color-text-1)">
+          Privacy Policy
+        </h1>
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-2)">
+          Last updated: November 2024 · Effective immediately
+        </p>
+      </div>
 
-        <h2 style="color: var(--color-text-1)">What We Do Not Collect</h2>
-        <ul>
-          <li>Payment or financial information (we have no checkout).</li>
-          <li>Personal accounts or registration data (no sign-up).</li>
-          <li>Browsing history beyond what any website server log captures.</li>
-        </ul>
+      {/* Main Content Sections */}
+      <div class="space-y-8">
+        <div
+          class="p-6 sm:p-8 rounded-2xl border leading-relaxed"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            SAVRIVO ("we", "us", "our") is committed to protecting your privacy. This policy explains what information we collect, how we use it, and your rights when browsing our platform.
+          </p>
+        </div>
 
-        <h2 style="color: var(--color-text-1)">Affiliate Links and Third Parties</h2>
-        <p>When you click an affiliate link and visit a retailer's website, that retailer's own privacy policy applies. We have no control over data collected by retailers.</p>
+        {/* What We Collect */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <div class="flex items-center gap-2 mb-4 font-display font-bold text-lg sm:text-xl" style="color: var(--color-text-1)">
+            <ShieldCheck size={20} class="text-[var(--color-accent)]" />
+            <h2>Information We Collect</h2>
+          </div>
+          <ul class="space-y-4 text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            <li class="flex items-start gap-3">
+              <span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--color-accent)"></span>
+              <div>
+                <strong style="color: var(--color-text-1)">Contact form submissions:</strong> If you use our contact form, we collect your name, email address, and message. We use this strictly to respond to your specific inquiry.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--color-accent)"></span>
+              <div>
+                <strong style="color: var(--color-text-1)">Theme preference:</strong> We store your light or dark theme preference locally in your browser's <code class="px-1.5 py-0.5 rounded text-xs" style="background: var(--color-overlay)">localStorage</code>. This data never leaves your device.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--color-accent)"></span>
+              <div>
+                <strong style="color: var(--color-text-1)">Aggregate server logs:</strong> Standard server logs record anonymous technical metadata (such as IP address, browser user-agent, and access timestamps) to diagnose service issues and prevent abusive traffic.
+              </div>
+            </li>
+          </ul>
+        </section>
 
-        <h2 style="color: var(--color-text-1)">Contact</h2>
-        <p>For privacy questions, email us at <a href="mailto:hello@savrivo.in" style="color: var(--color-accent)">hello@savrivo.in</a>.</p>
+        {/* What We Do NOT Collect */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <div class="flex items-center gap-2 mb-4 font-display font-bold text-lg sm:text-xl" style="color: var(--color-text-1)">
+            <EyeOff size={20} class="text-[var(--color-accent)]" />
+            <h2>What We Do Not Collect</h2>
+          </div>
+          <ul class="space-y-3 text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            <li class="flex items-start gap-3">
+              <span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--color-accent)"></span>
+              <span>Payment or financial information (SAVRIVO has no checkout or cart).</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--color-accent)"></span>
+              <span>Consumer account registration or login profiles.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--color-accent)"></span>
+              <span>Cross-site invasive ad tracking cookies.</span>
+            </li>
+          </ul>
+        </section>
+
+        {/* Affiliate Links & Retailers */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            Affiliate Links and Third-Party Retailers
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            When you click an affiliate link to visit an external retailer (such as Amazon.in or Flipkart), that retailer's own privacy policy and terms govern your activity on their site. We encourage you to review their respective privacy notices.
+          </p>
+        </section>
+
+        {/* Contact info */}
+        <div
+          class="p-6 sm:p-8 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          style="background: var(--color-overlay); border-color: var(--color-border);"
+        >
+          <div>
+            <h3 class="font-bold text-base mb-1" style="color: var(--color-text-1)">Questions about your privacy?</h3>
+            <p class="text-xs sm:text-sm" style="color: var(--color-text-2)">Our team is happy to assist with any data protection questions.</p>
+          </div>
+          <a
+            href="mailto:hello@savrivo.in"
+            class="inline-flex items-center gap-1.5 text-sm font-bold underline underline-offset-4"
+            style="color: var(--color-accent)"
+          >
+            hello@savrivo.in
+          </a>
+        </div>
+
+        {/* Cross-Policy Navigation Strip */}
+        <div class="pt-8 border-t flex flex-wrap gap-4 text-xs font-semibold" style={{ borderColor: 'var(--color-border)' }}>
+          <a href={url('/terms')} class="hover:underline" style="color: var(--color-text-2)">Terms of Use →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/affiliate-disclosure')} class="hover:underline" style="color: var(--color-text-2)">Affiliate Disclosure →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/editorial-policy')} class="hover:underline" style="color: var(--color-text-2)">Editorial Policy →</a>
+        </div>
       </div>
     </div>
   </div>

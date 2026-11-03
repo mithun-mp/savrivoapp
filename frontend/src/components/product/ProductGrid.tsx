@@ -61,8 +61,12 @@ export default function ProductGrid({
 
   return (
     <div className={`grid ${gridClassName}`}>
-      {products.map(p => (
-        <ProductCard key={p._id} product={p} />
+      {products.map((p, idx) => (
+        <ProductCard
+          key={p._id}
+          product={p}
+          className={`reveal-fade-up stagger-${(idx % 8) + 1}`}
+        />
       ))}
     </div>
   );

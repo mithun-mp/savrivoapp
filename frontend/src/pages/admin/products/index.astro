@@ -5,50 +5,79 @@ import { url } from '../../../lib/paths';
 
 <AdminLayout title="Product Management">
   <div class="space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
       <div>
-        <h1 class="text-xl font-bold" style="color: var(--color-text-1)">Products</h1>
-        <p class="text-xs" style="color: var(--color-text-2)">Create, review, publish, and manage affiliate products.</p>
+        <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Products</h1>
+        <p class="text-xs mt-1" style="color: var(--color-text-2)">Create, review, publish, and manage affiliate products in the catalog.</p>
       </div>
       <a
         href={url('/admin/products/new')}
-        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 min-h-[44px] self-start sm:self-auto"
+        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-95 active:scale-95 shadow-sm min-h-[44px] self-start sm:self-auto"
         style="background: var(--color-accent)"
       >
-        + Create Product
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Add Product</span>
       </a>
     </div>
 
     <!-- Filter bar -->
-    <div class="flex flex-wrap items-center gap-3 p-4 rounded-xl border" style="background: var(--color-surface); border-color: var(--color-border)">
-      <select id="filter-status" class="text-sm px-3.5 py-2.5 rounded-lg border outline-none min-h-[44px]" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)">
+    <div class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+      <div class="relative flex-1 min-w-[200px]">
+        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--color-text-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          id="filter-search"
+          placeholder="Filter by title or brand..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
+      </div>
+
+      <select
+        id="filter-status"
+        class="text-sm px-4 py-2.5 rounded-xl border outline-none min-h-[44px] transition-all focus:border-[var(--color-accent)] cursor-pointer"
+        style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+      >
         <option value="">All Statuses</option>
         <option value="published">Published</option>
         <option value="draft">Draft</option>
         <option value="archived">Archived</option>
       </select>
-      <button id="refresh-btn" class="text-sm px-4 py-2.5 rounded-lg border ml-auto min-h-[44px] font-medium" style="border-color: var(--color-border); color: var(--color-text-1)">
-        Refresh
+
+      <button
+        id="refresh-btn"
+        class="inline-flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl border min-h-[44px] font-medium transition-colors hover:bg-[var(--color-overlay)]"
+        style="border-color: var(--color-border); color: var(--color-text-1)"
+        title="Refresh products list"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+        <span class="hidden sm:inline">Refresh</span>
       </button>
     </div>
 
     <!-- Products Table -->
-    <div class="rounded-xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border)">
+    <div class="rounded-2xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm min-w-[640px]">
+        <table class="w-full text-left text-sm min-w-[700px]">
           <thead>
-            <tr class="border-b text-xs uppercase tracking-wider" style="border-color: var(--color-border); color: var(--color-text-2)">
-              <th class="p-4">Title</th>
-              <th class="p-4">Brand</th>
-              <th class="p-4">Category</th>
-              <th class="p-4">Status</th>
-              <th class="p-4">Featured</th>
-              <th class="p-4 text-right">Actions</th>
+            <tr class="border-b text-[11px] font-bold uppercase tracking-wider" style="background: var(--color-overlay); border-color: var(--color-border); color: var(--color-text-2)">
+              <th class="py-3.5 px-5">Product</th>
+              <th class="py-3.5 px-4">Brand</th>
+              <th class="py-3.5 px-4">Category</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th class="py-3.5 px-4">Highlight</th>
+              <th class="py-3.5 px-5 text-right">Actions</th>
             </tr>
           </thead>
           <tbody id="products-table-body">
             <tr>
-              <td colspan="6" class="p-4 text-center text-xs" style="color: var(--color-text-2)">Loading products...</td>
+              <td colspan="6" class="p-8 text-center text-xs" style="color: var(--color-text-2)">
+                <div class="flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 animate-spin text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  <span>Loading catalog...</span>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -61,59 +90,129 @@ import { url } from '../../../lib/paths';
   import { api } from '../../../lib/api';
   import { url } from '../../../lib/paths';
 
+  let allProducts: any[] = [];
+
+  function renderTable(products: any[]) {
+    const tbody = document.getElementById('products-table-body');
+    if (!tbody) return;
+
+    if (products.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="p-12 text-center">
+            <div class="flex flex-col items-center justify-center gap-2">
+              <svg class="w-8 h-8 opacity-40" style="color: var(--color-text-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+              <p class="text-sm font-medium" style="color: var(--color-text-2)">No products match the criteria</p>
+              <p class="text-xs" style="color: var(--color-text-3)">Try adjusting your search query or status filter.</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = products.map((p: any) => {
+      let statusBadge = '';
+      if (p.status === 'published') {
+        statusBadge = '<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background: rgba(5, 150, 105, 0.12); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.25)">Published</span>';
+      } else if (p.status === 'draft') {
+        statusBadge = '<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background: rgba(217, 119, 6, 0.12); color: #D97706; border: 1px solid rgba(217, 119, 6, 0.25)">Draft</span>';
+      } else {
+        statusBadge = '<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background: rgba(100, 116, 139, 0.12); color: var(--color-text-3); border: 1px solid rgba(100, 116, 139, 0.25)">Archived</span>';
+      }
+
+      const featuredBadge = p.featured
+        ? '<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md" style="background: rgba(255, 107, 0, 0.12); color: var(--color-accent); border: 1px solid rgba(255, 107, 0, 0.25)"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Featured</span>'
+        : '<span class="text-xs" style="color: var(--color-text-3)">—</span>';
+
+      return `
+        <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
+          <td class="py-3.5 px-5 font-medium" style="color: var(--color-text-1)">
+            <a href="${url('/product/' + p.slug)}" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-accent)] inline-flex items-center gap-1.5 group font-semibold text-sm">
+              <span>${p.title}</span>
+              <svg class="w-3.5 h-3.5 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </td>
+          <td class="py-3.5 px-4 text-xs font-medium" style="color: var(--color-text-2)">${p.brand || '—'}</td>
+          <td class="py-3.5 px-4 text-xs" style="color: var(--color-text-2)">${p.categoryId?.name || '—'}</td>
+          <td class="py-3.5 px-4">${statusBadge}</td>
+          <td class="py-3.5 px-4">${featuredBadge}</td>
+          <td class="py-3.5 px-5 text-right space-x-2">
+            <a
+              href="${url('/admin/products/' + p._id)}"
+              class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-[var(--color-overlay)]"
+              style="border-color: var(--color-border); color: var(--color-accent)"
+            >
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+              Edit
+            </a>
+            <button
+              data-delete-id="${p._id}"
+              class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-red-500/10"
+              style="border-color: var(--color-border); color: var(--color-error)"
+            >
+              Archive
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    document.querySelectorAll('[data-delete-id]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-delete-id');
+        if (id && confirm('Are you sure you want to archive this product? It will be hidden from the public catalog.')) {
+          await api.admin.products.delete(id);
+          loadProducts();
+        }
+      });
+    });
+  }
+
+  function applyFilter() {
+    const searchInput = document.getElementById('filter-search') as HTMLInputElement;
+    const q = (searchInput?.value || '').toLowerCase().trim();
+    if (!q) {
+      renderTable(allProducts);
+      return;
+    }
+    const filtered = allProducts.filter(p =>
+      (p.title && p.title.toLowerCase().includes(q)) ||
+      (p.brand && p.brand.toLowerCase().includes(q))
+    );
+    renderTable(filtered);
+  }
+
   async function loadProducts() {
     const tbody = document.getElementById('products-table-body');
     const statusSelect = document.getElementById('filter-status') as HTMLSelectElement;
     const status = statusSelect ? statusSelect.value : '';
 
-    try {
-      const res: any = await api.admin.products.list(status ? `status=${status}` : '');
-      const products = res.data || [];
-
-      if (!tbody) return;
-      if (products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-xs" style="color: var(--color-text-2)">No products found.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = products.map((p: any) => `
-        <tr class="border-b transition-colors" style="border-color: var(--color-border)">
-          <td class="p-4 font-medium" style="color: var(--color-text-1)">
-            <a href="${url('/product/' + p.slug)}" target="_blank" class="hover:underline flex items-center gap-1.5">
-              ${p.title} ↗
-            </a>
-          </td>
-          <td class="p-4 text-xs" style="color: var(--color-text-2)">${p.brand || '—'}</td>
-          <td class="p-4 text-xs" style="color: var(--color-text-2)">${p.categoryId?.name || '—'}</td>
-          <td class="p-4">
-            <span class="text-xs px-2 py-0.5 rounded-full ${p.status === 'published' ? 'bg-emerald-100 text-emerald-800' : p.status === 'draft' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700'}">
-              ${p.status}
-            </span>
-          </td>
-          <td class="p-4 text-xs">${p.featured ? '⭐ Yes' : 'No'}</td>
-          <td class="p-4 text-right space-x-2">
-            <a href="${url('/admin/products/' + p._id)}" class="text-xs font-medium hover:underline" style="color: var(--color-accent)">Edit</a>
-            <button data-delete-id="${p._id}" class="text-xs text-red-600 hover:underline">Archive</button>
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="p-8 text-center text-xs" style="color: var(--color-text-2)">
+            <div class="flex items-center justify-center gap-2">
+              <svg class="w-4 h-4 animate-spin text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <span>Loading catalog...</span>
+            </div>
           </td>
         </tr>
-      `).join('');
+      `;
+    }
 
-      document.querySelectorAll('[data-delete-id]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const id = (e.currentTarget as HTMLElement).getAttribute('data-delete-id');
-          if (id && confirm('Archive this product?')) {
-            await api.admin.products.delete(id);
-            loadProducts();
-          }
-        });
-      });
+    try {
+      const res: any = await api.admin.products.list(status ? `status=${status}` : '');
+      allProducts = res.data || [];
+      applyFilter();
     } catch (err) {
       if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-xs text-red-600">Failed to load products. Check server connection.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-xs" style="color: var(--color-error)">Failed to load products. Check server connection.</td></tr>';
       }
     }
   }
 
+  document.getElementById('filter-search')?.addEventListener('input', applyFilter);
   document.getElementById('filter-status')?.addEventListener('change', loadProducts);
   document.getElementById('refresh-btn')?.addEventListener('click', loadProducts);
   loadProducts();

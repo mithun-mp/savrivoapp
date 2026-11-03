@@ -4,64 +4,125 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
 <AdminLayout title="Buying Guide Management">
   <div class="space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
       <div>
-        <h1 class="text-xl font-bold" style="color: var(--color-text-1)">Buying Guides</h1>
-        <p class="text-xs" style="color: var(--color-text-2)">Create original, research-backed purchase guides.</p>
+        <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Buying Guides</h1>
+        <p class="text-xs mt-1" style="color: var(--color-text-2)">Create original, research-backed purchase and evaluation guides.</p>
       </div>
-      <button id="add-guide-btn" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 min-h-[44px] flex items-center justify-center self-start sm:self-auto" style="background: var(--color-accent)">
-        + New Guide
+      <button
+        id="add-guide-btn"
+        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-95 active:scale-95 shadow-sm min-h-[44px] self-start sm:self-auto"
+        style="background: var(--color-accent)"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>New Guide</span>
       </button>
     </div>
 
     <!-- Guide Form Box -->
-    <div id="guide-form-box" class="hidden p-6 rounded-xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border)">
-      <h2 class="text-sm font-semibold" style="color: var(--color-text-1)">Write New Buying Guide</h2>
-      <div>
-        <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Title *</label>
-        <input type="text" id="g-title" placeholder="e.g. How to Choose Wireless Earbuds in India (2025)" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+    <div id="guide-form-box" class="hidden p-6 sm:p-7 rounded-2xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+      <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+        <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+        <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">Write New Buying Guide</h2>
       </div>
+
+      <div>
+        <label for="g-title" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Title *</label>
+        <input
+          type="text"
+          id="g-title"
+          placeholder="e.g. How to Choose Wireless Earbuds in India (2025)"
+          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        />
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Category</label>
-          <input type="text" id="g-category" placeholder="e.g. Electronics" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+          <label for="g-category" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Category</label>
+          <input
+            type="text"
+            id="g-category"
+            placeholder="e.g. Electronics"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
         </div>
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Status</label>
-          <select id="g-status" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)">
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
+          <label for="g-status" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Publishing Status</label>
+          <select
+            id="g-status"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] cursor-pointer"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          >
+            <option value="draft">Draft (Private)</option>
+            <option value="published">Published (Live)</option>
           </select>
         </div>
       </div>
+
       <div>
-        <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Excerpt</label>
-        <textarea id="g-excerpt" rows="2" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"></textarea>
+        <label for="g-excerpt" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Excerpt / Overview</label>
+        <textarea
+          id="g-excerpt"
+          rows="2"
+          placeholder="Brief summary to display in article listings and social previews..."
+          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        ></textarea>
       </div>
+
       <div>
-        <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Body Content (HTML)</label>
-        <textarea id="g-body" rows="6" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none font-mono text-xs" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"></textarea>
+        <label for="g-body" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Body Content (HTML)</label>
+        <textarea
+          id="g-body"
+          rows="6"
+          placeholder="Editorial article content with HTML formatting..."
+          class="w-full px-4 py-2.5 rounded-xl border text-xs font-mono outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+        ></textarea>
       </div>
-      <div class="flex gap-2">
-        <button id="g-save-btn" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white min-h-[44px]" style="background: var(--color-accent)">Save Guide</button>
-        <button id="g-cancel-btn" class="px-5 py-2.5 rounded-lg border text-sm min-h-[44px]" style="border-color: var(--color-border); color: var(--color-text-2)">Cancel</button>
+
+      <div class="flex gap-2 pt-2">
+        <button
+          id="g-save-btn"
+          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-95 active:scale-95 shadow-sm min-h-[44px]"
+          style="background: var(--color-accent)"
+        >
+          Save Guide
+        </button>
+        <button
+          id="g-cancel-btn"
+          class="px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors hover:bg-[var(--color-overlay)] min-h-[44px]"
+          style="border-color: var(--color-border); color: var(--color-text-2)"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
     <!-- Table -->
-    <div class="rounded-xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border)">
+    <div class="rounded-2xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm min-w-[560px]">
+        <table class="w-full text-left text-sm min-w-[620px]">
           <thead>
-            <tr class="border-b text-xs uppercase tracking-wider" style="border-color: var(--color-border); color: var(--color-text-2)">
-              <th class="p-4">Title</th>
-              <th class="p-4">Category</th>
-              <th class="p-4">Status</th>
-              <th class="p-4">Published</th>
+            <tr class="border-b text-[11px] font-bold uppercase tracking-wider" style="background: var(--color-overlay); border-color: var(--color-border); color: var(--color-text-2)">
+              <th class="py-3.5 px-5">Title</th>
+              <th class="py-3.5 px-4">Category</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th class="py-3.5 px-5 text-right">Published Date</th>
             </tr>
           </thead>
           <tbody id="guides-tbody">
-            <tr><td colspan="4" class="p-4 text-center text-xs" style="color: var(--color-text-2)">Loading guides...</td></tr>
+            <tr>
+              <td colspan="4" class="p-8 text-center text-xs" style="color: var(--color-text-2)">
+                <div class="flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 animate-spin text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  <span>Loading guides...</span>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -80,27 +141,37 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       const list = res.data || [];
       if (!tbody) return;
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-xs" style="color: var(--color-text-2)">No guides published yet.</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="p-12 text-center">
+              <div class="flex flex-col items-center justify-center gap-2">
+                <p class="text-sm font-medium" style="color: var(--color-text-2)">No guides published yet</p>
+                <p class="text-xs" style="color: var(--color-text-3)">Click "+ New Guide" to draft a research-backed guide.</p>
+              </div>
+            </td>
+          </tr>
+        `;
         return;
       }
       tbody.innerHTML = list.map((g: any) => `
-        <tr class="border-b" style="border-color: var(--color-border)">
-          <td class="p-4 font-medium" style="color: var(--color-text-1)">
-            <a href="${url('/guides/' + g.slug)}" target="_blank" class="hover:underline flex items-center gap-1.5">
-              ${g.title} ↗
+        <tr class="border-b transition-colors hover:bg-[var(--color-overlay)]" style="border-color: var(--color-border)">
+          <td class="py-3.5 px-5 font-semibold text-sm" style="color: var(--color-text-1)">
+            <a href="${url('/guides/' + g.slug)}" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-accent)] inline-flex items-center gap-1.5 group">
+              <span>${g.title}</span>
+              <svg class="w-3.5 h-3.5 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </td>
-          <td class="p-4 text-xs" style="color: var(--color-text-2)">${g.category || '—'}</td>
-          <td class="p-4 text-xs">
-            <span class="px-2 py-0.5 rounded-full ${g.status === 'published' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+          <td class="py-3.5 px-4 text-xs font-medium" style="color: var(--color-text-2)">${g.category || '—'}</td>
+          <td class="py-3.5 px-4">
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="${g.status === 'published' ? 'background: rgba(5, 150, 105, 0.12); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.25)' : 'background: rgba(217, 119, 6, 0.12); color: #D97706; border: 1px solid rgba(217, 119, 6, 0.25)'}">
               ${g.status}
             </span>
           </td>
-          <td class="p-4 text-xs" style="color: var(--color-text-2)">${g.publishedAt ? new Date(g.publishedAt).toLocaleDateString() : '—'}</td>
+          <td class="py-3.5 px-5 text-right text-xs" style="color: var(--color-text-2)">${g.publishedAt ? new Date(g.publishedAt).toLocaleDateString() : '—'}</td>
         </tr>
       `).join('');
     } catch {
-      if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-xs text-red-600">Failed to load guides.</td></tr>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-xs" style="color: var(--color-error)">Failed to load guides. Check server connection.</td></tr>';
     }
   }
 
@@ -126,6 +197,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       publishedAt: status === 'published' ? new Date().toISOString() : undefined,
     });
     box?.classList.add('hidden');
+    (document.getElementById('g-title') as HTMLInputElement).value = '';
+    (document.getElementById('g-category') as HTMLInputElement).value = '';
+    (document.getElementById('g-excerpt') as HTMLTextAreaElement).value = '';
+    (document.getElementById('g-body') as HTMLTextAreaElement).value = '';
     load();
   });
 

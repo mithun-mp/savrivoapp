@@ -1,9 +1,10 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import GuideCard from '../../components/guide/GuideCard';
-import { url } from '../../lib/paths';
+import Breadcrumb from '../../components/ui/Breadcrumb';
 import { API_BASE } from '../../lib/api';
 import type { Guide } from '../../types';
+
 let guides: Guide[] = [];
 try {
   const res = await fetch(`${API_BASE}/guides?limit=50`, { signal: AbortSignal.timeout(5000) });
@@ -11,23 +12,50 @@ try {
 } catch {}
 ---
 
-<MainLayout title="Buying Guides — SAVRIVO" description="Expert buying guides to help you choose the right products. Read our independent research." canonicalUrl="https://savrivo.in/guides">
-  <div class="section">
+<MainLayout
+  title="Independent Buying Guides & Research — SAVRIVO"
+  description="Expert buying guides and independent product research to help Indian consumers choose the right tech, audio, and lifestyle gear."
+  canonicalUrl="https://savrivo.in/guides"
+>
+  <div class="section py-8 sm:py-12">
     <div class="container-content">
-      <nav class="text-xs mb-4" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">Buying Guides</span>
-      </nav>
-      <h1 class="font-display text-3xl md:text-4xl font-bold mb-3" style="color: var(--color-text-1)">Buying Guides</h1>
-      <p class="text-base mb-10" style="color: var(--color-text-2)">
-        Independent research to help you make smarter purchase decisions.
-      </p>
+      {/* Header & Breadcrumb */}
+      <div class="mb-10 sm:mb-14">
+        <div class="mb-4">
+          <Breadcrumb
+            client:load
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Buying Guides' },
+            ]}
+          />
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+              style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+              <span>Editorial Research</span>
+            </div>
+            <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight" style="color: var(--color-text-1)">
+              Buying Guides
+            </h1>
+          </div>
+
+          <p class="text-sm sm:text-base max-w-md leading-relaxed" style="color: var(--color-text-2)">
+            In-depth breakdowns, side-by-side technical evaluations, and honest buying advice tailored for the Indian market.
+          </p>
+        </div>
+      </div>
+
       {guides.length > 0 ? (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
           {guides.map(g => <GuideCard guide={g} />)}
         </div>
       ) : (
-        <p class="text-sm" style="color: var(--color-text-2)">Buying guides are being prepared. Check back soon.</p>
+        <div class="p-12 text-center rounded-2xl border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+          <p class="text-sm" style="color: var(--color-text-2)">New editorial buying guides are being prepared. Check back shortly.</p>
+        </div>
       )}
     </div>
   </div>

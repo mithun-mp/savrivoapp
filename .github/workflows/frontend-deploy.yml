@@ -47,7 +47,7 @@ jobs:
         working-directory: frontend
         run: pnpm run build
         env:
-          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL || 'https://savrivo-backend.onrender.com/api' }}
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL || 'https://savrivo-api.onrender.com/api' }}
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3

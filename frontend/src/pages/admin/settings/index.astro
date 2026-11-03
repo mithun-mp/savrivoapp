@@ -3,45 +3,77 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 ---
 
 <AdminLayout title="Platform Settings">
-  <div class="max-w-2xl space-y-6">
-    <div>
-      <h1 class="text-xl font-bold" style="color: var(--color-text-1)">Platform Settings</h1>
-      <p class="text-xs" style="color: var(--color-text-2)">Configure site-wide metadata, contact address, and operational modes.</p>
+  <div class="max-w-2xl space-y-6 pb-12">
+    <!-- Header -->
+    <div class="pb-2">
+      <h1 class="text-2xl font-bold font-display" style="color: var(--color-text-1)">Platform Settings</h1>
+      <p class="text-xs mt-1" style="color: var(--color-text-2)">Configure site-wide metadata, contact address, currency defaults, and operational modes.</p>
     </div>
 
     <form id="settings-form" class="space-y-6">
-      <div class="p-6 rounded-xl border space-y-4" style="background: var(--color-surface); border-color: var(--color-border)">
-        <h2 class="text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">General Settings</h2>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Site Name</label>
-          <input type="text" id="siteName" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+      <div class="p-6 sm:p-7 rounded-2xl border space-y-5" style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm)">
+        <div class="flex items-center gap-2 pb-2 border-b" style="border-color: var(--color-border)">
+          <svg class="w-4 h-4 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <h2 class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-text-1)">General Settings</h2>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Tagline</label>
-          <input type="text" id="tagline" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+          <label for="siteName" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Site Name</label>
+          <input
+            type="text"
+            id="siteName"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Contact Email</label>
-          <input type="email" id="contactEmail" class="w-full px-4 py-2.5 rounded-lg border text-sm outline-none" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+          <label for="tagline" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Tagline</label>
+          <input
+            type="text"
+            id="tagline"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold mb-1" style="color: var(--color-text-1)">Default Currency</label>
-          <input type="text" id="defaultCurrency" value="INR" readonly class="w-full px-4 py-2.5 rounded-lg border text-sm opacity-60" style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)" />
+          <label for="contactEmail" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--color-text-1)">Contact Email</label>
+          <input
+            type="email"
+            id="contactEmail"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            style="background: var(--color-bg); border-color: var(--color-border); color: var(--color-text-1)"
+          />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="defaultCurrency" class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-1)">Default Currency</label>
+            <span class="text-[11px] font-medium" style="color: var(--color-text-3)">Standard for Indian market</span>
+          </div>
+          <div class="relative">
+            <input
+              type="text"
+              id="defaultCurrency"
+              value="INR (₹)"
+              readonly
+              class="w-full px-4 py-2.5 rounded-xl border text-sm font-semibold cursor-not-allowed opacity-75"
+              style="background: var(--color-overlay); border-color: var(--color-border); color: var(--color-text-1)"
+            />
+          </div>
         </div>
       </div>
 
-      <div id="settings-msg" class="hidden text-xs p-3 rounded-lg"></div>
+      <div id="settings-msg" class="hidden text-xs p-4 rounded-xl font-medium"></div>
 
       <button
         type="submit"
         id="save-settings-btn"
-        class="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-sm min-h-[44px]"
         style="background: var(--color-accent)"
       >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Save Settings
       </button>
     </form>
@@ -81,17 +113,26 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       try {
         const res = await api.admin.settings.update(update);
         if (res.success) {
-          msg.className = 'block text-xs p-3 rounded-lg text-emerald-800 bg-emerald-50 border border-emerald-200';
+          msg.className = 'block text-xs p-4 rounded-xl font-medium';
+          msg.style.background = 'rgba(5, 150, 105, 0.12)';
+          msg.style.border = '1px solid rgba(5, 150, 105, 0.25)';
+          msg.style.color = 'var(--color-success)';
           msg.textContent = 'Settings saved successfully!';
         } else {
           throw new Error(res.message);
         }
       } catch (err: any) {
-        msg.className = 'block text-xs p-3 rounded-lg text-red-800 bg-red-50 border border-red-200';
+        msg.className = 'block text-xs p-4 rounded-xl font-medium';
+        msg.style.background = 'rgba(220, 38, 38, 0.1)';
+        msg.style.border = '1px solid rgba(220, 38, 38, 0.25)';
+        msg.style.color = 'var(--color-error)';
         msg.textContent = err.message || 'Save failed';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Save Settings';
+        btn.innerHTML = `
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Settings
+        `;
       }
     });
   }

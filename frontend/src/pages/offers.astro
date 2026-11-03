@@ -1,50 +1,99 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import { url } from '../lib/paths';
+import { ArrowRight, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 ---
 
 <MainLayout
-  title="Live Offers — Coming Soon | SAVRIVO"
-  description="Live offer discovery is coming to SAVRIVO. We're building a verified way to compare product offers across trusted retailers."
+  title="Live Verified Offers — Coming Soon | SAVRIVO"
+  description="Real-time multi-merchant offer discovery is coming to SAVRIVO. We are building an authentic, verified price comparison experience for Indian shoppers."
   canonicalUrl="https://savrivo.in/offers"
 >
-  <div class="section">
-    <div class="container-content">
-      <div class="max-w-xl mx-auto text-center py-16">
-        <!-- Savi mark -->
-        <div class="mx-auto mb-8 w-20 h-20">
-          <svg width="80" height="80" viewBox="0 0 64 64" fill="none" aria-label="Savi — SAVRIVO discovery companion">
-            <circle cx="32" cy="32" r="28" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.3"/>
-            <circle cx="32" cy="32" r="18" fill="var(--color-accent)" opacity="0.05"/>
-            <circle cx="32" cy="32" r="8" fill="var(--color-accent)" opacity="0.08"/>
-            <circle cx="32" cy="32" r="5" fill="var(--color-accent)" opacity="0.7"/>
-            <line x1="32" y1="14" x2="32" y2="22" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="32" y1="42" x2="32" y2="50" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
-            <line x1="14" y1="32" x2="22" y2="32" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
-            <line x1="42" y1="32" x2="50" y2="32" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
-            <circle cx="18" cy="18" r="2" fill="var(--color-accent-2)" opacity="0.5"/>
-            <circle cx="46" cy="46" r="1.5" fill="var(--color-accent-2)" opacity="0.4"/>
+  <div class="section py-8 sm:py-16">
+    <div class="container-content max-w-3xl">
+      {/* Breadcrumb Navigation */}
+      <div class="mb-8">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Live Offers' },
+          ]}
+        />
+      </div>
+
+      <div class="text-center py-6 sm:py-10">
+        {/* Precision S Brand Symbol */}
+        <div class="mx-auto mb-8 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-3xl border shadow-sv-sm"
+          style="background: var(--color-surface); border-color: var(--color-border);">
+          <svg width="48" height="48" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path
+              d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
+              stroke="var(--color-accent)"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <polygon points="32,24 38,32 32,40 26,32" fill="var(--color-accent)" />
           </svg>
         </div>
 
-        <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color: var(--color-accent)">Coming Soon</p>
-        <h1 class="font-display text-3xl md:text-4xl font-bold mb-5" style="color: var(--color-text-1)">
+        <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <Sparkles size={13} />
+          <span>Real-Time Retailer Comparison</span>
+        </div>
+
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-5" style="color: var(--color-text-1)">
           Live Offer Discovery
         </h1>
-        <p class="text-base leading-relaxed mb-8" style="color: var(--color-text-2)">
-          We're building a verified way to compare product offers across trusted retailers.<br />
-          Live offer discovery is on its way.
+
+        <p class="text-base sm:text-lg leading-relaxed mb-8 max-w-xl mx-auto" style="color: var(--color-text-2)">
+          We are engineering a verified engine to compare live pricing, merchant stock, and promotional deals across trusted Indian retailers.
         </p>
-        <p class="text-sm leading-relaxed mb-10 p-5 rounded-xl" style="color: var(--color-text-2); background: var(--color-overlay); border: 1px solid var(--color-border)">
-          SAVRIVO will only display offer data that has been verified through authorized affiliate programmes and feeds. We do not fabricate prices or availability.
-        </p>
+
+        {/* Commitment Card */}
+        <div
+          class="p-6 sm:p-8 rounded-2xl border text-left mb-10 max-w-2xl mx-auto"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <div class="flex items-center gap-2 mb-4 font-display font-bold text-base" style="color: var(--color-text-1)">
+            <ShieldCheck size={18} class="text-[var(--color-accent)]" />
+            <span>Our Verification Commitment</span>
+          </div>
+
+          <p class="text-xs sm:text-sm leading-relaxed mb-5" style="color: var(--color-text-2)">
+            SAVRIVO only displays verified pricing and retailer data sourced directly through authorized affiliate APIs and merchant feeds. We strictly prohibit fake countdown timers, artificial discounts, and misleading markup calculations.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs" style="color: var(--color-text-1)">
+            <div class="flex items-center gap-2">
+              <CheckCircle2 size={15} class="text-[var(--color-accent)] shrink-0" />
+              <span>Real INR prices directly from stores</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <CheckCircle2 size={15} class="text-[var(--color-accent)] shrink-0" />
+              <span>Amazon India & Flipkart verified feeds</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <CheckCircle2 size={15} class="text-[var(--color-accent)] shrink-0" />
+              <span>Zero hidden commission fees</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <CheckCircle2 size={15} class="text-[var(--color-accent)] shrink-0" />
+              <span>Direct links with no redirects</span>
+            </div>
+          </div>
+        </div>
 
         <a
           href={url('/products')}
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          class="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-150 hover:brightness-105 active:scale-95 shadow-sv-sm min-h-[44px]"
           style="background: var(--color-accent)"
         >
-          Browse Products Instead
+          <span>Explore Curated Products</span>
+          <ArrowRight size={16} />
         </a>
       </div>
     </div>

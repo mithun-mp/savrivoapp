@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SkeletonProps {
+export interface SkeletonProps {
   variant?: 'text' | 'card' | 'avatar' | 'image' | 'rect';
   width?: string;
   height?: string;
@@ -12,7 +12,7 @@ export function Skeleton({ variant = 'rect', width, height, className = '' }: Sk
   const variantClass =
     variant === 'avatar' ? 'rounded-full' :
     variant === 'text' ? 'rounded' :
-    'rounded-md';
+    'rounded-xl';
 
   const style: React.CSSProperties = {
     width: width,
@@ -25,22 +25,35 @@ export function Skeleton({ variant = 'rect', width, height, className = '' }: Sk
 export function ProductCardSkeleton() {
   return (
     <div
-      className="rounded-xl overflow-hidden"
-      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+      className="rounded-2xl overflow-hidden flex flex-col border shadow-sv-sm"
+      style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
       aria-hidden="true"
     >
       <Skeleton variant="image" className="w-full" height="220px" />
-      <div className="p-4 space-y-3">
-        <Skeleton variant="text" width="40%" height="12px" />
+      <div className="p-5 space-y-3 flex-1 flex flex-col">
+        <Skeleton variant="text" width="35%" height="12px" />
         <Skeleton variant="text" width="85%" height="18px" />
-        <Skeleton variant="text" width="30%" height="12px" />
         <Skeleton variant="text" width="100%" height="12px" />
-        <Skeleton variant="text" width="75%" height="12px" />
-        <div className="pt-2">
-          <Skeleton variant="rect" width="100%" height="38px" />
+        <Skeleton variant="text" width="60%" height="12px" />
+        <div className="mt-auto pt-4 flex items-center justify-between border-t" style={{ borderColor: 'var(--color-border)' }}>
+          <Skeleton variant="text" width="40%" height="16px" />
+          <Skeleton variant="rect" width="80px" height="32px" className="rounded-lg" />
         </div>
       </div>
     </div>
   );
 }
 
+export function TableRowSkeleton({ columns = 5 }: { columns?: number }) {
+  return (
+    <tr className="border-b" style={{ borderColor: 'var(--color-border)' }}>
+      {Array.from({ length: columns }).map((_, i) => (
+        <td key={i} className="p-4">
+          <Skeleton variant="text" width={i === 0 ? '70%' : '50%'} height="14px" />
+        </td>
+      ))}
+    </tr>
+  );
+}
+
+export default Skeleton;

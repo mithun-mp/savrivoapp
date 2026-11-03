@@ -1,76 +1,132 @@
 /* ============================================================
    SAVRIVO Design Tokens — CSS Custom Properties
-   Direction A: Premium Modern Commerce Theme
+   Brand Identity: Electric Luxury
+   Primary Accent: Electric Ember (#FF5A1F)
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+/* ── Typography Imports ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap');
 
-/* ── Light Theme (Default: Premium Modern Commerce) ── */
 :root {
-  --color-bg:                #F8F9FA; /* Crisp modern canvas */
-  --color-surface:           #FFFFFF; /* Pure card surface */
-  --color-surface-subtle:    #F1F3F5; /* Neutral badge & icon container */
-  --color-text-1:            #0F172A; /* Slate 900 (deep obsidian) */
-  --color-text-2:            #475569; /* Slate 600 (legible body/meta) */
-  --color-accent:            #047857; /* Emerald 700 (authoritative, high-conversion CTA) */
-  --color-accent-hover:      #065F46; /* Emerald 800 */
-  --color-accent-2:          #D97706; /* Amber 600 */
-  --color-accent-badge:      #ECFDF5; /* Emerald 50 (fresh badge background) */
-  --color-accent-badge-text: #065F46; /* Emerald 800 (100% WCAG AAA contrast) */
+  /* ── Electric Ember Palette (Constant Scale) ── */
+  --color-ember-50:  #FFF5F0;
+  --color-ember-100: #FFE6DB;
+  --color-ember-200: #FFCBB5;
+  --color-ember-300: #FFA785;
+  --color-ember-400: #FF7E4D;
+  --color-ember-500: #FF5A1F; /* Core Electric Ember */
+  --color-ember-600: #E6450A; /* Deepened CTA & Hover */
+  --color-ember-700: #C03403; /* High-contrast text on light */
+  --color-ember-800: #982B08;
+  --color-ember-900: #7B260C;
+
+  /* ── Light Theme (Warm Creamy Light) ── */
+  --color-bg:                #F8F7F4; /* Warm crisp linen canvas */
+  --color-surface:           #FFFFFF; /* Pure card & container surface */
+  --color-surface-subtle:    #F1EFEA; /* Neutral chip & subtle container */
+  --color-surface-elevated:  #EAE7E1; /* Secondary elevated container */
+  --color-text-1:            #0F172A; /* Deep obsidian for authoritative headings */
+  --color-text-2:            #475569; /* Slate 600 (WCAG 2.2 AA compliant >= 7:1) */
+
+  /* Brand Accents */
+  --color-accent:            #FF5A1F; /* Electric Ember 500 */
+  --color-accent-hover:      #E6450A; /* Ember 600 */
+  --color-accent-2:          #F59E0B; /* Amber 500 for rating stars & highlights */
+  --color-accent-badge:      #FFF2EC; /* Ember 50 tint */
+  --color-accent-badge-text: #C03403; /* Ember 700 (WCAG AA 5.1:1 on #FFF2EC) */
   --color-curated-badge:     #FEF3C7; /* Amber 100 ("Editor's Pick") */
   --color-curated-text:      #92400E; /* Amber 800 (WCAG AA compliant) */
-  --color-border:            #E2E8F0; /* Slate 200 */
-  --color-border-hover:      #CBD5E1; /* Slate 300 */
-  --color-success:           #059669;
-  --color-warning:           #D97706;
-  --color-error:             #DC2626;
+
+  /* Borders */
+  --color-border:            #E5E2DC; /* Warm light border */
+  --color-border-hover:      #CBD5E1; /* Elevated interactive border */
+
+  /* Functional Status Colors (Preserved) */
+  --color-success:           #059669; /* Emerald 600 */
+  --color-warning:           #D97706; /* Amber 600 */
+  --color-error:             #DC2626; /* Red 600 */
+  --color-info:              #2563EB; /* Blue 600 */
+
+  /* Overlays & Glows */
   --color-overlay:           rgba(15, 23, 42, 0.04);
-  --shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md:  0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
-  --shadow-lg:  0 10px 30px rgba(15, 23, 42, 0.10), 0 4px 8px rgba(15, 23, 42, 0.04);
-  --shadow-xl:  0 20px 60px rgba(15, 23, 42, 0.12);
+  --color-accent-glow:       rgba(255, 90, 31, 0.12);
+
+  /* Layered Luxury Shadows (Warm Ambient Depth) */
+  --shadow-sm:    0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-md:    0 4px 14px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg:    0 12px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  --shadow-xl:    0 24px 48px -8px rgba(15, 23, 42, 0.12);
+  --shadow-ember: 0 4px 20px -2px rgba(255, 90, 31, 0.25);
 
   /* Typography */
-  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Spacing scale */
+  /* Spacing Scale */
   --space-section: clamp(64px, 7vw, 104px);
 
-  /* Transitions */
-  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base:   200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow:   300ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Motion & Transitions (Electric Luxury Motion Scale) */
+  --duration-instant:    100ms;
+  --duration-fast:       150ms;
+  --duration-base:       220ms;
+  --duration-normal:     280ms;
+  --duration-slow:       380ms;
+  --duration-deliberate: 500ms;
 
-  /* Border radius */
+  --ease-luxury:         cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth:         cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-tactile:        cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --transition-fast:     var(--duration-fast) var(--ease-luxury);
+  --transition-base:     var(--duration-base) var(--ease-luxury);
+  --transition-slow:     var(--duration-slow) var(--ease-luxury);
+
+  /* Border Radius Scale */
+  --radius-xs:   4px;
   --radius-sm:   6px;
   --radius-md:   10px;
   --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-2xl:  32px;
   --radius-full: 9999px;
 }
 
-/* ── Dark Theme (Deep Slate Obsidian) ── */
+/* ── Dark Theme (Deep Obsidian Canvas) ── */
 [data-theme="dark"] {
-  --color-bg:                #0B0F17; /* Deep slate obsidian */
-  --color-surface:           #151C28; /* Elevated slate surface */
-  --color-surface-subtle:    #1E293B; /* Slate 800 */
-  --color-text-1:            #F8FAFC; /* Slate 50 */
-  --color-text-2:            #94A3B8; /* Slate 400 */
-  --color-accent:            #10B981; /* Emerald 500 */
-  --color-accent-hover:      #34D399; /* Emerald 400 */
+  --color-bg:                #101116; /* Deep obsidian canvas */
+  --color-surface:           #181920; /* Elevated surface layer 1 */
+  --color-surface-subtle:    #20212A; /* Elevated surface layer 2 */
+  --color-surface-elevated:  #282A36; /* Elevated surface layer 3 / popovers */
+  --color-text-1:            #F8FAFC; /* Crisp snow white (high contrast) */
+  --color-text-2:            #94A3B8; /* Slate 400 (WCAG 2.2 AA compliant >= 6.8:1) */
+
+  /* Brand Accents */
+  --color-accent:            #FF5A1F; /* Electric Ember 500 */
+  --color-accent-hover:      #FF7E4D; /* Ember 400 */
   --color-accent-2:          #F59E0B; /* Amber 500 */
-  --color-accent-badge:      rgba(16, 185, 129, 0.15);
-  --color-accent-badge-text: #34D399; /* Emerald 400 */
+  --color-accent-badge:      rgba(255, 90, 31, 0.14);
+  --color-accent-badge-text: #FFA785; /* Ember 300 (WCAG AA 9.2:1 on #181920) */
   --color-curated-badge:     rgba(245, 158, 11, 0.15);
   --color-curated-text:      #FCD34D; /* Amber 300 */
-  --color-border:            #1E293B; /* Slate 800 */
-  --color-border-hover:      #334155; /* Slate 700 */
-  --color-success:           #10B981;
-  --color-warning:           #F59E0B;
-  --color-error:             #F87171;
+
+  /* Borders */
+  --color-border:            rgba(255, 255, 255, 0.08); /* 8% white divider */
+  --color-border-hover:      rgba(255, 255, 255, 0.16); /* 16% white interactive */
+
+  /* Functional Status Colors (Preserved for Dark Canvas) */
+  --color-success:           #10B981; /* Emerald 500 */
+  --color-warning:           #F59E0B; /* Amber 500 */
+  --color-error:             #F87171; /* Red 400 */
+  --color-info:              #60A5FA; /* Blue 400 */
+
+  /* Overlays & Glows */
   --color-overlay:           rgba(255, 255, 255, 0.05);
-  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.45);
-  --shadow-lg:  0 10px 30px rgba(0, 0, 0, 0.55);
-  --shadow-xl:  0 20px 60px rgba(0, 0, 0, 0.65);
+  --color-accent-glow:       rgba(255, 90, 31, 0.22);
+
+  /* Deep Obsidian Shadows */
+  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-md:    0 4px 14px rgba(0, 0, 0, 0.55);
+  --shadow-lg:    0 12px 30px rgba(0, 0, 0, 0.65);
+  --shadow-xl:    0 24px 60px rgba(0, 0, 0, 0.75);
+  --shadow-ember: 0 4px 24px -2px rgba(255, 90, 31, 0.35);
 }

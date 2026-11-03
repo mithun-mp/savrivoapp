@@ -1,31 +1,148 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import { url } from '../lib/paths';
+import { FileText, ShieldAlert, AlertCircle, ExternalLink } from 'lucide-react';
 ---
 
-<MainLayout title="Terms of Use — SAVRIVO" description="Terms and conditions for using SAVRIVO." canonicalUrl="https://savrivo.in/terms">
-  <div class="section">
-    <div class="container-content max-w-3xl">
-      <nav class="text-xs mb-6" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">Terms of Use</span>
-      </nav>
-      <h1 class="font-display text-3xl font-bold mb-8" style="color: var(--color-text-1)">Terms of Use</h1>
-      <div class="prose prose-base max-w-none space-y-5" style="color: var(--color-text-2)">
-        <p><strong style="color: var(--color-text-1)">Last updated: November 2024</strong></p>
-        <p>By using SAVRIVO ("the site"), you agree to the following terms.</p>
-        <h2 style="color: var(--color-text-1)">Nature of the Site</h2>
-        <p>SAVRIVO is a product discovery and information platform. We do not sell products. All purchases are made directly on third-party retailer websites. SAVRIVO is not a party to any transaction between you and a retailer.</p>
-        <h2 style="color: var(--color-text-1)">Price and Availability Accuracy</h2>
-        <p>Product prices and availability shown on SAVRIVO are for informational purposes only. They may be outdated or inaccurate. Always verify current price and availability on the retailer's website before purchasing.</p>
-        <h2 style="color: var(--color-text-1)">Affiliate Links</h2>
-        <p>SAVRIVO contains affiliate links. When you click these and make a qualifying purchase, we may earn a commission. See our <a href={url('/affiliate-disclosure')} style="color: var(--color-accent)">affiliate disclosure</a>.</p>
-        <h2 style="color: var(--color-text-1)">No Endorsement of Retailers</h2>
-        <p>Linking to a retailer does not constitute an endorsement of that retailer or any specific seller. Conduct your own due diligence before purchasing.</p>
-        <h2 style="color: var(--color-text-1)">Limitation of Liability</h2>
-        <p>SAVRIVO is provided "as is" without any warranties. We are not liable for any loss arising from your use of the site, reliance on product information, or transactions with retailers.</p>
-        <h2 style="color: var(--color-text-1)">Changes</h2>
-        <p>We may update these terms at any time. Continued use of the site constitutes acceptance of the updated terms.</p>
+<MainLayout
+  title="Terms of Use — SAVRIVO"
+  description="Terms and conditions for browsing the SAVRIVO product discovery platform."
+  canonicalUrl="https://savrivo.in/terms"
+>
+  <div class="section py-8 sm:py-14">
+    <div class="container-content max-w-4xl">
+      {/* Breadcrumb Navigation */}
+      <div class="mb-8">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Terms of Use' },
+          ]}
+        />
+      </div>
+
+      {/* Hero Header */}
+      <div class="mb-10 pb-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <FileText size={13} />
+          <span>User Agreement</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3" style="color: var(--color-text-1)">
+          Terms of Use
+        </h1>
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-2)">
+          Last updated: November 2024 · Effective immediately
+        </p>
+      </div>
+
+      <div class="space-y-8">
+        <div
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            By accessing or using SAVRIVO ("the site", "we", "us"), you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, please discontinue use of the site.
+          </p>
+        </div>
+
+        {/* Nature of the Site */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            1. Nature of the Platform
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            SAVRIVO is an informational product discovery platform. We do not sell products directly, manage inventory, take payments, or process shipments.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            All transactions, payments, customer support, returns, and warranties are handled solely by the external third-party retailer where you complete your purchase. SAVRIVO is not a party to any commercial contract between you and an external merchant.
+          </p>
+        </section>
+
+        {/* Price and Availability Accuracy */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            2. Price and Availability Accuracy
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            While we strive for accurate and timely information, prices, discounts, and inventory availability on external merchant websites change dynamically.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            Information displayed on SAVRIVO is for comparative reference only. Always confirm current prices, taxes, delivery terms, and product condition directly on the retailer's official website prior to completing any purchase.
+          </p>
+        </section>
+
+        {/* Affiliate Links */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            3. Affiliate Links
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            SAVRIVO participates in affiliate marketing programmes. Outbound merchant links may contain tracking tags that allow partner retailers to attribute qualifying purchases to us and pay an affiliate commission. For full details, review our <a href={url('/affiliate-disclosure')} class="font-bold underline" style="color: var(--color-accent)">Affiliate Disclosure</a>.
+          </p>
+        </section>
+
+        {/* No Endorsement */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            4. No Endorsement of Retailers or Merchants
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            Referencing or linking to a third-party retailer does not constitute an endorsement, guarantee, or warranty of that merchant or specific marketplace seller. Users should exercise their own judgment when purchasing products online.
+          </p>
+        </section>
+
+        {/* Limitation of Liability */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            5. Limitation of Liability
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-3" style="color: var(--color-text-2)">
+            SAVRIVO is provided on an "as is" and "as available" basis without warranties of any kind.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            To the maximum extent permitted by applicable law in India, SAVRIVO and its creators shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use of or inability to use this site, reliance on product content, or merchant disputes.
+          </p>
+        </section>
+
+        {/* Changes to Terms */}
+        <section
+          class="p-6 sm:p-8 rounded-2xl border"
+          style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
+        >
+          <h2 class="font-display font-bold text-lg sm:text-xl mb-3" style="color: var(--color-text-1)">
+            6. Changes to Terms
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-2)">
+            We reserve the right to modify these terms at any time. Any changes will be posted here with an updated revision date. Continued use of SAVRIVO after updates signifies acceptance of the revised terms.
+          </p>
+        </section>
+
+        {/* Cross-Policy Navigation Strip */}
+        <div class="pt-8 border-t flex flex-wrap gap-4 text-xs font-semibold" style={{ borderColor: 'var(--color-border)' }}>
+          <a href={url('/privacy-policy')} class="hover:underline" style="color: var(--color-text-2)">Privacy Policy →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/affiliate-disclosure')} class="hover:underline" style="color: var(--color-text-2)">Affiliate Disclosure →</a>
+          <span style="color: var(--color-border)">•</span>
+          <a href={url('/editorial-policy')} class="hover:underline" style="color: var(--color-text-2)">Editorial Policy →</a>
+        </div>
       </div>
     </div>
   </div>

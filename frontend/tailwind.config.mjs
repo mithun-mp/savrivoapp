@@ -5,9 +5,22 @@ export default {
   theme: {
     extend: {
       colors: {
+        ember: {
+          50: 'var(--color-ember-50)',
+          100: 'var(--color-ember-100)',
+          200: 'var(--color-ember-200)',
+          300: 'var(--color-ember-300)',
+          400: 'var(--color-ember-400)',
+          500: 'var(--color-ember-500)',
+          600: 'var(--color-ember-600)',
+          700: 'var(--color-ember-700)',
+          800: 'var(--color-ember-800)',
+          900: 'var(--color-ember-900)',
+        },
         'sv-bg': 'var(--color-bg)',
         'sv-surface': 'var(--color-surface)',
         'sv-surface-subtle': 'var(--color-surface-subtle)',
+        'sv-surface-elevated': 'var(--color-surface-elevated)',
         'sv-text-1': 'var(--color-text-1)',
         'sv-text-2': 'var(--color-text-2)',
         'sv-accent': 'var(--color-accent)',
@@ -22,21 +35,34 @@ export default {
         'sv-success': 'var(--color-success)',
         'sv-warning': 'var(--color-warning)',
         'sv-error': 'var(--color-error)',
+        'sv-info': 'var(--color-info)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'sv-sm': 'var(--shadow-sm)',
         'sv-md': 'var(--shadow-md)',
         'sv-lg': 'var(--shadow-lg)',
+        'sv-xl': 'var(--shadow-xl)',
+        'sv-ember': 'var(--shadow-ember)',
+      },
+      borderRadius: {
+        'sv-xs': 'var(--radius-xs)',
+        'sv-sm': 'var(--radius-sm)',
+        'sv-md': 'var(--radius-md)',
+        'sv-lg': 'var(--radius-lg)',
+        'sv-xl': 'var(--radius-xl)',
+        'sv-2xl': 'var(--radius-2xl)',
       },
       maxWidth: {
         'content': '1440px',
+      },
+      transitionTimingFunction: {
+        'luxury': 'cubic-bezier(0.16, 1, 0.3, 1)',
       },
     },
   },
   plugins: [require('@tailwindcss/typography')],
 };
-

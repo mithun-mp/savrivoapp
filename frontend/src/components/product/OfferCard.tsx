@@ -6,6 +6,7 @@ import AffiliateDisclosure from '../ui/AffiliateDisclosure';
 
 interface OfferCardProps {
   offer: Offer;
+  className?: string;
 }
 
 function getMerchant(m: Offer['merchantId']): Merchant | null {
@@ -13,7 +14,7 @@ function getMerchant(m: Offer['merchantId']): Merchant | null {
   return m as Merchant;
 }
 
-export default function OfferCard({ offer }: OfferCardProps) {
+export default function OfferCard({ offer, className = '' }: OfferCardProps) {
   const merchant = getMerchant(offer.merchantId);
   const hasPrice = typeof offer.currentPrice === 'number' && offer.currentPrice > 0;
   const hasOriginal = typeof offer.originalPrice === 'number' && offer.originalPrice > 0;
@@ -21,73 +22,96 @@ export default function OfferCard({ offer }: OfferCardProps) {
 
   return (
     <div
-      className="rounded-xl p-5 flex flex-col gap-4"
-      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
+      className={`rounded-2xl p-5 sm:p-6 flex flex-col gap-4 border transition-all duration-200 ${className}`}
+      style={{
+        background: 'var(--color-surface)',
+        borderColor: 'var(--color-border)',
+        boxShadow: 'var(--shadow-sm)',
+      }}
     >
       <div className="flex items-start justify-between gap-4">
         <div>
           {merchant && (
-            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-accent)' }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--color-accent)' }}>
               {merchant.name}
             </p>
           )}
+
           {hasPrice && (
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold" style={{ color: 'var(--color-text-1)' }}>
+            <div className="flex items-baseline gap-2.5">
+              <span className="font-display text-2xl sm:text-3xl font-extrabold tabular-nums" style={{ color: 'var(--color-text-1)' }}>
                 {formatINR(offer.currentPrice!)}
               </span>
               {hasDiscount && (
-                <span className="text-sm line-through opacity-50" style={{ color: 'var(--color-text-2)' }}>
+                <span className="text-sm line-through opacity-50 tabular-nums" style={{ color: 'var(--color-text-2)' }}>
                   {formatINR(offer.originalPrice!)}
                 </span>
               )}
             </div>
           )}
+
           {!hasPrice && (
-            <p className="text-sm" style={{ color: 'var(--color-text-2)' }}>
-              Price available at retailer
+            <p className="text-sm font-medium" style={{ color: 'var(--color-text-2)' }}>
+              Live price available at retailer
             </p>
           )}
         </div>
+
         <span
-          className="text-xs px-2.5 py-1 rounded-full shrink-0"
+          className="text-xs font-semibold px-3 py-1 rounded-full shrink-0 border"
           style={
             offer.availability === 'in_stock'
-              ? { background: 'rgba(22,163,74,0.1)', color: 'var(--color-success)' }
+              ? {
+                  background: 'rgba(5, 150, 105, 0.12)',
+                  color: 'var(--color-success)',
+                  borderColor: 'rgba(5, 150, 105, 0.25)',
+                }
               : offer.availability === 'out_of_stock'
-              ? { background: 'rgba(220,38,38,0.1)', color: 'var(--color-error)' }
-              : { background: 'var(--color-overlay)', color: 'var(--color-text-2)' }
+              ? {
+                  background: 'rgba(220, 38, 38, 0.1)',
+                  color: 'var(--color-error)',
+                  borderColor: 'rgba(220, 38, 38, 0.25)',
+                }
+              : {
+                  background: 'var(--color-surface-subtle)',
+                  color: 'var(--color-text-2)',
+                  borderColor: 'var(--color-border)',
+                }
           }
         >
-          {offer.availability === 'in_stock' ? 'In Stock' : offer.availability === 'out_of_stock' ? 'Out of Stock' : 'Check Availability'}
+          {offer.availability === 'in_stock'
+            ? 'In Stock'
+            : offer.availability === 'out_of_stock'
+            ? 'Out of Stock'
+            : 'Check Availability'}
         </span>
       </div>
 
-      {/* Price note */}
-      {hasPrice && (
-        <p className="text-xs flex items-center gap-1" style={{ color: 'var(--color-text-2)' }}>
-          <Info size={11} aria-hidden="true" />
-          Price shown is indicative. Verify current price at the retailer.
-        </p>
-      )}
+      {/* Meta notes */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--color-text-2)' }}>
+        {hasPrice && (
+          <p className="flex items-center gap-1">
+            <Info size={12} aria-hidden="true" />
+            Price indicative at time of review
+          </p>
+        )}
+        {offer.offerLastVerifiedAt && (
+          <p className="flex items-center gap-1">
+            <Clock size={12} aria-hidden="true" />
+            Verified: {formatDate(offer.offerLastVerifiedAt)}
+          </p>
+        )}
+      </div>
 
-      {/* Last verified */}
-      {offer.offerLastVerifiedAt && (
-        <p className="text-xs flex items-center gap-1" style={{ color: 'var(--color-text-2)' }}>
-          <Clock size={11} aria-hidden="true" />
-          Last verified: {formatDate(offer.offerLastVerifiedAt)}
-        </p>
-      )}
-
-      {/* Shop Now */}
+      {/* Primary Affiliate Action */}
       <a
         href={offer.affiliateUrl}
         target="_blank"
         rel="sponsored nofollow noopener noreferrer"
-        className="flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl font-semibold text-base text-white transition-all hover:opacity-90 active:scale-[0.98] min-h-[48px] shadow-sv-sm"
+        className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white transition-all duration-150 hover:brightness-105 active:scale-[0.98] min-h-[48px] shadow-sv-sm cursor-pointer"
         style={{ background: 'var(--color-accent)' }}
       >
-        Shop at {merchant?.name || 'Retailer'}
+        <span>Shop at {merchant?.name || 'Retailer'}</span>
         <ExternalLink size={16} aria-hidden="true" />
       </a>
 
@@ -95,4 +119,3 @@ export default function OfferCard({ offer }: OfferCardProps) {
     </div>
   );
 }
-

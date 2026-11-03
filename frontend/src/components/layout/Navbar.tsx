@@ -4,6 +4,7 @@ import { themeStore, initTheme, toggleTheme } from '@/stores/theme';
 import { Search, Sun, Moon, Menu } from 'lucide-react';
 import { url } from '@/lib/paths';
 import MobileMenu from './MobileMenu';
+import BrandLogo from '../ui/BrandLogo';
 
 interface NavbarProps {
   currentPath: string;
@@ -39,75 +40,79 @@ export default function Navbar({ currentPath }: NavbarProps) {
         className="sticky top-0 z-40 transition-all duration-200"
         style={{
           background: scrolled ? 'var(--color-surface)' : 'var(--color-bg)',
-          borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',
-          backdropFilter: scrolled ? 'blur(12px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
+          borderBottom: '1px solid var(--color-border)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
         }}
       >
-        <div className="container-content flex items-center h-16 lg:h-20 gap-6 lg:gap-8">
+        <div className="container-content flex items-center justify-between h-16 lg:h-20 gap-4 lg:gap-8">
           {/* Logo */}
           <a
             href={url('/')}
-            className="flex items-center gap-2.5 shrink-0 font-bold tracking-[0.2em] text-sm lg:text-base"
-            style={{ color: 'var(--color-accent)' }}
+            className="group flex items-center shrink-0 cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
             aria-label="SAVRIVO — Home"
           >
-            {/* Inline S mark */}
-            <svg width="32" height="32" viewBox="0 0 48 56" fill="none" aria-hidden="true" className="shrink-0">
-              <path
-                d="M32 6 C22 6 14 11 14 19 C14 25 19 28 26 30 L30 31.5 C38 33.5 44 37 44 44 C44 51 37 50 30 50 C23 50 16 47 14 41"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <circle cx="28" cy="19" r="3" fill="var(--color-accent-2)" />
-            </svg>
-            <span>SAVRIVO</span>
+            <BrandLogo size={34} />
           </a>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1.5 flex-1" aria-label="Main navigation">
-            {navLinks.map(({ href, label }) => (
-              <a
-                key={href}
-                href={url(href)}
-                className="px-3.5 py-2 lg:px-4 lg:py-2.5 text-sm lg:text-[15px] rounded-lg transition-colors duration-150"
-                style={{
-                  color: isActive(href) ? 'var(--color-accent)' : 'var(--color-text-2)',
-                  background: isActive(href) ? 'var(--color-overlay)' : 'transparent',
-                  fontWeight: isActive(href) ? '600' : '500',
-                }}
-              >
-                {label}
-              </a>
-            ))}
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2 flex-1 justify-center" aria-label="Main navigation">
+            {navLinks.map(({ href, label }) => {
+              const active = isActive(href);
+              return (
+                <a
+                  key={href}
+                  href={url(href)}
+                  className={`relative px-3.5 lg:px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                    active
+                      ? 'shadow-sm'
+                      : 'hover:text-[var(--color-text-1)] hover:bg-[var(--color-overlay)]'
+                  }`}
+                  style={{
+                    color: active ? 'var(--color-accent)' : 'var(--color-text-2)',
+                    background: active ? 'var(--color-accent-badge)' : 'transparent',
+                  }}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {label}
+                  {active && (
+                    <span
+                      className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3.5 h-[2px] rounded-full transition-all"
+                      style={{ background: 'var(--color-accent)' }}
+                      aria-hidden="true"
+                    />
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-2 ml-auto">
+          {/* Actions: Search, Theme, Mobile toggle */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <a
               href={url('/search')}
-              className="p-2.5 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
-              style={{ color: 'var(--color-text-2)' }}
-              aria-label="Search"
+              className="p-2.5 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors hover:bg-[var(--color-overlay)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--color-text-1)' }}
+              aria-label="Search SAVRIVO"
             >
-              <Search size={19} />
+              <Search size={20} />
             </a>
+
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
-              style={{ color: 'var(--color-text-2)' }}
+              className="p-2.5 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors hover:bg-[var(--color-overlay)] cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--color-text-1)' }}
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
-              {theme === 'light' ? <Moon size={19} /> : <Sun size={19} />}
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
+
             {/* Mobile menu toggle */}
             <button
-              className="md:hidden p-2.5 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
-              style={{ color: 'var(--color-text-2)' }}
+              className="md:hidden p-2.5 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-[var(--color-overlay)] cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--color-text-1)' }}
               onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
+              aria-label="Open navigation menu"
               aria-expanded={menuOpen}
             >
               <Menu size={22} />
@@ -116,7 +121,7 @@ export default function Navbar({ currentPath }: NavbarProps) {
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* Mobile Drawer */}
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
@@ -126,4 +131,3 @@ export default function Navbar({ currentPath }: NavbarProps) {
     </>
   );
 }
-

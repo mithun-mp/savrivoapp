@@ -54,7 +54,7 @@ export default function SearchBar({
         onChange={e => setValue(e.target.value)}
         placeholder={placeholder}
         aria-label="Search SAVRIVO"
-        className="w-full pl-12 pr-11 py-3.5 md:py-4 rounded-xl text-sm md:text-base outline-none transition-all duration-150 shadow-sv-sm"
+        className="w-full pl-12 pr-11 py-3.5 md:py-4 rounded-xl text-sm md:text-base outline-none transition-all duration-200 focus:ring-2 focus:ring-[var(--color-accent)]/20 shadow-sm"
         style={{
           background: 'var(--color-surface)',
           border: '1.5px solid var(--color-border)',
@@ -67,7 +67,7 @@ export default function SearchBar({
         <button
           type="button"
           onClick={() => setValue('')}
-          className="absolute right-3 p-1.5 rounded-lg min-w-[36px] min-h-[36px] flex items-center justify-center"
+          className="absolute right-3 p-1.5 rounded-lg min-w-[36px] min-h-[36px] flex items-center justify-center btn-tactile hover:text-[var(--color-text-1)]"
           style={{ color: 'var(--color-text-2)' }}
           aria-label="Clear search"
         >

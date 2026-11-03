@@ -17,7 +17,15 @@ export function initTheme(): void {
 export function toggleTheme(): void {
   const next: Theme = themeStore.get() === 'light' ? 'dark' : 'light';
   themeStore.set(next);
-  document.documentElement.setAttribute('data-theme', next);
+
+  if (typeof document !== 'undefined') {
+    document.documentElement.classList.add('theme-transition');
+    document.documentElement.setAttribute('data-theme', next);
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition');
+    }, 280);
+  }
+
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem(STORAGE_KEY, next);
   }

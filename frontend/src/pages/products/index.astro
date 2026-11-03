@@ -1,7 +1,7 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import ProductsBrowser from '../../components/product/ProductsBrowser';
-import { url } from '../../lib/paths';
+import Breadcrumb from '../../components/ui/Breadcrumb';
 import { API_BASE } from '../../lib/api';
 import type { Category } from '../../types';
 
@@ -13,25 +13,41 @@ try {
 ---
 
 <MainLayout
-  title="All Products — SAVRIVO"
-  description="Browse and discover curated products across categories. Filter by brand, category, and more."
+  title="Curated Products Catalog — SAVRIVO"
+  description="Browse and discover expertly vetted products across technology, lifestyle, and home. Filter by category, brand, and verified deals."
   canonicalUrl="https://savrivo.in/products"
 >
-  <div class="section">
+  <div class="section py-8 sm:py-12">
     <div class="container-content">
-      <div class="mb-10">
-        <nav class="text-xs mb-4" style="color: var(--color-text-2)">
-          <a href={url('/')} class="hover:underline">Home</a>
-          <span class="mx-2">›</span>
-          <span style="color: var(--color-text-1)">Products</span>
-        </nav>
-        <h1 class="font-display text-3xl md:text-4xl font-bold mb-3" style="color: var(--color-text-1)">
-          All Products
-        </h1>
-        <p class="text-base" style="color: var(--color-text-2)">
-          Curated picks across categories — find what suits you.
-        </p>
+      {/* Header & Breadcrumb */}
+      <div class="mb-8 md:mb-12">
+        <div class="mb-4">
+          <Breadcrumb
+            client:load
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Products' },
+            ]}
+          />
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+              style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+              <span>Precision Discovery</span>
+            </div>
+            <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight" style="color: var(--color-text-1)">
+              Curated Catalog
+            </h1>
+          </div>
+
+          <p class="text-sm sm:text-base max-w-md" style="color: var(--color-text-2)">
+            Every recommendation is independently vetted for quality, durability, and true value in the Indian market.
+          </p>
+        </div>
       </div>
+
       <ProductsBrowser initialCategories={categories} client:load />
     </div>
   </div>

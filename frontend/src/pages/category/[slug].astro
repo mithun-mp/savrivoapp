@@ -2,6 +2,7 @@
 import MainLayout from '../../layouts/MainLayout.astro';
 import ProductGrid from '../../components/product/ProductGrid';
 import GuideCard from '../../components/guide/GuideCard';
+import Breadcrumb from '../../components/ui/Breadcrumb';
 import { url } from '../../lib/paths';
 import { API_BASE } from '../../lib/api';
 import type { Category, Product, Guide } from '../../types';
@@ -30,23 +31,83 @@ try {
 ---
 
 <MainLayout
-  title={category.seoTitle || `${category.name} — SAVRIVO`}
-  description={category.seoDescription || category.description || ''}
+  title={category.seoTitle || `${category.name} Curated Picks — SAVRIVO`}
+  description={category.seoDescription || category.description || `Explore the finest curated ${category.name} available in India.`}
   canonicalUrl={`https://savrivo.in/category/${category.slug}`}
 >
-  <div class="section">
+  <div class="section py-8 sm:py-12">
     <div class="container-content">
-      <nav class="text-xs mb-6" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <a href={url('/categories')} class="hover:underline">Categories</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">{category.name}</span>
-      </nav>
-      <h1 class="font-display text-3xl md:text-4xl font-bold mb-3" style="color: var(--color-text-1)">{category.name}</h1>
-      {category.description && <p class="text-base mb-10" style="color: var(--color-text-2)">{category.description}</p>}
-      <ProductGrid products={products} emptyTitle={`No products in ${category.name} yet`} emptyDescription="Check back soon for curated picks." />
+      {/* Breadcrumb Navigation */}
+      <div class="mb-6">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Categories', href: '/categories' },
+            { label: category.name },
+          ]}
+        />
+      </div>
+
+      {/* Category Hero Header */}
+      <div class="mb-10 sm:mb-14 pb-8 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <span>Category Discovery</span>
+          <span class="w-1 h-1 rounded-full bg-current opacity-60"></span>
+          <span class="tabular-nums">{products.length} {products.length === 1 ? 'Product' : 'Products'}</span>
+        </div>
+
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4" style="color: var(--color-text-1)">
+          {category.name}
+        </h1>
+
+        {category.description && (
+          <p class="text-base sm:text-lg max-w-2xl leading-relaxed" style="color: var(--color-text-2)">
+            {category.description}
+          </p>
+        )}
+      </div>
+
+      {/* Products Grid */}
+      <div class="mb-16">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="font-display text-lg sm:text-xl font-bold" style="color: var(--color-text-1)">
+            Top Recommended in {category.name}
+          </h2>
+          <a
+            href={url(`/products?category=${category._id}`)}
+            className="text-xs sm:text-sm font-semibold hover:underline"
+            style="color: var(--color-accent)"
+          >
+            Filter & Sort All
+          </a>
+        </div>
+
+        <ProductGrid
+          products={products}
+          emptyTitle={`No products currently listed in ${category.name}`}
+          emptyDescription="We are in the process of vetting recommendations for this category. Check back soon."
+        />
+      </div>
+
+      {/* Related Buying Guides */}
       {guides.length > 0 && (
-        <section class="mt-16">
-          <h2 class="font-display text-xl font-bold mb-6" style="color: var(--color-text-1)">Related Buying Guides</h2>
+        <section class="mt-16 pt-12 border-t" style={{ borderColor: 'var(--color-border)' }}>
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider mb-1" style="color: var(--color-accent)">
+                <span>Expert Advice</span>
+              </div>
+              <h2 class="font-display text-2xl sm:text-3xl font-bold" style="color: var(--color-text-1)">
+                Related Buying Guides
+              </h2>
+            </div>
+            <a href={url('/guides')} class="text-xs sm:text-sm font-semibold hover:underline" style="color: var(--color-accent)">
+              All Guides →
+            </a>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {guides.map(g => <GuideCard guide={g} />)}
           </div>

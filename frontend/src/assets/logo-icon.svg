@@ -1,7 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="SAVRIVO">
-  <path d="M32 8 C24 8 16 12 16 20 C16 26 21 29 28 31 L32 32 C39 34 44 37 44 43 C44 49 38 48 32 48 C26 48 20 45 18 40" 
-        stroke="#1C4532" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-  <circle cx="30" cy="20" r="3" fill="#C9A96E" opacity="0.8"/>
-  <circle cx="34" cy="40" r="3" fill="#1C4532" opacity="0.5"/>
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SAVRIVO Icon">
+  <path d="M48 11L53 16C53 16 51 25 43 28L21 36C13 39 11 48 11 48L16 53C24 53 35 53 45 47C53 42 53 33 53 33M16 53L11 48C11 48 13 39 21 36L43 28C51 25 53 16 53 16L48 11C40 11 29 11 19 17C11 22 11 31 11 31"
+        stroke="#FF5A1F" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="32,24 38,32 32,40 26,32" fill="#FF5A1F"/>
 </svg>
-

@@ -1,10 +1,12 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import ProductCard from '../../components/product/ProductCard';
+import Breadcrumb from '../../components/ui/Breadcrumb';
 import AffiliateDisclosure from '../../components/ui/AffiliateDisclosure';
 import { url } from '../../lib/paths';
-import { API_BASE } from '../../lib/api';
+import { API_BASE, formatDate } from '../../lib/api';
 import type { Guide, Product } from '../../types';
+import { BookOpen, User, Calendar, ArrowLeft } from 'lucide-react';
 
 export async function getStaticPaths() {
   try {
@@ -19,8 +21,8 @@ const { guide } = Astro.props as { guide: Guide };
 ---
 
 <MainLayout
-  title={guide.seoTitle || `${guide.title} | SAVRIVO Buying Guide`}
-  description={guide.seoDescription || guide.excerpt || ''}
+  title={guide.seoTitle || `${guide.title} — Buying Guide | SAVRIVO`}
+  description={guide.seoDescription || guide.excerpt || `In-depth buying advice and recommendations for ${guide.title}.`}
   canonicalUrl={`https://savrivo.in/guides/${guide.slug}`}
   ogImage={guide.coverImage}
   ogType="article"
@@ -30,51 +32,131 @@ const { guide } = Astro.props as { guide: Guide };
     "headline": guide.title,
     "description": guide.excerpt,
     "image": guide.coverImage,
-    "author": { "@type": "Organization", "name": guide.author || "Savrivo Editorial" },
+    "author": { "@type": "Organization", "name": guide.author || "SAVRIVO Editorial" },
     "publisher": { "@type": "Organization", "name": "SAVRIVO", "url": "https://savrivo.in" },
     "datePublished": guide.publishedAt,
   }}
 >
-  <div class="section">
+  <div class="section py-8 sm:py-12">
     <div class="container-content">
-      <nav class="text-xs mb-6" style="color: var(--color-text-2)">
-        <a href={url('/')} class="hover:underline">Home</a> <span class="mx-2">›</span>
-        <a href={url('/guides')} class="hover:underline">Buying Guides</a> <span class="mx-2">›</span>
-        <span style="color: var(--color-text-1)">{guide.title}</span>
-      </nav>
+      {/* Breadcrumb Navigation */}
+      <div class="mb-8">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Buying Guides', href: '/guides' },
+            { label: guide.title },
+          ]}
+        />
+      </div>
 
-      <div class="max-w-3xl mx-auto">
+      <article class="max-w-3xl mx-auto">
+        {/* Category Pill */}
         {guide.category && (
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4" style="color: var(--color-accent)">{guide.category}</p>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4"
+            style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+            <span>{guide.category}</span>
+          </div>
         )}
-        <h1 class="font-display text-3xl md:text-4xl font-bold mb-4 leading-snug" style="color: var(--color-text-1)">{guide.title}</h1>
-        {guide.excerpt && <p class="text-lg mb-6 leading-relaxed" style="color: var(--color-text-2)">{guide.excerpt}</p>}
-        <div class="flex items-center gap-4 text-sm mb-8 pb-8" style="color: var(--color-text-2); border-bottom: 1px solid var(--color-border)">
-          <span>By {guide.author || 'Savrivo Editorial'}</span>
-          {guide.publishedAt && <span>{new Date(guide.publishedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>}
+
+        {/* Title */}
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-5 leading-tight tracking-tight" style="color: var(--color-text-1)">
+          {guide.title}
+        </h1>
+
+        {/* Excerpt */}
+        {guide.excerpt && (
+          <p class="text-lg sm:text-xl mb-6 leading-relaxed" style="color: var(--color-text-2)">
+            {guide.excerpt}
+          </p>
+        )}
+
+        {/* Editorial Byline */}
+        <div
+          class="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm mb-8 pb-6 border-b"
+          style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-2)' }}
+        >
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs"
+              style="background: var(--color-accent-badge); color: var(--color-accent)">
+              <User size={14} />
+            </div>
+            <span class="font-semibold" style="color: var(--color-text-1)">{guide.author || 'SAVRIVO Editorial'}</span>
+          </div>
+
+          {guide.publishedAt && (
+            <div class="flex items-center gap-1.5">
+              <Calendar size={14} />
+              <span>{formatDate(guide.publishedAt)}</span>
+            </div>
+          )}
+
+          <div class="flex items-center gap-1.5 ml-auto">
+            <BookOpen size={14} class="text-[var(--color-accent)]" />
+            <span class="font-medium">Independent Review</span>
+          </div>
         </div>
 
+        {/* Featured Cover Photo */}
         {guide.coverImage && (
-          <img src={guide.coverImage} alt={`Cover for ${guide.title}`} class="w-full rounded-xl mb-8 object-cover" style="max-height: 400px" loading="eager" />
+          <div class="mb-10 rounded-2xl overflow-hidden border shadow-sv-sm" style="border-color: var(--color-border); background: var(--color-overlay)">
+            <img
+              src={guide.coverImage}
+              alt={`Cover for ${guide.title}`}
+              class="w-full max-h-[460px] object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
         )}
 
-        <AffiliateDisclosure />
+        <div class="mb-8">
+          <AffiliateDisclosure />
+        </div>
 
+        {/* Guide Content Body */}
         {guide.body ? (
-          <div class="prose prose-base max-w-none mt-8" style="color: var(--color-text-1)" set:html={guide.body} />
+          <div
+            class="prose prose-base sm:prose-lg max-w-none leading-relaxed space-y-6"
+            style="color: var(--color-text-2)"
+            set:html={guide.body}
+          />
         ) : (
-          <p class="mt-8 text-sm" style="color: var(--color-text-2)">Guide content coming soon.</p>
+          <div class="p-8 rounded-2xl border text-center my-8" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+            <p class="text-sm" style="color: var(--color-text-2)">Full guide content is currently being prepared by our editorial team.</p>
+          </div>
         )}
 
+        {/* Products Mentioned Grid */}
         {guide.relatedProducts && guide.relatedProducts.length > 0 && (
-          <section class="mt-12">
-            <h2 class="font-display text-xl font-bold mb-6" style="color: var(--color-text-1)">Products Mentioned</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <section class="mt-14 pt-10 border-t" style={{ borderColor: 'var(--color-border)' }}>
+            <div class="mb-6">
+              <span class="text-xs font-bold uppercase tracking-wider block mb-1" style="color: var(--color-accent)">
+                Curated Recommendations
+              </span>
+              <h2 class="font-display text-2xl font-bold" style="color: var(--color-text-1)">
+                Featured Products in This Guide
+              </h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {(guide.relatedProducts as Product[]).map(p => <ProductCard product={p} />)}
             </div>
           </section>
         )}
-      </div>
+
+        {/* Back Link */}
+        <div class="mt-12 pt-8 border-t flex justify-between items-center" style={{ borderColor: 'var(--color-border)' }}>
+          <a
+            href={url('/guides')}
+            class="inline-flex items-center gap-2 text-sm font-bold transition-transform hover:-translate-x-1"
+            style="color: var(--color-accent)"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to All Buying Guides</span>
+          </a>
+        </div>
+      </article>
     </div>
   </div>
 </MainLayout>

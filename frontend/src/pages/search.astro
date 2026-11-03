@@ -1,20 +1,40 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import SearchResults from '../components/search/SearchResults';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 const q = Astro.url.searchParams.get('q') || '';
 ---
 
 <MainLayout
-  title={q ? `Search: "${q}" — SAVRIVO` : 'Search — SAVRIVO'}
-  description="Search SAVRIVO for products, buying guides, and categories."
+  title={q ? `Search: "${q}" — SAVRIVO Discovery` : 'Search Product Discoveries — SAVRIVO'}
+  description="Instant discovery across curated tech, lifestyle, and home gear on SAVRIVO."
   noindex={true}
 >
-  <div class="section">
-    <div class="container-content max-w-3xl">
-      <h1 class="font-display text-2xl font-bold mb-8" style="color: var(--color-text-1)">
-        {q ? `Results for "${q}"` : 'Search SAVRIVO'}
-      </h1>
+  <div class="section py-8 sm:py-12">
+    <div class="container-content max-w-5xl">
+      {/* Breadcrumb */}
+      <div class="mb-6">
+        <Breadcrumb
+          client:load
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Search' },
+          ]}
+        />
+      </div>
+
+      {/* Header */}
+      <div class="mb-8">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+          style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)">
+          <span>Live Search</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight" style="color: var(--color-text-1)">
+          {q ? `Discoveries for "${q}"` : 'Search the Collection'}
+        </h1>
+      </div>
+
       <SearchResults initialQuery={q} client:load />
     </div>
   </div>
