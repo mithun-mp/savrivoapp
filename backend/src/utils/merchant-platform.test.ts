@@ -155,7 +155,7 @@ describe('SAVRIVO Strict Merchant-Platform Isolation', () => {
   describe('isOfferAllowedForProduct & filterOffersForProduct', () => {
     const amazonProduct = {
       _id: 'prod-001',
-      title: 'Sony WH-1000XM5',
+      title: 'Blaupunkt BH61 Moksha Headphones',
       sourcePlatform: 'amazon',
       canonicalUrl: 'https://www.amazon.in/dp/B0BDK62PDX',
     };
@@ -182,8 +182,8 @@ describe('SAVRIVO Strict Merchant-Platform Isolation', () => {
       _id: 'offer-fkrt',
       productId: 'prod-001',
       merchantId: { slug: 'flipkart', name: 'Flipkart' },
-      productUrl: 'https://www.flipkart.com/sony-wh-1000xm5/p/itm123',
-      affiliateUrl: 'https://www.flipkart.com/sony-wh-1000xm5/p/itm123?affid=savrivo',
+      productUrl: 'https://www.flipkart.com/blaupunkt-bh61/p/itm123',
+      affiliateUrl: 'https://www.flipkart.com/blaupunkt-bh61/p/itm123?affid=savrivo',
       currentPrice: 57999,
     };
 

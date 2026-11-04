@@ -25,7 +25,8 @@ export function isRealProduct(p: any): boolean {
   // Exclude removed dummy/sample entries
   if (slug === 'apple-iphone-14-128-gb-blue' || slug === 'apple-iphone-14' || slug.includes('apple-iphone-14')) return false;
   if (slug === 'blaupunkt-bh61-moksha-anc-wireless-over-ear-headphones' || slug === 'demo-premium-wireless-headphones') return false;
-  if (p._id === '6ae9f9cc02bf6219500af801' || p._id === '6ae9f9cc02bf6219500af803') return false;
+  if (slug === 'sony-wh-1000xm5-wireless-noise-cancelling-headphones' || slug === 'sony-wh-1000xm5' || slug.includes('sony-wh-1000xm5')) return false;
+  if (p._id === '6ae9f9cc02bf6219500af801' || p._id === '6ae9f9cc02bf6219500af802' || p._id === '6ae9f9cc02bf6219500af803') return false;
 
   return Boolean(p._id && p.title && p.slug);
 }

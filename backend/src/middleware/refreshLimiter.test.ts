@@ -61,7 +61,7 @@ describe('Product Refresh Security & Concurrency Guard', () => {
   }
 
   it('allows public request to proceed when within limits and acquires lock', () => {
-    const { req, res, next, getNextCalled } = createMockReqRes({ slug: 'sony-wh-1000xm5' });
+    const { req, res, next, getNextCalled } = createMockReqRes({ slug: 'blaupunkt-bh61-moksha' });
     productRefreshGuard(req, res, next);
 
     assert.equal(getNextCalled(), true);
@@ -72,12 +72,12 @@ describe('Product Refresh Security & Concurrency Guard', () => {
   });
 
   it('rejects concurrent in-flight refresh for the same product', () => {
-    const call1 = createMockReqRes({ slug: 'sony-wh-1000xm5' });
+    const call1 = createMockReqRes({ slug: 'blaupunkt-bh61-moksha' });
     productRefreshGuard(call1.req, call1.res, call1.next);
     assert.equal(call1.getNextCalled(), true);
 
     // Call 2 arrives while call 1 is still in flight (not finished)
-    const call2 = createMockReqRes({ slug: 'sony-wh-1000xm5' });
+    const call2 = createMockReqRes({ slug: 'blaupunkt-bh61-moksha' });
     productRefreshGuard(call2.req, call2.res, call2.next);
 
     assert.equal(call2.getNextCalled(), false);
@@ -89,14 +89,14 @@ describe('Product Refresh Security & Concurrency Guard', () => {
   });
 
   it('enforces 5-minute cooldown for subsequent public refresh calls on same product', () => {
-    const call1 = createMockReqRes({ slug: 'sony-wh-1000xm5' });
+    const call1 = createMockReqRes({ slug: 'blaupunkt-bh61-moksha' });
     productRefreshGuard(call1.req, call1.res, call1.next);
     assert.equal(call1.getNextCalled(), true);
     call1.res.statusCode = 200;
     call1.res.emit('finish'); // finishes and records refresh timestamp
 
     // Subsequent call immediately after
-    const call2 = createMockReqRes({ slug: 'sony-wh-1000xm5' });
+    const call2 = createMockReqRes({ slug: 'blaupunkt-bh61-moksha' });
     productRefreshGuard(call2.req, call2.res, call2.next);
 
     assert.equal(call2.getNextCalled(), false);
@@ -107,7 +107,7 @@ describe('Product Refresh Security & Concurrency Guard', () => {
 
   it('allows authenticated admin to bypass cooldown and concurrency limits', () => {
     // First, simulate a public request that finished and put product into cooldown
-    const call1 = createMockReqRes({ slug: 'sony-wh-1000xm5' });
+    const call1 = createMockReqRes({ slug: 'blaupunkt-bh61-moksha' });
     productRefreshGuard(call1.req, call1.res, call1.next);
     call1.res.statusCode = 200;
     call1.res.emit('finish');
@@ -120,7 +120,7 @@ describe('Product Refresh Security & Concurrency Guard', () => {
 
     // Admin request arrives during cooldown
     const adminCall = createMockReqRes({
-      slug: 'sony-wh-1000xm5',
+      slug: 'blaupunkt-bh61-moksha',
       authHeader: `Bearer ${adminToken}`,
     });
     productRefreshGuard(adminCall.req, adminCall.res, adminCall.next);
@@ -132,7 +132,7 @@ describe('Product Refresh Security & Concurrency Guard', () => {
 
   it('rejects invalid authentication bearer tokens with 401', () => {
     const invalidAuthCall = createMockReqRes({
-      slug: 'sony-wh-1000xm5',
+      slug: 'blaupunkt-bh61-moksha',
       authHeader: 'Bearer invalid-token-xyz',
     });
     productRefreshGuard(invalidAuthCall.req, invalidAuthCall.res, invalidAuthCall.next);

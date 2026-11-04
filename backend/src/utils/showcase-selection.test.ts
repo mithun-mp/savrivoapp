@@ -27,7 +27,8 @@ function isRealProduct(p: any): boolean {
   // Exclude removed dummy/sample entries
   if (slug === 'apple-iphone-14-128-gb-blue' || slug === 'apple-iphone-14' || slug.includes('apple-iphone-14')) return false;
   if (slug === 'blaupunkt-bh61-moksha-anc-wireless-over-ear-headphones' || slug === 'demo-premium-wireless-headphones') return false;
-  if (p._id === '6ae9f9cc02bf6219500af801' || p._id === '6ae9f9cc02bf6219500af803') return false;
+  if (slug === 'sony-wh-1000xm5-wireless-noise-cancelling-headphones' || slug === 'sony-wh-1000xm5' || slug.includes('sony-wh-1000xm5')) return false;
+  if (p._id === '6ae9f9cc02bf6219500af801' || p._id === '6ae9f9cc02bf6219500af802' || p._id === '6ae9f9cc02bf6219500af803') return false;
 
   return Boolean(p._id && p.title && p.slug);
 }
@@ -112,15 +113,16 @@ describe('Homepage Showcase Dynamic Product Selection', () => {
 
     const result = selectShowcaseProducts(demoProducts);
     assert.equal(result.all.length, 0);
+    assert.equal(isRealProduct({ _id: '6ae9f9cc02bf6219500af802', title: 'Sony WH-1000XM5 Wireless Headphones', slug: 'sony-wh-1000xm5-wireless-noise-cancelling-headphones' }), false);
   });
 
   it('handles dynamic count of 1 product without padding or duplicating', () => {
     const products: TestProduct[] = [
       {
         _id: 'p1',
-        title: 'Sony WH-1000XM5',
-        slug: 'sony-wh-1000xm5',
-        brand: 'Sony',
+        title: 'Blaupunkt BH61 Moksha Headphones',
+        slug: 'blaupunkt-bh61-moksha-true-active-noise-cancellation-wireless-headphones',
+        brand: 'Blaupunkt',
         featured: true,
         status: 'published',
         createdAt: '2026-11-04T10:00:00Z',

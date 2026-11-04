@@ -11,13 +11,13 @@ describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
     it('resolves product by slug and enforces strict merchant platform isolation on offers', async () => {
       const mockProduct = {
         _id: '65f01234567890abcdef0001',
-        title: 'Sony WH-1000XM5 Wireless Headphones',
-        slug: 'sony-wh-1000xm5-wireless-headphones',
-        brand: 'Sony',
+        title: 'Blaupunkt BH61 Moksha ANC Headphones',
+        slug: 'blaupunkt-bh61-moksha-anc-headphones',
+        brand: 'Blaupunkt',
         status: 'published',
         sourcePlatform: 'amazon',
-        images: [{ url: 'https://m.media-amazon.com/images/I/61bK6PMOC3L.jpg', alt: 'Sony XM5' }],
-        highlights: ['Industry-leading noise cancellation', '30-hour battery life'],
+        images: [{ url: 'https://m.media-amazon.com/images/I/61LzQ2gGyDL._SL1500_.jpg', alt: 'Blaupunkt BH61' }],
+        highlights: ['True Active Noise Cancellation', '30-hour battery life'],
       };
 
       const mockOffers = [
@@ -25,8 +25,8 @@ describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
           _id: '65f01234567890abcdef1001',
           productId: '65f01234567890abcdef0001',
           merchantId: { name: 'Amazon India', slug: 'amazon-india', logoUrl: 'https://amazon.in/logo.png' },
-          productUrl: 'https://www.amazon.in/dp/B09XS7JWHH',
-          affiliateUrl: 'https://www.amazon.in/dp/B09XS7JWHH?tag=savrivo-21',
+          productUrl: 'https://www.amazon.in/dp/B08sWmK9f',
+          affiliateUrl: 'https://www.amazon.in/dp/B08sWmK9f?tag=savrivo-21',
           currentPrice: 26990,
           originalPrice: 34990,
           currency: 'INR',
@@ -37,8 +37,8 @@ describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
           _id: '65f01234567890abcdef1002',
           productId: '65f01234567890abcdef0001',
           merchantId: { name: 'Flipkart', slug: 'flipkart', logoUrl: 'https://flipkart.com/logo.png' },
-          productUrl: 'https://www.flipkart.com/sony-wh-1000xm5/p/itm123',
-          affiliateUrl: 'https://www.flipkart.com/sony-wh-1000xm5/p/itm123?affid=savrivo',
+          productUrl: 'https://www.flipkart.com/blaupunkt-bh61/p/itm123',
+          affiliateUrl: 'https://www.flipkart.com/blaupunkt-bh61/p/itm123?affid=savrivo',
           currentPrice: 27990,
           originalPrice: 34990,
           currency: 'INR',
@@ -65,7 +65,7 @@ describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
       })) as any;
 
       try {
-        const result = await getProductBySlug('sony-wh-1000xm5-wireless-headphones');
+        const result = await getProductBySlug('blaupunkt-bh61-moksha-anc-headphones');
         assert.ok(result);
         assert.equal(result.title, mockProduct.title);
         assert.equal(result.slug, mockProduct.slug);
