@@ -5,6 +5,7 @@ import { sendSuccess, sendError } from '../utils/response';
 export async function handleOfferRedirect(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const offerId = req.params.offerId;
+    const productId = (req.query.productId as string) || (req.query.product as string);
     const campaign = (req.query.campaign as string) || (req.query.ref as string);
     const referrer = req.headers.referer || req.headers.referrer as string;
     const userAgent = req.headers['user-agent'];
@@ -12,6 +13,7 @@ export async function handleOfferRedirect(req: Request, res: Response, next: Nex
 
     const result = await trackOfferClick({
       offerId,
+      productId,
       referrer,
       userAgent,
       clientIp,
@@ -42,13 +44,14 @@ export async function handleOfferRedirect(req: Request, res: Response, next: Nex
 
 export async function handleTrackClick(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { offerId, campaign } = req.body || {};
+    const { offerId, productId, campaign } = req.body || {};
     const referrer = req.headers.referer || req.headers.referrer as string;
     const userAgent = req.headers['user-agent'];
     const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip;
 
     const result = await trackOfferClick({
       offerId,
+      productId,
       referrer,
       userAgent,
       clientIp,
@@ -60,9 +63,8 @@ export async function handleTrackClick(req: Request, res: Response, next: NextFu
       return;
     }
 
-    sendSuccess(res, { targetUrl: result.targetUrl }, 200, 'Click recorded successfully');
+    sendSuccess(res, { targetUrl: result.targetUrl }, 200, 'Click recorded');
   } catch (err) {
     next(err);
   }
 }
-

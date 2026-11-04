@@ -60,6 +60,10 @@ export interface Product {
   seoTitle?: string;
   seoDescription?: string;
   canonicalUrl?: string;
+  sourceMerchantId?: Merchant | string;
+  sourcePlatform?: string;
+  sourceMerchant?: Merchant;
+  offers?: Offer[];
   createdAt: string;
   updatedAt: string;
 }
@@ -88,38 +92,36 @@ export interface Offer {
   sourceType: 'manual' | 'official_api' | 'authorized_feed';
   offerLastVerifiedAt?: string;
   status: 'active' | 'expired' | 'disabled';
+  trackingLabel?: string;
 }
 
 export interface Guide {
   _id: string;
   title: string;
   slug: string;
-  excerpt?: string;
-  body?: string;
+  excerpt: string;
+  body: string;
+  featuredImage?: string;
   coverImage?: string;
-  author: string;
+  categoryId?: Category | string;
   category?: string;
-  relatedProducts?: Product[];
-  status: 'draft' | 'published' | 'archived';
+  author?: string;
+  status: 'draft' | 'published';
+  tags: string[];
   publishedAt?: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface SearchResults {
   products: Product[];
   categories: Category[];
   guides: Guide[];
+  total: number;
 }
 
-export interface DashboardStats {
-  stats: {
-    totalProducts: number;
-    publishedProducts: number;
-    draftProducts: number;
-    totalCategories: number;
-    activeMerchants: number;
-    expiredOffers: number;
-  };
-  recentProducts: Pick<Product, '_id' | 'title' | 'slug' | 'status' | 'createdAt'>[];
+export interface FilterOptions {
+  categories: Category[];
+  brands: string[];
+  priceRange: { min: number; max: number };
 }
-

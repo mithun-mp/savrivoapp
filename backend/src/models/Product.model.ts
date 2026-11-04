@@ -29,6 +29,8 @@ export interface IProduct extends Document {
   seoTitle?: string;
   seoDescription?: string;
   canonicalUrl?: string;
+  sourceMerchantId?: Types.ObjectId;
+  sourcePlatform?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,12 +54,15 @@ const productSchema = new Schema<IProduct>(
     seoTitle: { type: String },
     seoDescription: { type: String },
     canonicalUrl: { type: String },
+    sourceMerchantId: { type: Schema.Types.ObjectId, ref: 'Merchant' },
+    sourcePlatform: { type: String, lowercase: true, trim: true },
   },
   { timestamps: true }
 );
 
 productSchema.index({ status: 1, featured: 1 });
 productSchema.index({ categoryId: 1, status: 1 });
+productSchema.index({ sourcePlatform: 1, status: 1 });
 productSchema.index({ createdAt: -1 });
 productSchema.index({ title: 'text', shortDescription: 'text', brand: 'text', searchKeywords: 'text' });
 

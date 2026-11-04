@@ -32,6 +32,11 @@
   --color-accent:            #FF5A1F; /* Electric Ember 500 */
   --color-accent-hover:      #E6450A; /* Ember 600 */
   --color-accent-2:          #F59E0B; /* Amber 500 for rating stars & highlights */
+  --color-accent-3:          #0D9488; /* Electric Teal 600 — Third Brand Accent */
+  --color-accent-3-hover:    #0F766E; /* Electric Teal 700 */
+  --color-accent-3-badge:    #F0FDFA; /* Teal 50 tint */
+  --color-accent-3-text:     #115E59; /* Teal 800 (WCAG 2.2 AA compliant) */
+  --color-accent-3-glow:     rgba(13, 148, 136, 0.22);
   --color-accent-badge:      #FFF2EC; /* Ember 50 tint */
   --color-accent-badge-text: #C03403; /* Ember 700 (WCAG AA 5.1:1 on #FFF2EC) */
   --color-curated-badge:     #FEF3C7; /* Amber 100 ("Editor's Pick") */
@@ -104,6 +109,11 @@
   --color-accent:            #FF5A1F; /* Electric Ember 500 */
   --color-accent-hover:      #FF7E4D; /* Ember 400 */
   --color-accent-2:          #F59E0B; /* Amber 500 */
+  --color-accent-3:          #14B8A6; /* Electric Teal 500 (Radiant on obsidian) */
+  --color-accent-3-hover:    #2DD4BF; /* Teal 400 */
+  --color-accent-3-badge:    rgba(20, 184, 166, 0.15);
+  --color-accent-3-text:     #5EEAD4; /* Teal 300 (WCAG AA > 9:1) */
+  --color-accent-3-glow:     rgba(20, 184, 166, 0.32);
   --color-accent-badge:      rgba(255, 90, 31, 0.14);
   --color-accent-badge-text: #FFA785; /* Ember 300 (WCAG AA 9.2:1 on #181920) */
   --color-curated-badge:     rgba(245, 158, 11, 0.15);

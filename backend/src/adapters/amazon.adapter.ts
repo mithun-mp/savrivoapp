@@ -60,6 +60,35 @@ export class AmazonAdapter implements MerchantAdapter {
   }
 
   /**
+   * Constructs the clean canonical Amazon product detail page URL using the ASIN.
+   */
+  public generateCanonicalUrl(asinOrUrl: string): string {
+    const asin = this.extractAsin(asinOrUrl);
+    const marketplace = config.amazon.marketplace || this.defaultMarketplace;
+    if (asin) {
+      return `https://${marketplace}/dp/${asin}`;
+    }
+    try {
+      const parsed = new URL(asinOrUrl);
+      parsed.search = '';
+      parsed.hash = '';
+      return parsed.toString();
+    } catch {
+      return asinOrUrl;
+    }
+  }
+
+  /**
+   * Generates a similar-product search URL for the Find Similar feature on Amazon.
+   */
+  public generateSearchUrl(query: string, options?: { customTag?: string }): string {
+    const tag = options?.customTag || config.amazon.associateTag;
+    const marketplace = config.amazon.marketplace || this.defaultMarketplace;
+    const base = `https://${marketplace}/s?k=${encodeURIComponent(query.trim())}`;
+    return tag ? `${base}&tag=${tag}` : base;
+  }
+
+  /**
    * Evaluates whether cached Amazon data has exceeded the 24-hour licensing limit.
    */
   public isCacheValid(lastUpdated?: Date): boolean {

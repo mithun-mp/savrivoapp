@@ -2,9 +2,11 @@ import crypto from 'node:crypto';
 import { Offer, type IOffer } from '../models/Offer.model';
 import { Click } from '../models/Click.model';
 import { isForbiddenIp } from '../modules/product-import/ssrf-guard';
+import { isOfferAllowedForProduct } from '../utils/merchant-platform';
 
 export interface RecordClickParams {
   offerId: string;
+  productId?: string;
   referrer?: string;
   userAgent?: string;
   clientIp?: string;
@@ -23,7 +25,6 @@ export interface ClickRedirectResult {
  */
 export function anonymizeIp(ip?: string): string {
   if (!ip) return 'anonymous';
-  // Use a stable salt per IP hashing
   return crypto.createHash('sha256').update(`savrivo_salt_${ip}`).digest('hex').slice(0, 32);
 }
 
@@ -49,9 +50,10 @@ export function validateAffiliateRedirectUrl(urlStr: string): boolean {
 /**
  * Records an affiliate purchase click and returns the validated stored destination URL.
  * Strictly ignores arbitrary user-provided redirect URLs to prevent open redirect vulnerabilities.
+ * Enforces strict merchant-platform isolation.
  */
 export async function trackOfferClick(params: RecordClickParams): Promise<ClickRedirectResult> {
-  const { offerId, referrer, userAgent, clientIp, campaign } = params;
+  const { offerId, productId, referrer, userAgent, clientIp, campaign } = params;
 
   // Validate ObjectId format
   if (!offerId || !offerId.match(/^[0-9a-fA-F]{24}$/)) {
@@ -79,6 +81,32 @@ export async function trackOfferClick(params: RecordClickParams): Promise<ClickR
     };
   }
 
+  // 1. Verify offer belongs to requested product if productId was passed
+  if (productId && offer.productId) {
+    const offerProdId = (offer.productId as any)._id
+      ? (offer.productId as any)._id.toString()
+      : offer.productId.toString();
+    if (offerProdId !== productId.toString()) {
+      return {
+        success: false,
+        targetUrl: '',
+        error: 'Offer does not belong to the requested product',
+      };
+    }
+  }
+
+  // 2. Strict merchant-platform isolation check
+  if (offer.productId && typeof offer.productId === 'object') {
+    const product = offer.productId;
+    if (!isOfferAllowedForProduct(product, offer)) {
+      return {
+        success: false,
+        targetUrl: '',
+        error: 'Offer platform does not match product associated merchant platform',
+      };
+    }
+  }
+
   // Resolve target URL strictly from stored offer
   const rawTarget = offer.affiliateUrl || offer.productUrl;
   if (!rawTarget || !validateAffiliateRedirectUrl(rawTarget)) {
@@ -93,8 +121,8 @@ export async function trackOfferClick(params: RecordClickParams): Promise<ClickR
   try {
     const ipHash = anonymizeIp(clientIp);
     await Click.create({
-      productId: offer.productId,
-      merchantId: offer.merchantId,
+      productId: (offer.productId as any)?._id || offer.productId,
+      merchantId: (offer.merchantId as any)?._id || offer.merchantId,
       offerId: offer._id,
       targetUrl: rawTarget,
       referrer: referrer?.slice(0, 500),
@@ -103,7 +131,6 @@ export async function trackOfferClick(params: RecordClickParams): Promise<ClickR
       campaign: campaign?.slice(0, 100) || 'product_detail',
     });
   } catch (logErr) {
-    // Log error but do not break user purchase navigation
     console.error('[ClickTracking] Failed to persist click record:', logErr);
   }
 
@@ -113,4 +140,3 @@ export async function trackOfferClick(params: RecordClickParams): Promise<ClickR
     offer,
   };
 }
-

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export type MerchantType = 'amazon' | 'flipkart' | 'generic';
+export type MerchantType = 'amazon' | 'flipkart' | 'myntra' | 'ajio' | 'generic';
 
 export interface ExtractedImage {
   url: string;
@@ -122,7 +122,7 @@ export const previewUrlSchema = z.object({
 export const bulkPreviewUrlsSchema = z.object({
   urls: z
     .array(z.string().url('Each item must be a valid URL'))
-    .min(1, 'At least 1 URL is required')
+    .min(1, 'At 1 URL is required')
     .max(10, 'Maximum 10 URLs allowed per batch'),
 });
 
@@ -157,6 +157,8 @@ export const saveDraftProductSchema = z.object({
   seoTitle: z.string().optional().default(''),
   seoDescription: z.string().optional().default(''),
   canonicalUrl: z.string().url().optional(),
+  sourceMerchantId: z.string().optional().nullable(),
+  sourcePlatform: z.string().optional().nullable(),
   featured: z.boolean().optional().default(false),
   // Associated offer details
   offer: z

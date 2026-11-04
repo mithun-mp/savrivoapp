@@ -17,6 +17,21 @@ export class GenericAdapter implements MerchantAdapter {
     return baseUrl;
   }
 
+  public generateCanonicalUrl(baseUrl: string): string {
+    try {
+      const parsed = new URL(baseUrl);
+      parsed.search = '';
+      parsed.hash = '';
+      return parsed.toString();
+    } catch {
+      return baseUrl;
+    }
+  }
+
+  public generateSearchUrl(query: string, _options?: { customTag?: string }): string {
+    return `https://www.google.com/search?q=${encodeURIComponent(query.trim())}`;
+  }
+
   public validateUrl(url: string): boolean {
     try {
       new URL(url);

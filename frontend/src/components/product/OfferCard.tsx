@@ -20,7 +20,9 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
   const hasOriginal = typeof offer.originalPrice === 'number' && offer.originalPrice > 0;
   const hasDiscount = hasPrice && hasOriginal && offer.originalPrice! > offer.currentPrice!;
 
-  const clickUrl = offer._id ? `${API_BASE}/click/${offer._id}` : offer.affiliateUrl;
+  const clickUrl = offer._id
+    ? `${API_BASE}/click/${offer._id}${offer.productId ? `?productId=${offer.productId}` : ''}`
+    : offer.affiliateUrl;
 
   return (
     <div
@@ -45,9 +47,21 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
                 {formatINR(offer.currentPrice!)}
               </span>
               {hasDiscount && (
-                <span className="text-sm line-through opacity-50 tabular-nums" style={{ color: 'var(--color-text-2)' }}>
-                  {formatINR(offer.originalPrice!)}
-                </span>
+                <>
+                  <span className="text-sm line-through opacity-50 tabular-nums" style={{ color: 'var(--color-text-2)' }}>
+                    {formatINR(offer.originalPrice!)}
+                  </span>
+                  <span
+                    className="text-xs font-bold px-2 py-0.5 rounded-md border"
+                    style={{
+                      background: 'var(--color-accent-3-badge)',
+                      color: 'var(--color-accent-3)',
+                      borderColor: 'var(--color-accent-3)',
+                    }}
+                  >
+                    {Math.round(((offer.originalPrice! - offer.currentPrice!) / offer.originalPrice!) * 100)}% OFF
+                  </span>
+                </>
               )}
             </div>
           )}
@@ -113,7 +127,7 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
         className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white transition-all duration-150 hover:brightness-105 active:scale-[0.98] min-h-[48px] shadow-sv-sm cursor-pointer"
         style={{ background: 'var(--color-accent)' }}
       >
-        <span>Shop at {merchant?.name || 'Retailer'}</span>
+        <span>Buy at {merchant?.name || 'Retailer'}</span>
         <ExternalLink size={16} aria-hidden="true" />
       </a>
 

@@ -140,7 +140,27 @@ export function detectMerchant(inputUrl: string): DetectedMerchantInfo {
     };
   }
 
-  // 3. Generic Merchant
+  // 3. Myntra detection
+  if (host.includes('myntra.com')) {
+    return {
+      merchantType: 'myntra',
+      merchantName: 'Myntra',
+      canonicalUrl: cleanGenericTrackingParams(inputUrl),
+      domain: host,
+    };
+  }
+
+  // 4. AJIO detection
+  if (host.includes('ajio.com')) {
+    return {
+      merchantType: 'ajio',
+      merchantName: 'AJIO',
+      canonicalUrl: cleanGenericTrackingParams(inputUrl),
+      domain: host,
+    };
+  }
+
+  // 5. Generic Merchant
   return {
     merchantType: 'generic',
     merchantName: formatMerchantNameFromHost(host),

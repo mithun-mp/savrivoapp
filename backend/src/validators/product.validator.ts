@@ -28,6 +28,8 @@ export const createProductSchema = z.object({
   seoTitle: z.string().max(70).optional(),
   seoDescription: z.string().max(160).optional(),
   canonicalUrl: z.union([z.string().url(), z.literal(''), z.null()]).optional().transform(v => v || undefined),
+  sourceMerchantId: z.union([z.string(), z.literal(''), z.null()]).optional().transform(v => v || undefined),
+  sourcePlatform: z.string().optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();

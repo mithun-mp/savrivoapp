@@ -47,7 +47,8 @@ export interface MerchantAdapter {
   fetchOffers(externalId: string): Promise<MerchantOfferData[]>;
   fetchAvailability(externalId: string): Promise<'in_stock' | 'out_of_stock' | 'unknown'>;
   generateAffiliateLink(externalId: string, options?: { customTag?: string; subId?: string }): string;
+  generateCanonicalUrl(externalIdOrUrl: string): string;
+  generateSearchUrl(query: string, options?: { customTag?: string }): string;
   refreshProductData(externalId: string, currentOffer?: unknown): Promise<MerchantRefreshResult>;
   isCacheValid(lastUpdated?: Date): boolean;
 }
-

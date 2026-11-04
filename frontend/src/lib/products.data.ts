@@ -22,6 +22,8 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     brand: 'Apple',
     categoryId: '6ae9f9cc02bf6219500af7b1', // Electronics
     subcategory: 'Smartphones',
+    sourcePlatform: 'amazon',
+    canonicalUrl: 'https://www.amazon.in/dp/B0BDK62PDX',
     images: [
       {
         url: 'https://m.media-amazon.com/images/I/61bK6PMOC3L._SX679_.jpg',
@@ -53,6 +55,29 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     seoTitle: 'Apple iPhone 14 (128 GB) - Blue — Review & Deals | SAVRIVO',
     seoDescription:
       'Compare verified retailer deals and technical specifications for the Apple iPhone 14 on SAVRIVO.',
+    offers: [
+      {
+        _id: '6ae9f9cc02bf6219500af901',
+        productId: '6ae9f9cc02bf6219500af801',
+        merchantId: {
+          _id: '6ae9f9cc02bf6219500af701',
+          name: 'Amazon India',
+          slug: 'amazon',
+          websiteUrl: 'https://www.amazon.in',
+          enabled: true,
+        },
+        productUrl: 'https://www.amazon.in/dp/B0BDK62PDX',
+        affiliateUrl: 'https://www.amazon.in/dp/B0BDK62PDX?tag=savrivo-21',
+        currentPrice: 58999,
+        originalPrice: 69900,
+        currency: 'INR',
+        availability: 'in_stock',
+        sellerName: 'Appario Retail',
+        sourceType: 'official_api',
+        offerLastVerifiedAt: '2026-11-04T12:00:00.000Z',
+        status: 'active',
+      },
+    ],
     createdAt: '2026-11-01T00:00:00.000Z',
     updatedAt: '2026-11-03T00:00:00.000Z',
   },
@@ -67,6 +92,8 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     brand: 'Sony',
     categoryId: '6ae9f9cc02bf6219500af7b1', // Electronics
     subcategory: 'Audio',
+    sourcePlatform: 'amazon',
+    canonicalUrl: 'https://www.amazon.in/dp/B09XS7JWHH',
     images: [
       {
         url: 'https://m.media-amazon.com/images/I/51SKmu2G9FL._SX679_.jpg',
@@ -92,6 +119,29 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     seoTitle: 'Sony WH-1000XM5 Wireless Headphones — Review & Deals | SAVRIVO',
     seoDescription:
       'Check live prices and verified retailer offers for Sony WH-1000XM5 headphones on SAVRIVO.',
+    offers: [
+      {
+        _id: '6ae9f9cc02bf6219500af902',
+        productId: '6ae9f9cc02bf6219500af802',
+        merchantId: {
+          _id: '6ae9f9cc02bf6219500af701',
+          name: 'Amazon India',
+          slug: 'amazon',
+          websiteUrl: 'https://www.amazon.in',
+          enabled: true,
+        },
+        productUrl: 'https://www.amazon.in/dp/B09XS7JWHH',
+        affiliateUrl: 'https://www.amazon.in/dp/B09XS7JWHH?tag=savrivo-21',
+        currentPrice: 28990,
+        originalPrice: 34990,
+        currency: 'INR',
+        availability: 'in_stock',
+        sellerName: 'Appario Retail',
+        sourceType: 'official_api',
+        offerLastVerifiedAt: '2026-11-04T12:00:00.000Z',
+        status: 'active',
+      },
+    ],
     createdAt: '2026-11-01T00:00:00.000Z',
     updatedAt: '2026-11-03T00:00:00.000Z',
   },
@@ -106,6 +156,8 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     brand: 'DEMO Brand',
     categoryId: '6ae9f9cc02bf6219500af7b1',
     subcategory: 'Audio',
+    sourcePlatform: 'amazon',
+    canonicalUrl: 'https://www.amazon.in/dp/B0DEMO0001',
     images: [],
     specifications: [
       { key: 'Connectivity', value: 'Bluetooth 5.3' },
@@ -137,6 +189,8 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     brand: 'DEMO Brand',
     categoryId: '6ae9f9cc02bf6219500af7b2',
     subcategory: 'Home Essentials',
+    sourcePlatform: 'amazon',
+    canonicalUrl: 'https://www.amazon.in/dp/B0DEMO0002',
     images: [],
     specifications: [
       { key: 'Filter Type', value: 'HEPA H13' },
@@ -165,6 +219,8 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     brand: 'DEMO Brand',
     categoryId: '6ae9f9cc02bf6219500af7b3',
     subcategory: 'Skincare',
+    sourcePlatform: 'amazon',
+    canonicalUrl: 'https://www.amazon.in/dp/B0DEMO0003',
     images: [],
     specifications: [
       { key: 'Volume', value: '30 ml' },
@@ -202,7 +258,7 @@ export async function getBuildProducts(): Promise<Product[]> {
       signal: AbortSignal.timeout(5000),
     });
     if (res.ok) {
-      const json = await res.json() as { data?: Product[] };
+      const json = (await res.json()) as { data?: Product[] };
       const liveProducts = json.data || [];
       for (const lp of liveProducts) {
         if (lp.slug) {
@@ -219,4 +275,3 @@ export async function getBuildProducts(): Promise<Product[]> {
 
   return Array.from(mergedMap.values());
 }
-

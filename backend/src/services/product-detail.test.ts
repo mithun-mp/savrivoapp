@@ -7,14 +7,15 @@ import { validateImageUrl, sanitizeProductImages } from '../modules/product-impo
 import { MerchantRefreshService } from './merchant-refresh.service';
 
 describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
-  describe('Product Detail Route Resolution & Multi-Merchant Offers', () => {
-    it('resolves product by slug and populates associated active merchant offers', async () => {
+  describe('Product Detail Route Resolution & Strict Merchant-Platform Isolation', () => {
+    it('resolves product by slug and enforces strict merchant platform isolation on offers', async () => {
       const mockProduct = {
         _id: '65f01234567890abcdef0001',
         title: 'Sony WH-1000XM5 Wireless Headphones',
         slug: 'sony-wh-1000xm5-wireless-headphones',
         brand: 'Sony',
         status: 'published',
+        sourcePlatform: 'amazon',
         images: [{ url: 'https://m.media-amazon.com/images/I/61bK6PMOC3L.jpg', alt: 'Sony XM5' }],
         highlights: ['Industry-leading noise cancellation', '30-hour battery life'],
       };
@@ -68,9 +69,11 @@ describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
         assert.ok(result);
         assert.equal(result.title, mockProduct.title);
         assert.equal(result.slug, mockProduct.slug);
-        assert.equal((result as any).offers?.length, 2);
+        assert.equal(result.sourcePlatform, 'amazon');
+        // Under strict isolation, only the Amazon offer is returned; cross-platform Flipkart offer is filtered out
+        assert.equal((result as any).offers?.length, 1);
         assert.equal((result as any).offers[0].currentPrice, 26990);
-        assert.equal((result as any).offers[1].currentPrice, 27990);
+        assert.equal((result as any).offers[0].merchantId.name, 'Amazon India');
       } finally {
         Product.findOne = originalProductFindOne;
         Offer.find = originalOfferFind;
@@ -169,4 +172,3 @@ describe('Product Detail Resolution, Images & Merchant Data Refresh', () => {
     });
   });
 });
-

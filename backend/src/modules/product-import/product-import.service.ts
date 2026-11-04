@@ -252,7 +252,37 @@ export class ProductImportService {
     const sanitized = await sanitizeProductImages(data.images, data.title);
     const finalImages = sanitized.length > 0 ? sanitized.map((img) => ({ url: img.url, alt: img.alt })) : data.images;
 
-    // 4. Create Product Document
+    // 4. Resolve Source Merchant & Platform (Strict Merchant-Platform Isolation)
+    const sourceUrlForDetection = data.offer?.productUrl || data.canonicalUrl || '';
+    const detected = sourceUrlForDetection ? detectMerchant(sourceUrlForDetection) : null;
+    let resolvedMerchantId = data.sourceMerchantId || data.offer?.merchantId;
+
+    if (!resolvedMerchantId && detected) {
+      let merchant = await Merchant.findOne({
+        $or: [
+          { name: new RegExp(`^${detected.merchantName}$`, 'i') },
+          { websiteUrl: new RegExp(detected.domain, 'i') },
+        ],
+      });
+
+      if (!merchant && detected.domain) {
+        merchant = new Merchant({
+          name: detected.merchantName,
+          slug: slugify(detected.merchantName),
+          websiteUrl: `https://${detected.domain}`,
+          affiliateProgramName: `${detected.merchantName} Associates`,
+          enabled: true,
+        });
+        await merchant.save();
+      }
+      if (merchant) {
+        resolvedMerchantId = String(merchant._id);
+      }
+    }
+
+    const sourcePlatform = data.sourcePlatform || (detected ? detected.merchantType : undefined);
+
+    // 5. Create Product Document
     const product = new Product({
       title: data.title,
       slug: finalSlug,
@@ -271,41 +301,19 @@ export class ProductImportService {
       seoTitle: data.seoTitle || undefined,
       seoDescription: data.seoDescription || undefined,
       canonicalUrl: data.canonicalUrl || undefined,
+      sourceMerchantId: resolvedMerchantId || undefined,
+      sourcePlatform: sourcePlatform || undefined,
     });
 
     await product.save();
 
-    // 5. Create Offer if provided
+    // 6. Create Offer if provided (Strictly linked to the same associated merchant)
     let createdOffer: unknown = undefined;
     if (data.offer && data.offer.productUrl) {
-      let merchantId = data.offer.merchantId;
-
-      // Auto-detect or resolve merchant if merchantId not supplied
-      const detected = detectMerchant(data.offer.productUrl);
-      if (!merchantId) {
-        let merchant = await Merchant.findOne({
-          $or: [
-            { name: new RegExp(`^${detected.merchantName}$`, 'i') },
-            { websiteUrl: new RegExp(detected.domain, 'i') },
-          ],
-        });
-
-        if (!merchant) {
-          // Auto-register merchant if absent
-          merchant = new Merchant({
-            name: detected.merchantName,
-            slug: slugify(detected.merchantName),
-            websiteUrl: `https://${detected.domain || 'amazon.in'}`,
-            affiliateProgramName: `${detected.merchantName} Associates`,
-            enabled: true,
-          });
-          await merchant.save();
-        }
-        merchantId = String(merchant._id);
-      }
+      const merchantId = resolvedMerchantId || data.offer.merchantId;
 
       if (merchantId) {
-        const adapter = defaultAdapterRegistry.getAdapter(detected.merchantName);
+        const adapter = defaultAdapterRegistry.getAdapter(detected?.merchantName);
         const compliantAffiliateUrl = adapter.generateAffiliateLink(data.offer.productUrl);
 
         const offer = new Offer({

@@ -3,10 +3,13 @@ import MainLayout from '../layouts/MainLayout.astro';
 import SearchBar from '../components/search/SearchBar';
 import ProductGrid from '../components/product/ProductGrid';
 import GuideCard from '../components/guide/GuideCard';
+import CircularProductShowcase from '../components/home/CircularProductShowcase';
 import AffiliateDisclosure from '../components/ui/AffiliateDisclosure';
 import BrandLogo from '../components/ui/BrandLogo';
 import { url } from '../lib/paths';
 import { API_BASE, formatINR } from '../lib/api';
+import { selectShowcaseProducts } from '../lib/showcase-selection';
+import { CONTROLLED_PRODUCT_SNAPSHOT } from '../lib/products.data';
 import type { Category, Product, Guide, Offer } from '../types';
 import {
   ArrowRight,
@@ -52,7 +55,17 @@ try {
   ]);
 } catch {}
 
-const topPick = featuredProducts.length > 0 ? featuredProducts[0] : null;
+// Combine live products with snapshot to guarantee resilience and deterministic 6 unique items
+const allAvailableProducts = [...recentProducts];
+for (const p of CONTROLLED_PRODUCT_SNAPSHOT) {
+  if (!allAvailableProducts.some((ap) => ap.slug === p.slug)) {
+    allAvailableProducts.push(p);
+  }
+}
+const showcaseResult = selectShowcaseProducts(allAvailableProducts, 6);
+const showcaseProducts = showcaseResult.all;
+
+const topPick = featuredProducts.length > 0 ? featuredProducts[0] : (showcaseProducts[0] || null);
 
 // Category icons map for quick rail
 const categoryIcons: Record<string, any> = {
@@ -161,100 +174,9 @@ const categoryIcons: Record<string, any> = {
           </div>
         </div>
 
-        <!-- Right: Editor's Spotlight Showcase Card -->
-        <div class="lg:col-span-5 hidden lg:block animate-hero-spotlight">
-          {topPick ? (
-            <div
-              class="rounded-2xl p-6 sm:p-7 transition-all duration-200 card-hover border"
-              style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-lg)"
-            >
-              <div class="flex items-center justify-between gap-2 mb-4">
-                <span
-                  class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border shadow-sv-sm"
-                  style="background: var(--color-curated-badge); color: var(--color-curated-text); border-color: var(--color-border)"
-                >
-                  Editor's Spotlight
-                </span>
-                <span class="text-xs font-semibold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
-                  <ShieldCheck size={14} /> Verified Recommendation
-                </span>
-              </div>
-
-              <a
-                href={url(`/product/${topPick.slug}`)}
-                class="block relative rounded-xl overflow-hidden mb-5 group"
-                style="aspect-ratio: 4/3; background: var(--color-overlay)"
-              >
-                {topPick.images?.[0] ? (
-                  <img
-                    src={topPick.images[0].url}
-                    alt={topPick.images[0].alt || topPick.title}
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="eager"
-                  />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center text-xs" style="color: var(--color-text-2)">
-                    Featured Discovery
-                  </div>
-                )}
-              </a>
-
-              <div class="space-y-2.5">
-                {topPick.brand && (
-                  <p class="text-xs font-bold uppercase tracking-widest" style="color: var(--color-accent)">
-                    {topPick.brand}
-                  </p>
-                )}
-                <h3 class="font-display text-lg font-bold line-clamp-2 leading-snug" style="color: var(--color-text-1)">
-                  <a href={url(`/product/${topPick.slug}`)} class="hover:underline">
-                    {topPick.title}
-                  </a>
-                </h3>
-                {topPick.shortDescription && (
-                  <p class="text-xs sm:text-sm line-clamp-2 leading-relaxed" style="color: var(--color-text-2)">
-                    {topPick.shortDescription}
-                  </p>
-                )}
-
-                <div class="pt-4 flex items-center justify-between border-t" style="border-color: var(--color-border)">
-                  <a
-                    href={url(`/product/${topPick.slug}`)}
-                    class="inline-flex items-center gap-1.5 text-sm font-bold hover:underline"
-                    style="color: var(--color-accent)"
-                  >
-                    <span>View Product Breakdown</span>
-                    <ArrowRight size={14} />
-                  </a>
-                  <span class="text-xs font-medium" style="color: var(--color-text-2)">
-                    Multi-Retailer
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              class="rounded-2xl p-8 border space-y-4"
-              style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-lg)"
-            >
-              <div
-                class="w-12 h-12 rounded-xl flex items-center justify-center"
-                style="background: var(--color-accent-badge); color: var(--color-accent)"
-              >
-                <Sparkles size={24} />
-              </div>
-              <h3 class="font-display text-xl font-bold" style="color: var(--color-text-1)">
-                Independent Product Intelligence
-              </h3>
-              <p class="text-sm leading-relaxed" style="color: var(--color-text-2)">
-                Every recommendation on SAVRIVO is independently researched on build quality, real-world Indian testing, and verified retailer availability.
-              </p>
-              <div class="pt-2">
-                <a href={url('/about')} class="text-sm font-bold hover:underline" style="color: var(--color-accent)">
-                  Learn about our research policy →
-                </a>
-              </div>
-            </div>
-          )}
+        <!-- Right: Animated Circular Product Showcase (Desktop) & Compact Carousel (Mobile) -->
+        <div class="lg:col-span-5 w-full flex justify-center animate-hero-spotlight">
+          <CircularProductShowcase client:load products={showcaseProducts} />
         </div>
       </div>
     </div>

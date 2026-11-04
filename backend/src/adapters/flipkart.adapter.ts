@@ -34,6 +34,31 @@ export class FlipkartAdapter implements MerchantAdapter {
     }
   }
 
+  public generateCanonicalUrl(productUrl: string): string {
+    try {
+      const parsed = new URL(productUrl);
+      const pid = parsed.searchParams.get('pid');
+      if (pid) {
+        const cleanPath = parsed.pathname.split('/p/')[0];
+        if (cleanPath && cleanPath !== '/') {
+          return `https://www.flipkart.com${cleanPath}/p/itm?pid=${pid}`;
+        }
+        return `https://www.flipkart.com/p/itm?pid=${pid}`;
+      }
+      parsed.search = '';
+      parsed.hash = '';
+      return parsed.toString();
+    } catch {
+      return productUrl;
+    }
+  }
+
+  public generateSearchUrl(query: string, options?: { customTag?: string }): string {
+    const affiliateId = options?.customTag || config.flipkart.affiliateId;
+    const base = `https://www.flipkart.com/search?q=${encodeURIComponent(query.trim())}`;
+    return affiliateId ? `${base}&affid=${affiliateId}` : base;
+  }
+
   public isCacheValid(lastUpdated?: Date): boolean {
     if (!lastUpdated) return false;
     const ageMs = Date.now() - new Date(lastUpdated).getTime();
