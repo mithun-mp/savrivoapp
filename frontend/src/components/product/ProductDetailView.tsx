@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Product, Offer, Category, Merchant } from '@/types';
-import { formatINR, formatDate, api, API_BASE } from '@/lib/api';
+import { formatDate, api, API_BASE } from '@/lib/api';
 import { url } from '@/lib/paths';
 import ProductGallery from './ProductGallery';
 import ProductCard from './ProductCard';
@@ -17,7 +17,6 @@ import {
   Tag,
   ArrowRight,
   Store,
-  Search,
 } from 'lucide-react';
 
 interface ProductDetailViewProps {
@@ -31,7 +30,9 @@ export default function ProductDetailView({
   initialOffers = [],
   relatedProducts = [],
 }: ProductDetailViewProps) {
-  const [offers, setOffers] = useState<Offer[]>(initialOffers);
+  const [offers, setOffers] = useState<Offer[]>(
+    initialOffers && initialOffers.length > 0 ? initialOffers : (product.offers || [])
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
 
@@ -113,7 +114,8 @@ export default function ProductDetailView({
       : getPlatformName(platform);
 
   // 2. Strict Merchant-Platform Isolation: Filter offers strictly to product's associated merchant platform
-  const isolatedOffers = [...offers]
+  const rawOffers = offers && offers.length > 0 ? offers : (product.offers || []);
+  let isolatedOffers = [...rawOffers]
     .filter((o) => {
       const u = (o.productUrl || o.affiliateUrl || '').toLowerCase();
       const mName = (typeof o.merchantId === 'object' ? (o.merchantId as Merchant).name : '').toLowerCase();
@@ -122,34 +124,28 @@ export default function ProductDetailView({
       if (platform === 'myntra') return u.includes('myntra') || mName.includes('myntra');
       if (platform === 'ajio') return u.includes('ajio') || mName.includes('ajio');
       return true;
-    })
-    .sort((a, b) => {
-      if (!a.currentPrice) return 1;
-      if (!b.currentPrice) return -1;
-      return a.currentPrice - b.currentPrice;
     });
+
+  // If no offer records exist yet, synthesize primary offer from canonicalUrl if available
+  if (isolatedOffers.length === 0 && product.canonicalUrl) {
+    isolatedOffers = [
+      {
+        _id: '',
+        productUrl: product.canonicalUrl,
+        affiliateUrl: product.canonicalUrl,
+        availability: 'in_stock',
+        status: 'active',
+      } as any,
+    ];
+  }
 
   const primaryOffer = isolatedOffers[0];
   const secondaryOffers = isolatedOffers.slice(1);
 
-  // 3. Generate Find Similar search URL on the SAME associated platform
-  const getFindSimilarUrl = (plat: string, title: string): string => {
-    const q = title.trim();
-    switch (plat) {
-      case 'amazon':
-        return `https://www.amazon.in/s?k=${encodeURIComponent(q)}&tag=savrivo-21`;
-      case 'flipkart':
-        return `https://www.flipkart.com/search?q=${encodeURIComponent(q)}&affid=savrivo`;
-      case 'myntra':
-        return `https://www.myntra.com/${encodeURIComponent(q.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}`;
-      case 'ajio':
-        return `https://www.ajio.com/search/?text=${encodeURIComponent(q)}`;
-      default:
-        return `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-    }
-  };
-
-  const findSimilarUrl = getFindSimilarUrl(platform, product.title);
+  // Resolved direct Buy Now destination
+  const buyNowUrl = primaryOffer?._id
+    ? `${API_BASE}/click/${primaryOffer._id}?productId=${product._id}`
+    : primaryOffer?.affiliateUrl || primaryOffer?.productUrl || product.canonicalUrl || '#';
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
@@ -157,14 +153,14 @@ export default function ProductDetailView({
     setRefreshMessage(null);
     try {
       const res = (await api.products.refresh(product.slug)) as any;
-      if (res?.data?.offers && Array.isArray(res.data.offers)) {
+      if (res?.data?.offers && Array.isArray(res.data.offers) && res.data.offers.length > 0) {
         setOffers(res.data.offers);
-        setRefreshMessage('Prices & availability refreshed.');
+        setRefreshMessage('Retailer offers refreshed.');
       } else {
-        setRefreshMessage('Price data is up to date.');
+        setRefreshMessage('Offer data is up to date.');
       }
     } catch {
-      setRefreshMessage('Checked: currently using latest verified price.');
+      setRefreshMessage('Using verified retailer offer.');
     } finally {
       setIsRefreshing(false);
       setTimeout(() => setRefreshMessage(null), 4000);
@@ -308,7 +304,7 @@ export default function ProductDetailView({
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--color-text-2)' }}>
                   <Store size={14} className="text-[var(--color-accent)]" />
-                  Verified Retailer Pricing ({associatedMerchantName})
+                  Verified Retailer Offer ({associatedMerchantName})
                 </h2>
                 <button
                   onClick={handleRefresh}
@@ -319,10 +315,10 @@ export default function ProductDetailView({
                     color: 'var(--color-text-2)',
                     background: 'var(--color-surface)',
                   }}
-                  title="Refresh live prices from merchant API"
+                  title="Check latest availability from merchant"
                 >
                   <RefreshCw size={12} className={isRefreshing ? 'animate-spin text-[var(--color-accent)]' : ''} />
-                  <span>{isRefreshing ? 'Checking...' : 'Check Live Price'}</span>
+                  <span>{isRefreshing ? 'Checking...' : 'Check Availability'}</span>
                 </button>
               </div>
 
@@ -409,40 +405,8 @@ export default function ProductDetailView({
                       </span>
                     </div>
 
-                    {/* Price Block (Accurate ₹ Currency & Honest Discount) */}
-                    <div className="flex items-baseline gap-3 pt-1">
-                      {primaryOffer.currentPrice && primaryOffer.currentPrice > 0 ? (
-                        <>
-                          <span className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums" style={{ color: 'var(--color-text-1)' }}>
-                            {formatINR(primaryOffer.currentPrice)}
-                          </span>
-                          {primaryOffer.originalPrice && primaryOffer.originalPrice > primaryOffer.currentPrice && (
-                            <>
-                              <span className="text-base line-through opacity-50 tabular-nums" style={{ color: 'var(--color-text-2)' }}>
-                                {formatINR(primaryOffer.originalPrice)}
-                              </span>
-                              <span
-                                className="text-xs font-extrabold px-2.5 py-0.5 rounded-md border"
-                                style={{
-                                  background: 'var(--color-accent-3-badge)',
-                                  color: 'var(--color-accent-3)',
-                                  borderColor: 'var(--color-accent-3)',
-                                }}
-                              >
-                                {Math.round(((primaryOffer.originalPrice - primaryOffer.currentPrice) / primaryOffer.originalPrice) * 100)}% OFF
-                              </span>
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-base font-semibold" style={{ color: 'var(--color-text-2)' }}>
-                          Live price verified at {associatedMerchantName}
-                        </span>
-                      )}
-                    </div>
-
                     {/* Freshness & Attribution timestamp */}
-                    <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-text-2)' }}>
+                    <div className="flex items-center gap-2 text-xs pt-1" style={{ color: 'var(--color-text-2)' }}>
                       <Clock size={12} />
                       <span>
                         Verified {primaryOffer.offerLastVerifiedAt ? formatDate(primaryOffer.offerLastVerifiedAt) : 'recently'} on{' '}
@@ -450,34 +414,17 @@ export default function ProductDetailView({
                       </span>
                     </div>
 
-                    {/* Action Buttons: Buy Now & Find Similar on SAME Platform */}
-                    <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                      {/* 1. Buy Now CTA */}
+                    {/* Primary Buy Now CTA */}
+                    <div className="pt-2">
                       <a
-                        href={`${API_BASE}/click/${primaryOffer._id}?productId=${product._id}`}
+                        href={buyNowUrl}
                         target="_blank"
                         rel="sponsored nofollow noopener noreferrer"
-                        className="flex-1 py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white flex items-center justify-center gap-2 transition-transform duration-150 hover:brightness-105 active:scale-[0.98] shadow-md"
+                        className="w-full py-4 px-6 rounded-xl font-bold text-base sm:text-lg text-white flex items-center justify-center gap-2 transition-transform duration-150 hover:brightness-105 active:scale-[0.98] shadow-md cursor-pointer"
                         style={{ background: 'var(--color-accent)' }}
                       >
                         <span>Buy Now</span>
-                        <ExternalLink size={18} />
-                      </a>
-
-                      {/* 2. Find Similar CTA (strictly on the SAME merchant platform) */}
-                      <a
-                        href={findSimilarUrl}
-                        target="_blank"
-                        rel="sponsored nofollow noopener noreferrer"
-                        className="py-3.5 px-5 rounded-xl font-bold text-sm border flex items-center justify-center gap-2 transition-colors hover:border-[var(--color-accent-3)] hover:text-[var(--color-accent-3)]"
-                        style={{
-                          background: 'var(--color-surface)',
-                          borderColor: 'var(--color-border)',
-                          color: 'var(--color-text-1)',
-                        }}
-                      >
-                        <Search size={16} />
-                        <span>Find Similar on {associatedMerchantName}</span>
+                        <ExternalLink size={20} />
                       </a>
                     </div>
                   </div>
@@ -503,11 +450,6 @@ export default function ProductDetailView({
                               <p className="text-xs font-bold" style={{ color: 'var(--color-text-1)' }}>
                                 {secOffer.sellerName || associatedMerchantName}
                               </p>
-                              {secOffer.currentPrice && (
-                                <p className="text-sm font-extrabold tabular-nums" style={{ color: 'var(--color-accent)' }}>
-                                  {formatINR(secOffer.currentPrice)}
-                                </p>
-                              )}
                             </div>
                           </div>
                           <a
@@ -520,7 +462,7 @@ export default function ProductDetailView({
                               color: 'var(--color-text-1)',
                             }}
                           >
-                            <span>View Offer</span>
+                            <span>Buy Now</span>
                             <ExternalLink size={13} />
                           </a>
                         </div>
@@ -529,7 +471,7 @@ export default function ProductDetailView({
                   )}
                 </div>
               ) : (
-                /* Fallback when no active offer is linked: No cross-platform mixing */
+                /* Fallback when no active offer is linked */
                 <div
                   className="p-6 rounded-2xl border flex flex-col gap-4"
                   style={{
@@ -547,23 +489,9 @@ export default function ProductDetailView({
                         Currently Unavailable on {associatedMerchantName}
                       </h3>
                       <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'var(--color-text-2)' }}>
-                        This product is associated with {associatedMerchantName}. We are actively monitoring inventory and live pricing. Verified direct offers will appear once in stock.
+                        This product is associated with {associatedMerchantName}. We are actively monitoring inventory. Verified direct offers will appear once in stock.
                       </p>
                     </div>
-                  </div>
-
-                  <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                    <a
-                      href={findSimilarUrl}
-                      target="_blank"
-                      rel="sponsored nofollow noopener noreferrer"
-                      className="flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-bold text-sm text-white transition-opacity hover:opacity-95 shadow-sm min-h-[44px]"
-                      style={{ background: 'var(--color-accent-3)' }}
-                    >
-                      <Search size={15} />
-                      <span>Search on {associatedMerchantName}</span>
-                      <ExternalLink size={15} />
-                    </a>
                   </div>
                 </div>
               )}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { Product, Category } from '@/types';
-import { formatINR } from '@/lib/api';
 import { ArrowRight } from 'lucide-react';
 import { url } from '@/lib/paths';
 

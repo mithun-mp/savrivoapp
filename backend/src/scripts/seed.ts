@@ -87,26 +87,8 @@ async function seed() {
     }
   }
 
-  // Demo Products
+  // Demo Products (Dummy headphone records removed)
   const productData = [
-    {
-      title: 'DEMO: Premium Wireless Headphones',
-      slug: 'demo-premium-wireless-headphones',
-      shortDescription: DEMO_NOTE + ' Sample wireless headphones with active noise cancellation.',
-      brand: 'DEMO Brand',
-      categoryId: categoryIds['electronics'],
-      highlights: ['Active Noise Cancellation', '30-hour battery life', 'Premium audio quality'],
-      specifications: [
-        { key: 'Connectivity', value: 'Bluetooth 5.3' },
-        { key: 'Battery', value: '30 hours' },
-        { key: 'Noise Cancellation', value: 'Active' },
-      ],
-      tags: ['headphones', 'wireless', 'audio'],
-      featured: true,
-      status: 'published' as const,
-      seoTitle: 'DEMO: Premium Wireless Headphones | SAVRIVO',
-      seoDescription: 'Demo product record. Replace with a real product via the admin dashboard.',
-    },
     {
       title: 'DEMO: Smart Air Purifier',
       slug: 'demo-smart-air-purifier',
@@ -150,16 +132,16 @@ async function seed() {
   }
 
   // Demo Guide
-  const guideSlug = 'demo-how-to-choose-wireless-headphones';
+  const guideSlug = 'demo-smart-home-buying-guide';
   const existingGuide = await Guide.findOne({ slug: guideSlug });
   if (!existingGuide) {
     await Guide.create({
-      title: 'DEMO: How to Choose the Right Wireless Headphones',
+      title: 'DEMO: Smart Home Essentials Buying Guide',
       slug: guideSlug,
       excerpt: 'A sample buying guide. Replace with real editorial content via the admin dashboard.',
       body: `<p>${DEMO_NOTE}</p><h2>What to Look For</h2><p>This is placeholder body content for a buying guide. Real guides should be written by your editorial team and published through the admin dashboard.</p>`,
       author: 'Savrivo Editorial',
-      category: 'Electronics',
+      category: 'Home & Kitchen',
       status: 'published',
       publishedAt: new Date(),
     });

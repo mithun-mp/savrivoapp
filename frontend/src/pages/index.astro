@@ -7,7 +7,7 @@ import CircularProductShowcase from '../components/home/CircularProductShowcase'
 import AffiliateDisclosure from '../components/ui/AffiliateDisclosure';
 import BrandLogo from '../components/ui/BrandLogo';
 import { url } from '../lib/paths';
-import { API_BASE, formatINR } from '../lib/api';
+import { API_BASE } from '../lib/api';
 import { selectShowcaseProducts } from '../lib/showcase-selection';
 import { CONTROLLED_PRODUCT_SNAPSHOT } from '../lib/products.data';
 import type { Category, Product, Guide, Offer } from '../types';
@@ -195,7 +195,7 @@ const categoryIcons: Record<string, any> = {
           {
             step: '02',
             title: 'Transparent Comparison',
-            desc: 'Explore clear pros, cons, technical details, and indicative prices across trusted platforms in India.',
+            desc: 'Explore clear pros, cons, technical details, and direct retailer availability across trusted platforms in India.',
           },
           {
             step: '03',
@@ -385,10 +385,10 @@ const categoryIcons: Record<string, any> = {
           Retailer Offers & Deals
         </p>
         <h2 class="font-display text-2xl sm:text-3xl font-extrabold mb-4" style="color: var(--color-text-1)">
-          Compare Verified Discounts
+          Compare Verified Retailer Offers
         </h2>
         <p class="text-sm sm:text-base leading-relaxed mb-8 max-w-lg mx-auto" style="color: var(--color-text-2)">
-          We track verified promotional offers, coupon codes, and price drops across authorized Indian retail feeds.
+          We track verified promotional offers, coupon codes, and verified products across authorized Indian retail feeds.
         </p>
 
         <a

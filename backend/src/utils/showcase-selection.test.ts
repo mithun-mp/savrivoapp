@@ -24,6 +24,11 @@ function isRealProduct(p: any): boolean {
   if (desc.startsWith('[demo]') || desc.includes('this is sample data')) return false;
   if (brand === 'demo brand' || brand === 'demo') return false;
 
+  // Exclude removed dummy/sample entries
+  if (slug === 'apple-iphone-14-128-gb-blue' || slug === 'apple-iphone-14' || slug.includes('apple-iphone-14')) return false;
+  if (slug === 'blaupunkt-bh61-moksha-anc-wireless-over-ear-headphones' || slug === 'demo-premium-wireless-headphones') return false;
+  if (p._id === '6ae9f9cc02bf6219500af801' || p._id === '6ae9f9cc02bf6219500af803') return false;
+
   return Boolean(p._id && p.title && p.slug);
 }
 
@@ -113,9 +118,9 @@ describe('Homepage Showcase Dynamic Product Selection', () => {
     const products: TestProduct[] = [
       {
         _id: 'p1',
-        title: 'Apple iPhone 14',
-        slug: 'apple-iphone-14',
-        brand: 'Apple',
+        title: 'Sony WH-1000XM5',
+        slug: 'sony-wh-1000xm5',
+        brand: 'Sony',
         featured: true,
         status: 'published',
         createdAt: '2026-11-04T10:00:00Z',

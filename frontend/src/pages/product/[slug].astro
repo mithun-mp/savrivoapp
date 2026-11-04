@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
 const { product } = Astro.props as { product: Product };
 
-let offers: Offer[] = [];
+let offers: Offer[] = product.offers && product.offers.length > 0 ? [...product.offers] : [];
 let relatedProducts: Product[] = [];
 try {
   const catId = typeof product.categoryId === 'object' ? (product.categoryId as Category)?._id : product.categoryId;
@@ -23,7 +23,7 @@ try {
 
   if (productDetailRes.ok) {
     const json = await productDetailRes.json();
-    if (json?.data?.offers && Array.isArray(json.data.offers)) {
+    if (json?.data?.offers && Array.isArray(json.data.offers) && json.data.offers.length > 0) {
       offers = json.data.offers;
     }
   }

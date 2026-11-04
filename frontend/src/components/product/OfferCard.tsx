@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Offer, Merchant } from '@/types';
-import { formatINR, formatDate, API_BASE } from '@/lib/api';
-import { ExternalLink, Clock, Info } from 'lucide-react';
+import { formatDate, API_BASE } from '@/lib/api';
+import { ExternalLink, Clock } from 'lucide-react';
 import AffiliateDisclosure from '../ui/AffiliateDisclosure';
 
 interface OfferCardProps {
@@ -16,9 +16,6 @@ function getMerchant(m: Offer['merchantId']): Merchant | null {
 
 export default function OfferCard({ offer, className = '' }: OfferCardProps) {
   const merchant = getMerchant(offer.merchantId);
-  const hasPrice = typeof offer.currentPrice === 'number' && offer.currentPrice > 0;
-  const hasOriginal = typeof offer.originalPrice === 'number' && offer.originalPrice > 0;
-  const hasDiscount = hasPrice && hasOriginal && offer.originalPrice! > offer.currentPrice!;
 
   const clickUrl = offer._id
     ? `${API_BASE}/click/${offer._id}${offer.productId ? `?productId=${offer.productId}` : ''}`
@@ -40,37 +37,9 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
               {merchant.name}
             </p>
           )}
-
-          {hasPrice && (
-            <div className="flex items-baseline gap-2.5">
-              <span className="font-display text-2xl sm:text-3xl font-extrabold tabular-nums" style={{ color: 'var(--color-text-1)' }}>
-                {formatINR(offer.currentPrice!)}
-              </span>
-              {hasDiscount && (
-                <>
-                  <span className="text-sm line-through opacity-50 tabular-nums" style={{ color: 'var(--color-text-2)' }}>
-                    {formatINR(offer.originalPrice!)}
-                  </span>
-                  <span
-                    className="text-xs font-bold px-2 py-0.5 rounded-md border"
-                    style={{
-                      background: 'var(--color-accent-3-badge)',
-                      color: 'var(--color-accent-3)',
-                      borderColor: 'var(--color-accent-3)',
-                    }}
-                  >
-                    {Math.round(((offer.originalPrice! - offer.currentPrice!) / offer.originalPrice!) * 100)}% OFF
-                  </span>
-                </>
-              )}
-            </div>
-          )}
-
-          {!hasPrice && (
-            <p className="text-sm font-medium" style={{ color: 'var(--color-text-2)' }}>
-              Live price available at retailer
-            </p>
-          )}
+          <p className="text-sm font-semibold" style={{ color: 'var(--color-text-1)' }}>
+            Authorized Direct Merchant Offer
+          </p>
         </div>
 
         <span
@@ -104,20 +73,14 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
       </div>
 
       {/* Meta notes */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--color-text-2)' }}>
-        {hasPrice && (
-          <p className="flex items-center gap-1">
-            <Info size={12} aria-hidden="true" />
-            Price indicative at time of review
-          </p>
-        )}
-        {offer.offerLastVerifiedAt && (
+      {offer.offerLastVerifiedAt && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--color-text-2)' }}>
           <p className="flex items-center gap-1">
             <Clock size={12} aria-hidden="true" />
             Verified: {formatDate(offer.offerLastVerifiedAt)}
           </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Primary Affiliate Action */}
       <a

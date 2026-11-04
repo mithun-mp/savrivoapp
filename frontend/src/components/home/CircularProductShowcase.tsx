@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { Product } from '@/types';
-import { formatINR } from '@/lib/api';
 import { url } from '@/lib/paths';
 import { isRealProduct } from '@/lib/showcase-selection';
 import { Sparkles, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -97,17 +96,6 @@ export default function CircularProductShowcase({
     }
   }, [activeIndex, reducedMotion, items.length]);
 
-  const getProductPrice = (p?: Product): { current: number | null; original: number | null } => {
-    if (!p) return { current: null, original: null };
-    if (p.offers && p.offers.length > 0 && p.offers[0].currentPrice) {
-      return {
-        current: p.offers[0].currentPrice,
-        original: p.offers[0].originalPrice || null,
-      };
-    }
-    return { current: null, original: null };
-  };
-
   const handleImageError = (id: string) => {
     setImageErrors((prev) => ({ ...prev, [id]: true }));
   };
@@ -183,7 +171,6 @@ export default function CircularProductShowcase({
         >
           {items.map((prod, idx) => {
             const isActive = idx === activeIndex;
-            const priceInfo = getProductPrice(prod);
             const isEditorChoice = Boolean(prod.featured);
             const hasImgError = imageErrors[prod._id];
             const mainImg = prod.images?.[0]?.url;
@@ -285,7 +272,7 @@ export default function CircularProductShowcase({
                     )}
 
                     {/* Title */}
-                    <a href={url(`/product/${prod.slug}`)} className="block mb-2 group">
+                    <a href={url(`/product/${prod.slug}`)} className="block mb-4 group">
                       <h3
                         className="font-display text-sm font-bold leading-snug line-clamp-2 transition-colors group-hover:text-[var(--color-accent-3)]"
                         style={{ color: 'var(--color-text-1)' }}
@@ -293,32 +280,6 @@ export default function CircularProductShowcase({
                         {prod.title}
                       </h3>
                     </a>
-
-                    {/* Price and Discount */}
-                    <div className="flex items-baseline justify-center gap-2 mb-3">
-                      {priceInfo.current !== null ? (
-                        <>
-                          <span
-                            className="font-display text-lg font-extrabold tabular-nums"
-                            style={{ color: 'var(--color-text-1)' }}
-                          >
-                            {formatINR(priceInfo.current)}
-                          </span>
-                          {priceInfo.original && priceInfo.original > priceInfo.current && (
-                            <span
-                              className="text-xs line-through opacity-50 tabular-nums"
-                              style={{ color: 'var(--color-text-2)' }}
-                            >
-                              {formatINR(priceInfo.original)}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-xs font-medium" style={{ color: 'var(--color-text-2)' }}>
-                          Verified Retailer Offer
-                        </span>
-                      )}
-                    </div>
 
                     {/* Clear View Details Action */}
                     <a
@@ -380,17 +341,11 @@ export default function CircularProductShowcase({
                       )}
                     </div>
 
-                    {/* Compact Price / Brand footer */}
+                    {/* Compact Brand footer */}
                     <div className="w-full text-center mt-1 pt-1 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                      {priceInfo.current !== null ? (
-                        <span className="text-[11px] font-extrabold tabular-nums block truncate" style={{ color: 'var(--color-text-1)' }}>
-                          {formatINR(priceInfo.current)}
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold block truncate" style={{ color: 'var(--color-accent-3)' }}>
-                          {prod.brand || 'Featured'}
-                        </span>
-                      )}
+                      <span className="text-[10px] font-bold block truncate" style={{ color: 'var(--color-accent-3)' }}>
+                        {prod.brand || 'Verified'}
+                      </span>
                     </div>
                   </button>
                 )}
@@ -469,7 +424,6 @@ export default function CircularProductShowcase({
         >
           {items.map((prod, idx) => {
             const isActive = idx === activeIndex;
-            const priceInfo = getProductPrice(prod);
             const mainImg = prod.images?.[0]?.url;
             const hasImgError = imageErrors[prod._id];
 
@@ -550,23 +504,14 @@ export default function CircularProductShowcase({
                   </h4>
                 </a>
 
-                {/* Price & CTA */}
+                {/* Action CTA */}
                 <div
                   className="mt-auto pt-2 flex items-center justify-between border-t"
                   style={{ borderColor: 'var(--color-border)' }}
                 >
-                  {priceInfo.current !== null ? (
-                    <span
-                      className="font-display text-base font-extrabold tabular-nums"
-                      style={{ color: 'var(--color-text-1)' }}
-                    >
-                      {formatINR(priceInfo.current)}
-                    </span>
-                  ) : (
-                    <span className="text-xs" style={{ color: 'var(--color-text-2)' }}>
-                      Verified Partner
-                    </span>
-                  )}
+                  <span className="text-xs font-semibold" style={{ color: 'var(--color-text-2)' }}>
+                    Verified Partner
+                  </span>
 
                   <a
                     href={url(`/product/${prod.slug}`)}
