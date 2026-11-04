@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Offer, Merchant } from '@/types';
-import { formatINR, formatDate } from '@/lib/api';
+import { formatINR, formatDate, API_BASE } from '@/lib/api';
 import { ExternalLink, Clock, Info } from 'lucide-react';
 import AffiliateDisclosure from '../ui/AffiliateDisclosure';
 
@@ -19,6 +19,8 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
   const hasPrice = typeof offer.currentPrice === 'number' && offer.currentPrice > 0;
   const hasOriginal = typeof offer.originalPrice === 'number' && offer.originalPrice > 0;
   const hasDiscount = hasPrice && hasOriginal && offer.originalPrice! > offer.currentPrice!;
+
+  const clickUrl = offer._id ? `${API_BASE}/click/${offer._id}` : offer.affiliateUrl;
 
   return (
     <div
@@ -105,7 +107,7 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
 
       {/* Primary Affiliate Action */}
       <a
-        href={offer.affiliateUrl}
+        href={clickUrl}
         target="_blank"
         rel="sponsored nofollow noopener noreferrer"
         className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white transition-all duration-150 hover:brightness-105 active:scale-[0.98] min-h-[48px] shadow-sv-sm cursor-pointer"

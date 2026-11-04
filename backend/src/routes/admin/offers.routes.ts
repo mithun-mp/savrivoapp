@@ -6,6 +6,7 @@ import {
   updateOffer,
   expireOffer,
   deleteOffer,
+  refreshOffer,
 } from '../../controllers/offer.controller';
 import { requireAuth } from '../../middleware/auth.middleware';
 
@@ -16,5 +17,7 @@ router.get('/:id', getOffer);
 router.post('/', createOffer);
 router.patch('/:id', updateOffer);
 router.post('/:id/expire', expireOffer);
+router.post('/:id/refresh', refreshOffer);
 router.delete('/:id', deleteOffer);
+
 export default router;

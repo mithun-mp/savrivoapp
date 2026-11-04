@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ProductImage } from '@/types';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 
 interface ProductGalleryProps {
   images: ProductImage[];
@@ -60,7 +60,7 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
             className="w-full h-full object-contain p-6 sm:p-8 img-zoom-target reveal-fade-up"
             loading={active === 0 ? 'eager' : 'lazy'}
             decoding="async"
-            onError={() => setImgErrors(prev => ({ ...prev, [active]: true }))}
+            onError={() => setImgErrors((prev) => ({ ...prev, [active]: true }))}
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-6" style={{ color: 'var(--color-text-2)' }}>
@@ -97,7 +97,7 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
         {images.length > 1 && (
           <>
             <button
-              onClick={() => setActive(i => Math.max(0, i - 1))}
+              onClick={() => setActive((i) => Math.max(0, i - 1))}
               disabled={active === 0}
               className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-150 hover:scale-105 active:scale-95 shadow-sv-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
               style={{
@@ -110,7 +110,7 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
               <ChevronLeft size={20} />
             </button>
             <button
-              onClick={() => setActive(i => Math.min(images.length - 1, i + 1))}
+              onClick={() => setActive((i) => Math.min(images.length - 1, i + 1))}
               disabled={active === images.length - 1}
               className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-150 hover:scale-105 active:scale-95 shadow-sv-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
               style={{
@@ -133,7 +133,7 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
             <button
               key={i}
               onClick={() => setActive(i)}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden flex-shrink-0 transition-all duration-150 hover:opacity-95 p-1 relative"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden flex-shrink-0 transition-all duration-150 hover:opacity-95 p-1 relative flex items-center justify-center"
               style={{
                 border: i === active ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
                 background: 'var(--color-overlay)',
@@ -142,14 +142,16 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
               aria-label={`View image ${i + 1} of ${images.length}`}
               aria-pressed={i === active}
             >
-              {!imgErrors[i] && (
+              {!imgErrors[i] ? (
                 <img
                   src={thumb.url}
                   alt={thumb.alt || `Thumbnail ${i + 1}`}
                   className="w-full h-full object-contain"
                   loading="lazy"
-                  onError={() => setImgErrors(prev => ({ ...prev, [i]: true }))}
+                  onError={() => setImgErrors((prev) => ({ ...prev, [i]: true }))}
                 />
+              ) : (
+                <ImageIcon size={18} className="opacity-40" />
               )}
             </button>
           ))}
@@ -158,4 +160,3 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
     </div>
   );
 }
-

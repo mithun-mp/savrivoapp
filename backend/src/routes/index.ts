@@ -6,6 +6,7 @@ import merchantRoutes from './public/merchants.routes';
 import guideRoutes from './public/guides.routes';
 import searchRoutes from './public/search.routes';
 import offerRoutes from './public/offers.routes';
+import clickRoutes from './public/click.routes';
 import adminAuthRoutes from './admin/auth.routes';
 import adminProductRoutes from './admin/products.routes';
 import adminCategoryRoutes from './admin/categories.routes';
@@ -26,6 +27,7 @@ router.use('/merchants', merchantRoutes);
 router.use('/guides', guideRoutes);
 router.use('/search', searchRoutes);
 router.use('/offers', offerRoutes);
+router.use('/click', clickRoutes);
 
 // Admin routes
 router.use('/admin/auth', adminAuthRoutes);

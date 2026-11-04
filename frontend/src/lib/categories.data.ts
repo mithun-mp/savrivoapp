@@ -96,20 +96,34 @@ export const CONTROLLED_CATEGORY_SNAPSHOT: Category[] = [
 /**
  * Retrieves categories for static route generation and category directories.
  * Attempts to query the live API with a bounded 4-second timeout.
- * If unreachable, timed out, or empty, seamlessly utilizes the controlled snapshot
- * and logs a visible build notice so operators know the fallback was engaged.
+ * Merges snapshot categories with any live categories to guarantee deterministic
+ * static builds regardless of live database warming state or cold-start timeouts.
  */
 export async function getBuildCategories(): Promise<{ categories: Category[]; isFallback: boolean }> {
+  const mergedMap = new Map<string, Category>();
+
+  // 1. Seed with snapshot categories to guarantee complete baseline
+  for (const cat of CONTROLLED_CATEGORY_SNAPSHOT) {
+    mergedMap.set(cat.slug, cat);
+  }
+
+  let isFallback = true;
+
   try {
     const res = await fetch(`${API_BASE}/categories`, { signal: AbortSignal.timeout(4000) });
     if (res.ok) {
       const json = await res.json();
       const liveCategories: Category[] = (json.data as Category[] || []).filter((c) => c.active !== false);
       if (liveCategories.length > 0) {
+        isFallback = false;
         console.log(
           `[SAVRIVO Build] Successfully retrieved ${liveCategories.length} live categories from ${API_BASE}/categories.`
         );
-        return { categories: liveCategories, isFallback: false };
+        for (const live of liveCategories) {
+          if (live.slug) {
+            mergedMap.set(live.slug, { ...(mergedMap.get(live.slug) || {}), ...live });
+          }
+        }
       }
     }
   } catch (err: unknown) {
@@ -120,9 +134,9 @@ export async function getBuildCategories(): Promise<{ categories: Category[]; is
     );
   }
 
-  console.warn(
-    `[SAVRIVO Build Notice] Live API returned empty or inactive category list. ` +
-    `Utilizing controlled category snapshot (${CONTROLLED_CATEGORY_SNAPSHOT.length} categories) for deterministic static route generation.`
+  const categories = Array.from(mergedMap.values()).sort(
+    (a, b) => (a.displayOrder || 99) - (b.displayOrder || 99)
   );
-  return { categories: CONTROLLED_CATEGORY_SNAPSHOT, isFallback: true };
+
+  return { categories, isFallback };
 }

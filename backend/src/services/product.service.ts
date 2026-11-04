@@ -1,4 +1,5 @@
 import { Product } from '../models/Product.model';
+import { Offer } from '../models/Offer.model';
 import { slugify } from '../utils/slugify';
 import { getPagination } from '../utils/pagination';
 import type { Request } from 'express';
@@ -32,15 +33,31 @@ export async function getProducts(query: Request['query']) {
 }
 
 export async function getProductBySlug(slug: string) {
-  return Product.findOne({ slug, status: 'published' })
+  const product = await Product.findOne({ slug, status: 'published' })
     .populate('categoryId', 'name slug')
     .lean();
+  if (!product) return null;
+
+  const offers = await Offer.find({ productId: product._id, status: 'active' })
+    .populate('merchantId', 'name slug websiteUrl logoUrl')
+    .sort({ currentPrice: 1, createdAt: -1 })
+    .lean();
+
+  return { ...product, offers };
 }
 
 export async function getProductById(id: string) {
-  return Product.findById(id)
+  const product = await Product.findById(id)
     .populate('categoryId', 'name slug')
     .lean();
+  if (!product) return null;
+
+  const offers = await Offer.find({ productId: product._id })
+    .populate('merchantId', 'name slug websiteUrl logoUrl')
+    .sort({ currentPrice: 1, createdAt: -1 })
+    .lean();
+
+  return { ...product, offers };
 }
 
 export async function createProduct(data: Record<string, unknown>) {

@@ -1,25 +1,13 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-import ProductGallery from '../../components/product/ProductGallery';
-import OfferCard from '../../components/product/OfferCard';
-import ProductGrid from '../../components/product/ProductGrid';
-import Breadcrumb from '../../components/ui/Breadcrumb';
-import AffiliateDisclosure from '../../components/ui/AffiliateDisclosure';
-import { url } from '../../lib/paths';
+import ProductDetailView from '../../components/product/ProductDetailView';
+import { getBuildProducts } from '../../lib/products.data';
 import { API_BASE } from '../../lib/api';
 import type { Product, Offer, Category } from '../../types';
-import { ShieldCheck, ExternalLink, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export async function getStaticPaths() {
-  try {
-    const res = await fetch(`${API_BASE}/products?limit=100&status=published`, { signal: AbortSignal.timeout(6000) });
-    if (!res.ok) return [];
-    const json = await res.json();
-    const products: Product[] = json.data || [];
-    return products.map(p => ({ params: { slug: p.slug }, props: { product: p } }));
-  } catch {
-    return [];
-  }
+  const products = await getBuildProducts();
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
 }
 
 const { product } = Astro.props as { product: Product };
@@ -27,20 +15,28 @@ const { product } = Astro.props as { product: Product };
 let offers: Offer[] = [];
 let relatedProducts: Product[] = [];
 try {
-  const catId = typeof product.categoryId === 'object' ? (product.categoryId as Category)._id : product.categoryId;
-  const [offersRes, relRes] = await Promise.all([
+  const catId = typeof product.categoryId === 'object' ? (product.categoryId as Category)?._id : product.categoryId;
+  const [productDetailRes, relRes] = await Promise.all([
     fetch(`${API_BASE}/products/${product.slug}`, { signal: AbortSignal.timeout(5000) }),
     fetch(`${API_BASE}/products?limit=6${catId ? `&category=${catId}` : ''}`, { signal: AbortSignal.timeout(4000) }),
   ]);
+
+  if (productDetailRes.ok) {
+    const json = await productDetailRes.json();
+    if (json?.data?.offers && Array.isArray(json.data.offers)) {
+      offers = json.data.offers;
+    }
+  }
 
   if (relRes.ok) {
     const j = await relRes.json();
     relatedProducts = (j.data || []).filter((p2: Product) => p2._id !== product._id).slice(0, 4);
   }
-} catch {}
+} catch {
+  // If API fetch fails during static generation, default to empty offers (offers will load or fallback on client)
+}
 
-const categoryName = typeof product.categoryId === 'object' ? (product.categoryId as Category).name : '';
-const categorySlug = typeof product.categoryId === 'object' ? (product.categoryId as Category).slug : '';
+const categoryName = typeof product.categoryId === 'object' && product.categoryId ? (product.categoryId as Category).name : '';
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -49,6 +45,13 @@ const structuredData = {
   "description": product.shortDescription || '',
   "brand": product.brand ? { "@type": "Brand", "name": product.brand } : undefined,
   "image": product.images?.[0]?.url,
+  "offers": offers.length > 0 ? offers.map(o => ({
+    "@type": "Offer",
+    "price": o.currentPrice || undefined,
+    "priceCurrency": o.currency || 'INR',
+    "availability": o.availability === 'in_stock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    "url": o.affiliateUrl || o.productUrl,
+  })) : undefined,
 };
 ---
 
@@ -60,256 +63,10 @@ const structuredData = {
   ogType="product"
   structuredData={structuredData}
 >
-  <div class="section py-6 sm:py-10">
-    <div class="container-content">
-      {/* Breadcrumb Navigation */}
-      <div class="mb-6 sm:mb-8">
-        <Breadcrumb
-          client:load
-          items={[
-            { label: 'Home', href: '/' },
-            { label: 'Products', href: '/products' },
-            ...(categoryName ? [{ label: categoryName, href: `/category/${categorySlug}` }] : []),
-            { label: product.title },
-          ]}
-        />
-      </div>
-
-      {/* Main Product Showcase Grid */}
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 mb-16 lg:mb-20">
-        {/* Gallery Column (Sticky on Desktop) */}
-        <div class="lg:col-span-6 xl:col-span-5 lg:sticky lg:top-28 self-start">
-          <ProductGallery images={product.images || []} title={product.title} client:load />
-
-          {/* Trust Value Badges under Gallery */}
-          <div
-            className="mt-6 p-4 rounded-2xl border flex items-center justify-around gap-2 text-xs"
-            style="background: var(--color-surface); border-color: var(--color-border);"
-          >
-            <div class="flex items-center gap-1.5 font-medium" style="color: var(--color-text-2)">
-              <ShieldCheck size={16} class="text-[var(--color-accent)]" />
-              <span>Verified Specs</span>
-            </div>
-            <div class="w-px h-4" style="background: var(--color-border)"></div>
-            <div class="flex items-center gap-1.5 font-medium" style="color: var(--color-text-2)">
-              <Sparkles size={16} class="text-[var(--color-accent)]" />
-              <span>Unbiased Review</span>
-            </div>
-            <div class="w-px h-4" style="background: var(--color-border)"></div>
-            <div class="flex items-center gap-1.5 font-medium" style="color: var(--color-text-2)">
-              <CheckCircle2 size={16} class="text-[var(--color-accent)]" />
-              <span>Authentic Links</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Product Details & Actions Column */}
-        <div class="lg:col-span-6 xl:col-span-7 flex flex-col gap-6">
-          {/* Category & Brand Meta */}
-          <div class="flex flex-wrap items-center gap-2.5">
-            {categoryName && (
-              <a href={url(`/category/${categorySlug}`)} class="inline-flex">
-                <span
-                  class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full transition-transform hover:scale-105"
-                  style="background: var(--color-accent-badge); color: var(--color-accent-badge-text); border: 1px solid var(--color-border)"
-                >
-                  {categoryName}
-                </span>
-              </a>
-            )}
-
-            {product.featured && (
-              <span
-                class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full"
-                style="background: var(--color-curated-badge); color: var(--color-curated-text); border: 1px solid var(--color-border)"
-              >
-                Editor's Pick
-              </span>
-            )}
-          </div>
-
-          <div>
-            {product.brand && (
-              <p class="text-xs sm:text-sm font-bold uppercase tracking-widest mb-2" style="color: var(--color-accent)">
-                {product.brand}
-              </p>
-            )}
-            <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-snug tracking-tight" style="color: var(--color-text-1)">
-              {product.title}
-            </h1>
-          </div>
-
-          {product.shortDescription && (
-            <p class="text-base sm:text-lg leading-relaxed" style="color: var(--color-text-2)">
-              {product.shortDescription}
-            </p>
-          )}
-
-          {/* Key Highlights Glass Card */}
-          {product.highlights && product.highlights.length > 0 && (
-            <div
-              class="p-5 sm:p-6 rounded-2xl border"
-              style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
-            >
-              <h2 class="text-xs font-bold uppercase tracking-widest mb-3.5 flex items-center gap-2" style="color: var(--color-text-1)">
-                <Sparkles size={14} style="color: var(--color-accent)" />
-                Key Highlights & Capabilities
-              </h2>
-              <ul class="space-y-2.5">
-                {product.highlights.map(h => (
-                  <li class="flex items-start gap-3 text-sm leading-relaxed" style="color: var(--color-text-1)">
-                    <span class="mt-1.5 w-2 h-2 rotate-45 shrink-0" style="background: var(--color-accent)"></span>
-                    <span>{h}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Retailer Offers & Direct Purchase Actions */}
-          <div class="space-y-3 pt-2">
-            <div class="flex items-center justify-between">
-              <h2 class="text-xs font-bold uppercase tracking-widest" style="color: var(--color-text-2)">
-                Verified Retailer Offers
-              </h2>
-              <span class="text-xs" style="color: var(--color-text-2)">INR Currency</span>
-            </div>
-
-            {offers.length > 0 ? (
-              <div class="space-y-4">
-                {offers.map(offer => <OfferCard offer={offer} client:load />)}
-              </div>
-            ) : (
-              <div
-                class="p-6 rounded-2xl border flex flex-col gap-3"
-                style="background: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-sm);"
-              >
-                <div class="flex items-start gap-3">
-                  <div class="p-2.5 rounded-xl shrink-0" style="background: var(--color-accent-badge); color: var(--color-accent)">
-                    <ShieldCheck size={20} />
-                  </div>
-                  <div>
-                    <h3 class="text-base font-bold mb-1" style="color: var(--color-text-1)">
-                      Retailer Availability & Pricing
-                    </h3>
-                    <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--color-text-2)">
-                      This product is actively available across leading Indian merchants. Live price feeds and multi-store comparison links are verified directly before each recommendation is featured.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="pt-2 flex flex-col sm:flex-row gap-3">
-                  <a
-                    href={`https://www.amazon.in/s?k=${encodeURIComponent(product.title)}`}
-                    target="_blank"
-                    rel="sponsored nofollow noopener noreferrer"
-                    class="flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-bold text-sm text-white transition-opacity hover:opacity-95 shadow-sv-sm min-h-[44px]"
-                    style="background: var(--color-accent)"
-                  >
-                    <span>Check on Amazon India</span>
-                    <ExternalLink size={15} />
-                  </a>
-                  <a
-                    href={`https://www.flipkart.com/search?q=${encodeURIComponent(product.title)}`}
-                    target="_blank"
-                    rel="sponsored nofollow noopener noreferrer"
-                    class="flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-bold text-sm border transition-colors hover:bg-[var(--color-overlay)] min-h-[44px]"
-                    style="border-color: var(--color-border); color: var(--color-text-1); background: var(--color-surface)"
-                  >
-                    <span>Search on Flipkart</span>
-                    <ExternalLink size={15} />
-                  </a>
-                </div>
-              </div>
-            )}
-
-            <div class="pt-2">
-              <AffiliateDisclosure />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Specifications Section */}
-      {product.specifications && product.specifications.length > 0 && (
-        <section class="mb-16 pt-8 border-t" style={{ borderColor: 'var(--color-border)' }}>
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider block mb-1" style="color: var(--color-accent)">
-                Technical Details
-              </span>
-              <h2 class="font-display text-2xl sm:text-3xl font-bold" style="color: var(--color-text-1)">
-                Product Specifications
-              </h2>
-            </div>
-          </div>
-
-          <div
-            class="rounded-2xl overflow-hidden border"
-            style="border-color: var(--color-border); box-shadow: var(--shadow-sm);"
-          >
-            {product.specifications.map((spec, i) => (
-              <div
-                class="flex flex-col sm:flex-row sm:items-center px-5 sm:px-6 py-3.5 transition-colors"
-                style={{
-                  borderBottom: i < product.specifications.length - 1 ? '1px solid var(--color-border)' : 'none',
-                  background: i % 2 === 0 ? 'var(--color-surface)' : 'var(--color-overlay)',
-                }}
-              >
-                <div class="sm:w-56 shrink-0 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-1 sm:mb-0" style="color: var(--color-text-2)">
-                  {spec.key}
-                </div>
-                <div class="flex-1 text-sm font-medium" style="color: var(--color-text-1)">
-                  {spec.value}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Full Editorial Description */}
-      {product.fullDescription && (
-        <section class="mb-16 max-w-3xl pt-8 border-t" style={{ borderColor: 'var(--color-border)' }}>
-          <span class="text-xs font-bold uppercase tracking-wider block mb-1" style="color: var(--color-accent)">
-            Editorial Review
-          </span>
-          <h2 class="font-display text-2xl sm:text-3xl font-bold mb-6" style="color: var(--color-text-1)">
-            About This Discovery
-          </h2>
-          <div
-            class="prose prose-sm sm:prose-base max-w-none leading-relaxed"
-            style="color: var(--color-text-2)"
-            set:html={product.fullDescription}
-          />
-        </section>
-      )}
-
-      {/* Related Products Grid */}
-      {relatedProducts.length > 0 && (
-        <section class="pt-12 border-t" style={{ borderColor: 'var(--color-border)' }}>
-          <div class="flex items-center justify-between mb-8">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider block mb-1" style="color: var(--color-accent)">
-                Smart Alternatives
-              </span>
-              <h2 class="font-display text-2xl sm:text-3xl font-bold" style="color: var(--color-text-1)">
-                You May Also Consider
-              </h2>
-            </div>
-            <a
-              href={url(categorySlug ? `/category/${categorySlug}` : '/products')}
-              class="text-xs sm:text-sm font-semibold hover:underline"
-              style="color: var(--color-accent)"
-            >
-              Explore more →
-            </a>
-          </div>
-
-          <ProductGrid products={relatedProducts} skeletonCount={4} />
-        </section>
-      )}
-    </div>
-  </div>
+  <ProductDetailView
+    client:load
+    product={product}
+    initialOffers={offers}
+    relatedProducts={relatedProducts}
+  />
 </MainLayout>
-

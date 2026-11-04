@@ -13,6 +13,9 @@ import { GeminiModelManager, defaultModelManager } from './gemini-model-manager'
 import { GeminiRotationService, defaultRotationService } from './gemini-rotation.service';
 import { GeminiClient, defaultGeminiClient, type CategoryContext } from './gemini.client';
 import { DuplicateDetector, defaultDuplicateDetector } from './duplicate-detector';
+import { sanitizeProductImages } from './image-validator';
+import { defaultAdapterRegistry } from '../../adapters/merchant-adapter.registry';
+import type { AmazonAdapter } from '../../adapters/amazon.adapter';
 import type {
   ExtractedProductData,
   ImportPreviewResult,
@@ -60,11 +63,31 @@ export class ProductImportService {
     let extracted: ExtractedProductData;
     if (merchantInfo.merchantType === 'amazon') {
       extracted = extractAmazonProduct(fetchResult.html, merchantInfo, inputUrl);
+
+      // Check official Amazon Creators API if configured
+      const amazonAdapter = defaultAdapterRegistry.getAdapter('amazon') as AmazonAdapter;
+      if (amazonAdapter && amazonAdapter.isApiConfigured() && merchantInfo.skuOrAsin) {
+        try {
+          const officialDetails = await amazonAdapter.fetchProductDetails(merchantInfo.skuOrAsin);
+          if (officialDetails?.images && officialDetails.images.length > 0) {
+            extracted.images = officialDetails.images.map((img) => ({
+              url: img.url,
+              alt: img.alt || extracted.rawTitle,
+            }));
+          }
+        } catch {
+          // Keep extracted DOM images if official API call fails
+        }
+      }
     } else if (merchantInfo.merchantType === 'flipkart') {
       extracted = extractFlipkartProduct(fetchResult.html, merchantInfo, inputUrl);
     } else {
       extracted = extractGenericProduct(fetchResult.html, merchantInfo, inputUrl);
     }
+
+    // 4b. Sanitize and validate image URLs
+    const sanitizedImages = await sanitizeProductImages(extracted.images, extracted.rawTitle);
+    extracted.images = sanitizedImages.map((img) => ({ url: img.url, alt: img.alt }));
 
     // 5. Duplicate Check
     const duplicateCheck = await this.duplicateDetector.checkDuplicate({
@@ -107,7 +130,15 @@ export class ProductImportService {
     } else {
       if (extracted.rawTitle && extracted.rawTitle !== 'Untitled Product') confidenceScore += 25;
       if (extracted.images && extracted.images.length > 0) confidenceScore += 20;
-      else warnings.push('No product images were detected. Please upload an image.');
+      else {
+        if (merchantInfo.merchantType === 'amazon') {
+          warnings.push(
+            'Amazon merchant images are unavailable. To retrieve official product images, configure Amazon PA-API / Creators API credentials or upload images manually.'
+          );
+        } else {
+          warnings.push('No product images were detected. Please upload an image.');
+        }
+      }
 
       if (extracted.price !== undefined && extracted.price > 0) confidenceScore += 20;
       else warnings.push('Product price could not be detected automatically.');
@@ -217,7 +248,11 @@ export class ProductImportService {
       finalSlug = `${finalSlug}-${Date.now().toString(36).slice(-4)}`;
     }
 
-    // 3. Create Product Document
+    // 3. Sanitize Images
+    const sanitized = await sanitizeProductImages(data.images, data.title);
+    const finalImages = sanitized.length > 0 ? sanitized.map((img) => ({ url: img.url, alt: img.alt })) : data.images;
+
+    // 4. Create Product Document
     const product = new Product({
       title: data.title,
       slug: finalSlug,
@@ -226,7 +261,7 @@ export class ProductImportService {
       fullDescription: data.fullDescription || undefined,
       categoryId: categoryId || undefined,
       subcategory: data.subcategory || undefined,
-      images: data.images,
+      images: finalImages,
       specifications: data.specifications,
       highlights: data.highlights,
       searchKeywords: data.searchKeywords,
@@ -240,14 +275,14 @@ export class ProductImportService {
 
     await product.save();
 
-    // 4. Create Offer if provided
+    // 5. Create Offer if provided
     let createdOffer: unknown = undefined;
     if (data.offer && data.offer.productUrl) {
       let merchantId = data.offer.merchantId;
 
       // Auto-detect or resolve merchant if merchantId not supplied
+      const detected = detectMerchant(data.offer.productUrl);
       if (!merchantId) {
-        const detected = detectMerchant(data.offer.productUrl);
         let merchant = await Merchant.findOne({
           $or: [
             { name: new RegExp(`^${detected.merchantName}$`, 'i') },
@@ -270,11 +305,14 @@ export class ProductImportService {
       }
 
       if (merchantId) {
+        const adapter = defaultAdapterRegistry.getAdapter(detected.merchantName);
+        const compliantAffiliateUrl = adapter.generateAffiliateLink(data.offer.productUrl);
+
         const offer = new Offer({
           productId: product._id,
           merchantId,
           productUrl: data.offer.productUrl,
-          affiliateUrl: data.offer.affiliateUrl || data.offer.productUrl,
+          affiliateUrl: compliantAffiliateUrl || data.offer.affiliateUrl || data.offer.productUrl,
           currentPrice: data.offer.currentPrice || undefined,
           originalPrice: data.offer.originalPrice || undefined,
           currency: data.offer.currency || 'INR',
@@ -302,4 +340,3 @@ export class ProductImportService {
 }
 
 export const defaultProductImportService = new ProductImportService();
-

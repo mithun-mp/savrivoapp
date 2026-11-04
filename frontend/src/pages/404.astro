@@ -1,0 +1,97 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import ProductDetailClientLoader from '../components/product/ProductDetailClientLoader';
+import { url } from '../lib/paths';
+import { ShoppingBag, Compass, BookOpen, ArrowLeft } from 'lucide-react';
+---
+
+<MainLayout
+  title="Page Not Found — 404 | SAVRIVO"
+  description="The page you are looking for does not exist on SAVRIVO."
+  noindex={true}
+>
+  {/* Client-side dynamic product route interceptor */}
+  <div id="dynamic-product-container">
+    <ProductDetailClientLoader client:load />
+  </div>
+
+  {/* Standard 404 Page (displayed for non-product 404s) */}
+  <div id="generic-404-container" class="section py-16 sm:py-24 text-center min-h-[60vh] flex items-center justify-center">
+    <div class="container-content max-w-lg space-y-6">
+      <div
+        class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center border font-display text-3xl font-extrabold shadow-sm"
+        style="background: var(--color-surface); borderColor: var(--color-border); color: var(--color-accent);"
+      >
+        404
+      </div>
+
+      <div>
+        <h1 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-3" style="color: var(--color-text-1)">
+          Page Not Found
+        </h1>
+        <p class="text-base sm:text-lg leading-relaxed" style="color: var(--color-text-2)">
+          The page or product you requested cannot be found or may have been moved.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
+        <a
+          href={url('/products')}
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all hover:border-[var(--color-accent)] group"
+          style="background: var(--color-surface); borderColor: var(--color-border);"
+        >
+          <ShoppingBag size={20} class="text-[var(--color-accent)] transition-transform group-hover:scale-110" />
+          <span class="text-xs font-bold" style="color: var(--color-text-1)">Browse Catalog</span>
+        </a>
+
+        <a
+          href={url('/categories')}
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all hover:border-[var(--color-accent)] group"
+          style="background: var(--color-surface); borderColor: var(--color-border);"
+        >
+          <Compass size={20} class="text-[var(--color-accent)] transition-transform group-hover:scale-110" />
+          <span class="text-xs font-bold" style="color: var(--color-text-1)">All Categories</span>
+        </a>
+
+        <a
+          href={url('/guides')}
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all hover:border-[var(--color-accent)] group"
+          style="background: var(--color-surface); borderColor: var(--color-border);"
+        >
+          <BookOpen size={20} class="text-[var(--color-accent)] transition-transform group-hover:scale-110" />
+          <span class="text-xs font-bold" style="color: var(--color-text-1)">Buying Guides</span>
+        </a>
+      </div>
+
+      <div class="pt-4">
+        <a
+          href={url('/')}
+          class="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold text-sm text-white transition-opacity hover:opacity-90"
+          style="background: var(--color-accent);"
+        >
+          <ArrowLeft size={16} />
+          <span>Return to Homepage</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    // Immediate client inspection: toggle between dynamic product hydration and generic 404
+    (function () {
+      var pathname = window.location.pathname;
+      var isProduct = /\/(?:savrivo|savrivoapp)?\/?product\/[a-zA-Z0-9_-]+/i.test(pathname);
+      var productContainer = document.getElementById('dynamic-product-container');
+      var genericContainer = document.getElementById('generic-404-container');
+
+      if (isProduct) {
+        if (genericContainer) genericContainer.style.display = 'none';
+        if (productContainer) productContainer.style.display = 'block';
+      } else {
+        if (productContainer) productContainer.style.display = 'none';
+        if (genericContainer) genericContainer.style.display = 'flex';
+      }
+    })();
+  </script>
+</MainLayout>
+

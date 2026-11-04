@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as productService from '../services/product.service';
+import { defaultMerchantRefreshService } from '../services/merchant-refresh.service';
 import { createProductSchema, updateProductSchema } from '../validators/product.validator';
 import { sendSuccess, sendError } from '../utils/response';
 
@@ -17,6 +18,27 @@ export async function getProduct(req: Request, res: Response, next: NextFunction
     const product = await productService.getProductBySlug(req.params.slug);
     if (!product) { sendError(res, 'Product not found', 404, 'NOT_FOUND'); return; }
     sendSuccess(res, product);
+  } catch (err) { next(err); }
+}
+
+export async function refreshProductData(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const result = await defaultMerchantRefreshService.refreshProductOffers(req.params.slug);
+    if (!result.success || !result.product) {
+      sendError(res, 'Product not found', 404, 'NOT_FOUND');
+      return;
+    }
+    sendSuccess(
+      res,
+      {
+        product: result.product,
+        offers: result.offers,
+        refreshedCount: result.refreshedCount,
+        warnings: result.warnings,
+      },
+      200,
+      'Product merchant data refreshed'
+    );
   } catch (err) { next(err); }
 }
 

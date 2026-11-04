@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as offerService from '../services/offer.service';
+import { defaultMerchantRefreshService } from '../services/merchant-refresh.service';
 import { createOfferSchema, updateOfferSchema } from '../validators/offer.validator';
 import { sendSuccess, sendError } from '../utils/response';
 
@@ -58,5 +59,12 @@ export async function deleteOffer(req: Request, res: Response, next: NextFunctio
     const offer = await offerService.deleteOffer(req.params.id);
     if (!offer) { sendError(res, 'Offer not found', 404, 'NOT_FOUND'); return; }
     sendSuccess(res, { id: req.params.id }, 200, 'Offer deleted');
+  } catch (err) { next(err); }
+}
+
+export async function refreshOffer(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { offer, refreshResult } = await defaultMerchantRefreshService.refreshOffer(req.params.id);
+    sendSuccess(res, { offer, refreshResult }, 200, 'Offer data refreshed');
   } catch (err) { next(err); }
 }

@@ -60,6 +60,16 @@ export const api = {
   products: {
     list: (params = '') => apiRequest<unknown[]>(`/products${params ? `?${params}` : ''}`),
     get: (slug: string) => apiRequest<unknown>(`/products/${slug}`),
+    refresh: (slug: string) => apiRequest<unknown>(`/products/${slug}/refresh`, { method: 'POST' }),
+  },
+  click: {
+    getUrl: (offerId: string, campaign?: string) =>
+      `${API_BASE}/click/${offerId}${campaign ? `?campaign=${encodeURIComponent(campaign)}` : ''}`,
+    track: (offerId: string, campaign?: string) =>
+      apiRequest<{ targetUrl: string }>('/click/track', {
+        method: 'POST',
+        body: JSON.stringify({ offerId, campaign }),
+      }),
   },
   categories: {
     list: () => apiRequest<unknown[]>('/categories'),
@@ -150,6 +160,9 @@ export const api = {
       expire: (id: string) => apiRequest<unknown>(`/admin/offers/${id}/expire`, {
         method: 'POST', headers: authHeaders(),
       }),
+      refresh: (id: string) => apiRequest<unknown>(`/admin/offers/${id}/refresh`, {
+        method: 'POST', headers: authHeaders(),
+      }),
     },
 
     guides: {
@@ -206,4 +219,3 @@ export function formatDate(dateStr: string): string {
     year: 'numeric', month: 'long', day: 'numeric',
   }).format(new Date(dateStr));
 }
-
