@@ -249,11 +249,11 @@ describe('Product Extractors', () => {
           {
             "@context": "https://schema.org",
             "@type": "Product",
-            "name": "Sony WH-1000XM5 Wireless Headphones",
+            "name": "AudioTech Pro Wireless Headphones",
             "description": "Industry leading noise cancelling headphones with auto NC optimizer.",
-            "brand": { "@type": "Brand", "name": "Sony" },
-            "image": ["https://images.example.com/sony-xm5.jpg"],
-            "sku": "SONY-XM5-BLK",
+            "brand": { "@type": "Brand", "name": "AudioTech" },
+            "image": ["https://images.example.com/audiotech-pro.jpg"],
+            "sku": "AUDIO-PRO-BLK",
             "offers": {
               "@type": "Offer",
               "price": "29990.00",
@@ -271,17 +271,17 @@ describe('Product Extractors', () => {
       </html>
     `;
 
-    const merchantInfo = detectMerchant('https://www.sony.co.in/headphones/wh-1000xm5');
-    const result = extractGenericProduct(sampleHtml, merchantInfo, 'https://www.sony.co.in/headphones/wh-1000xm5');
+    const merchantInfo = detectMerchant('https://www.audiotech.example.com/headphones/pro');
+    const result = extractGenericProduct(sampleHtml, merchantInfo, 'https://www.audiotech.example.com/headphones/pro');
 
-    assert.equal(result.rawTitle, 'Sony WH-1000XM5 Wireless Headphones');
-    assert.equal(result.brand, 'Sony');
+    assert.equal(result.rawTitle, 'AudioTech Pro Wireless Headphones');
+    assert.equal(result.brand, 'AudioTech');
     assert.equal(result.price, 29990);
     assert.equal(result.currency, 'INR');
     assert.equal(result.availability, 'in_stock');
-    assert.equal(result.skuOrAsin, 'SONY-XM5-BLK');
+    assert.equal(result.skuOrAsin, 'AUDIO-PRO-BLK');
     assert.equal(result.images.length, 1);
-    assert.equal(result.images[0].url, 'https://images.example.com/sony-xm5.jpg');
+    assert.equal(result.images[0].url, 'https://images.example.com/audiotech-pro.jpg');
     assert.equal(result.specifications.length, 2);
     assert.equal(result.specifications[0].key, 'Battery Life');
     assert.equal(result.specifications[0].value, '30 Hours');

@@ -22,7 +22,8 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
     fullDescription:
       'The Blaupunkt BH61 Moksha wireless headphones combine sophisticated German-inspired design with advanced acoustic engineering to deliver an exceptional listening experience. Designed for audiophiles and professionals on the go, these headphones feature True Active Noise Cancellation to isolate you from external distractions, allowing you to focus entirely on your music or calls.\n\nEquipped with a finely tuned audio driver system, the BH61 Moksha produces high-definition sound with a perfect balance of deep bass, clear mids, and crisp highs. The integrated high-sensitivity microphone ensures crystal-clear voice transmission for all your calls and virtual meetings. With an ergonomic build tailored for extended wear, these headphones are the ideal companion for daily commutes, travel, and long work sessions.',
     brand: 'Blaupunkt',
-    categoryId: '6ae9f9cc02bf6219500af7b1',
+    categoryId: '6ae9f9cc02bf6219500af7b1', // Electronics
+    subcategory: 'Audio',
     sourcePlatform: 'amazon',
     canonicalUrl: 'https://link.amazon/B08sWmK9f',
     images: [
@@ -57,17 +58,18 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
         productId: '6aea329ad9ab2abb5fb5edda',
         merchantId: {
           _id: '6aea329ad9ab2abb5fb5ede3',
-          name: 'Amazon India',
-          slug: 'amazon',
-          websiteUrl: 'https://www.amazon.in',
+          name: 'Link',
+          slug: 'link',
+          websiteUrl: 'https://link.amazon',
           enabled: true,
         },
         productUrl: 'https://link.amazon/B08sWmK9f',
         affiliateUrl: 'https://link.amazon/B08sWmK9f',
         currency: 'INR',
-        availability: 'in_stock',
+        availability: 'unknown',
+        sellerName: 'Link',
         sourceType: 'manual',
-        offerLastVerifiedAt: '2026-11-04T12:00:00.000Z',
+        offerLastVerifiedAt: '2026-11-03T19:14:34.874Z',
         status: 'active',
       },
     ],

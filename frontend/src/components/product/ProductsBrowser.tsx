@@ -174,7 +174,7 @@ export default function ProductsBrowser({ initialCategories = [] }: ProductsBrow
             type="text"
             value={brand}
             onChange={e => setBrand(e.target.value)}
-            placeholder="e.g. Blaupunkt, Samsung, Bose"
+            placeholder="e.g. Blaupunkt, Zebronics, Bose"
             className={inputClass}
             style={inputStyle}
             onFocus={e => (e.target.style.borderColor = 'var(--color-accent)')}

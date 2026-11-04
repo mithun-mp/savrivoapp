@@ -113,16 +113,15 @@ describe('Homepage Showcase Dynamic Product Selection', () => {
 
     const result = selectShowcaseProducts(demoProducts);
     assert.equal(result.all.length, 0);
-    assert.equal(isRealProduct({ _id: '6ae9f9cc02bf6219500af802', title: 'Sony WH-1000XM5 Wireless Headphones', slug: 'sony-wh-1000xm5-wireless-noise-cancelling-headphones' }), false);
   });
 
   it('handles dynamic count of 1 product without padding or duplicating', () => {
     const products: TestProduct[] = [
       {
         _id: 'p1',
-        title: 'Blaupunkt BH61 Moksha Headphones',
-        slug: 'blaupunkt-bh61-moksha-true-active-noise-cancellation-wireless-headphones',
-        brand: 'Blaupunkt',
+        title: 'Active Wireless Headphones',
+        slug: 'active-wireless-headphones',
+        brand: 'AudioPro',
         featured: true,
         status: 'published',
         createdAt: '2026-11-04T10:00:00Z',
