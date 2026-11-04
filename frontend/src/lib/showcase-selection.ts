@@ -3,48 +3,76 @@ import type { Product } from '../types';
 export interface ShowcaseSelectionResult {
   recent: Product[];
   editorsChoice: Product[];
-  all: Product[]; // exactly 6 unique items (or as many as available up to 6)
+  all: Product[]; // Dynamic count: up to 3 recent + up to 3 featured, deduplicated
 }
 
 /**
- * Selects exactly six unique products for the homepage showcase:
- * - 3 most recently added products (by createdAt timestamp descending).
- * - 3 latest Editor's Choice products (featured: true, by createdAt/updatedAt descending).
+ * Validates whether a product record is a genuine, published product and not demo/sample content.
+ */
+export function isRealProduct(p: any): boolean {
+  if (!p || typeof p !== 'object') return false;
+  const title = String(p.title || '').trim().toLowerCase();
+  const slug = String(p.slug || '').trim().toLowerCase();
+  const desc = String(p.shortDescription || '').toLowerCase();
+  const brand = String(p.brand || '').trim().toLowerCase();
+
+  // Exclude demo / placeholder titles, slugs, and brands
+  if (title.startsWith('demo:') || title.includes('[demo]') || title.includes('demo brand')) return false;
+  if (slug.startsWith('demo-') || slug === 'demo' || slug.includes('demo-product')) return false;
+  if (desc.startsWith('[demo]') || desc.includes('this is sample data')) return false;
+  if (brand === 'demo brand' || brand === 'demo') return false;
+
+  return Boolean(p._id && p.title && p.slug);
+}
+
+/**
+ * Selects dynamic showcase products for the homepage:
+ * - Up to 3 most recently added products (by createdAt timestamp descending).
+ * - Up to 3 latest Editor's Choice products (featured: true, by createdAt descending).
  *
  * Rules:
- * - No hardcoded products or random picks.
+ * - Excludes all sample, demo, or placeholder products.
  * - Deduplicates between both groups.
- * - If a product appears in both groups, selects the next eligible Editor's Choice product.
- * - If fewer than 3 Editor's Choice products are available, fills from next eligible recent products.
+ * - Dynamic count: does NOT force 6 cards and never duplicates products to pad.
+ * - If fewer exist, returns fewer items (e.g. 1, 2, 3).
+ * - If 0 exist, returns empty array.
  */
 export function selectShowcaseProducts(
-  allProducts: Product[],
-  targetCount: number = 6
+  allProducts: Product[]
 ): ShowcaseSelectionResult {
   if (!Array.isArray(allProducts) || allProducts.length === 0) {
     return { recent: [], editorsChoice: [], all: [] };
   }
 
-  // 1. Filter published products and sort by createdAt descending (newest first)
-  const sortedByRecent = [...allProducts]
-    .filter((p) => p && p.slug && p.status !== 'archived')
-    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+  // 1. Filter out non-published, archived, or demo products
+  const validProducts = allProducts.filter(
+    (p) => p && p.slug && p.status !== 'archived' && isRealProduct(p)
+  );
 
-  // 2. Filter Editor's Choice products (featured: true)
-  const sortedFeatured = sortedByRecent.filter((p) => Boolean(p.featured));
+  if (validProducts.length === 0) {
+    return { recent: [], editorsChoice: [], all: [] };
+  }
 
+  // 2. Sort published products by createdAt descending (newest first)
+  const sortedByRecent = [...validProducts].sort(
+    (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+  );
+
+  // 3. Take up to 3 most recently added products
   const selectedRecent: Product[] = [];
-  const selectedEditorsChoice: Product[] = [];
   const usedIds = new Set<string>();
 
-  // 3. Select 3 most recently added products
   for (const prod of sortedByRecent) {
     if (selectedRecent.length >= 3) break;
     selectedRecent.push(prod);
     usedIds.add(prod._id);
   }
 
-  // 4. Select 3 latest Editor's Choice products that are not duplicates of the 3 recent products
+  // 4. Filter Editor's Choice products (featured: true), newest first
+  const sortedFeatured = sortedByRecent.filter((p) => Boolean(p.featured));
+
+  // 5. Select up to 3 latest Editor's Choice products that are not duplicates of the recent products
+  const selectedEditorsChoice: Product[] = [];
   for (const prod of sortedFeatured) {
     if (selectedEditorsChoice.length >= 3) break;
     if (!usedIds.has(prod._id)) {
@@ -53,23 +81,12 @@ export function selectShowcaseProducts(
     }
   }
 
-  // 5. If combined count is still under targetCount (e.g. fewer than 3 featured products exist),
-  // fill remaining slots from the next eligible recent products to guarantee exactly 6 unique products
+  // 6. Merge groups without padding or duplicating to force 6 cards
   const combined = [...selectedRecent, ...selectedEditorsChoice];
-  if (combined.length < targetCount) {
-    for (const prod of sortedByRecent) {
-      if (combined.length >= targetCount) break;
-      if (!usedIds.has(prod._id)) {
-        combined.push(prod);
-        usedIds.add(prod._id);
-      }
-    }
-  }
 
   return {
     recent: selectedRecent,
     editorsChoice: selectedEditorsChoice,
-    all: combined.slice(0, targetCount),
+    all: combined,
   };
 }
-

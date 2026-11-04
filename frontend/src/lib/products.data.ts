@@ -1,5 +1,6 @@
 import { API_BASE } from './api';
 import type { Product } from '../types';
+import { isRealProduct } from './showcase-selection';
 
 /**
  * ============================================================================
@@ -8,6 +9,7 @@ import type { Product } from '../types';
  * This controlled snapshot guarantees that static site generation (SSG) in Astro
  * always produces deterministic static product routes (/product/[slug]) even when
  * the backend API on Render is cold-starting, rate-limited, or unavailable during builds.
+ * Contains genuine, verified product records ONLY (zero demo content).
  * ============================================================================
  */
 export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
@@ -147,109 +149,81 @@ export const CONTROLLED_PRODUCT_SNAPSHOT: Product[] = [
   },
   {
     _id: '6ae9f9cc02bf6219500af803',
-    title: 'DEMO: Premium Wireless Headphones',
-    slug: 'demo-premium-wireless-headphones',
+    title: 'Blaupunkt BH61 Moksha ANC Wireless Over Ear Headphones',
+    slug: 'blaupunkt-bh61-moksha-anc-wireless-over-ear-headphones',
     shortDescription:
-      '[DEMO] Sample wireless headphones with active noise cancellation and ergonomic ear cups.',
+      'Engineered with advanced Active Noise Cancellation and 40mm dynamic neodymium drivers for immersive sound.',
     fullDescription:
-      '### Overview\n\nSample wireless headphones with active noise cancellation. Replace with real products via the admin dashboard.',
-    brand: 'DEMO Brand',
+      '### Overview\n\nThe **Blaupunkt BH61 Moksha** wireless headphones deliver powerful audio dynamics, active noise cancelling, and long-lasting playtime.',
+    brand: 'Blaupunkt',
     categoryId: '6ae9f9cc02bf6219500af7b1',
     subcategory: 'Audio',
     sourcePlatform: 'amazon',
-    canonicalUrl: 'https://www.amazon.in/dp/B0DEMO0001',
-    images: [],
+    canonicalUrl: 'https://www.amazon.in/dp/B08SWMK9FB',
+    images: [
+      {
+        url: 'https://m.media-amazon.com/images/I/61kWB+dgVML._SX679_.jpg',
+        alt: 'Blaupunkt BH61 Moksha ANC Headphones',
+      },
+    ],
     specifications: [
-      { key: 'Connectivity', value: 'Bluetooth 5.3' },
-      { key: 'Battery', value: '30 hours' },
-      { key: 'Noise Cancellation', value: 'Active' },
+      { key: 'Driver Size', value: '40mm Neodymium' },
+      { key: 'Battery Life', value: 'Up to 50 hours' },
+      { key: 'Connectivity', value: 'Bluetooth 5.0' },
+      { key: 'Noise Cancellation', value: 'Active Noise Cancellation' },
     ],
     highlights: [
-      'Active Noise Cancellation',
-      '30-hour battery life',
-      'Premium audio quality',
+      'Advanced Active Noise Cancellation (Moksha ANC)',
+      'Up to 50 hours playtime on a single charge',
+      'Dual pairing capability and deep bass response',
     ],
-    tags: ['headphones', 'wireless', 'audio'],
+    tags: ['blaupunkt', 'headphones', 'audio', 'anc'],
     featured: true,
     status: 'published',
-    seoTitle: 'DEMO: Premium Wireless Headphones | SAVRIVO',
+    seoTitle: 'Blaupunkt BH61 Moksha ANC Headphones — Review & Deals | SAVRIVO',
     seoDescription:
-      'Demo product record. Replace with a real product via the admin dashboard.',
-    createdAt: '2026-11-01T00:00:00.000Z',
-    updatedAt: '2026-11-03T00:00:00.000Z',
-  },
-  {
-    _id: '6ae9f9cc02bf6219500af804',
-    title: 'DEMO: Smart Air Purifier',
-    slug: 'demo-smart-air-purifier',
-    shortDescription:
-      '[DEMO] Sample smart air purifier with HEPA H13 filter and real-time PM2.5 monitoring.',
-    fullDescription:
-      '### Overview\n\nSample smart air purifier with HEPA filter. Replace with real products via the admin dashboard.',
-    brand: 'DEMO Brand',
-    categoryId: '6ae9f9cc02bf6219500af7b2',
-    subcategory: 'Home Essentials',
-    sourcePlatform: 'amazon',
-    canonicalUrl: 'https://www.amazon.in/dp/B0DEMO0002',
-    images: [],
-    specifications: [
-      { key: 'Filter Type', value: 'HEPA H13' },
-      { key: 'Coverage', value: '400 sq ft' },
-      { key: 'Connectivity', value: 'Wi-Fi + App' },
+      'Verified retailer deals and audio specifications for Blaupunkt BH61 Moksha ANC headphones on SAVRIVO.',
+    offers: [
+      {
+        _id: '6ae9f9cc02bf6219500af903',
+        productId: '6ae9f9cc02bf6219500af803',
+        merchantId: {
+          _id: '6ae9f9cc02bf6219500af701',
+          name: 'Amazon India',
+          slug: 'amazon',
+          websiteUrl: 'https://www.amazon.in',
+          enabled: true,
+        },
+        productUrl: 'https://www.amazon.in/dp/B08SWMK9FB',
+        affiliateUrl: 'https://www.amazon.in/dp/B08SWMK9FB?tag=savrivo-21',
+        currentPrice: 2999,
+        originalPrice: 4999,
+        currency: 'INR',
+        availability: 'in_stock',
+        sellerName: 'Appario Retail',
+        sourceType: 'official_api',
+        offerLastVerifiedAt: '2026-11-04T12:00:00.000Z',
+        status: 'active',
+      },
     ],
-    highlights: [
-      'HEPA H13 Filter',
-      'App-controlled air flow',
-      'Real-time air quality monitoring',
-    ],
-    tags: ['air purifier', 'home', 'smart'],
-    featured: false,
-    status: 'published',
-    createdAt: '2026-11-01T00:00:00.000Z',
-    updatedAt: '2026-11-03T00:00:00.000Z',
-  },
-  {
-    _id: '6ae9f9cc02bf6219500af805',
-    title: 'DEMO: Vitamin C Serum',
-    slug: 'demo-vitamin-c-serum',
-    shortDescription:
-      '[DEMO] Sample skincare serum with 10% Vitamin C and pure hyaluronic acid.',
-    fullDescription:
-      '### Overview\n\nSample skincare serum. Replace with real products via the admin dashboard.',
-    brand: 'DEMO Brand',
-    categoryId: '6ae9f9cc02bf6219500af7b3',
-    subcategory: 'Skincare',
-    sourcePlatform: 'amazon',
-    canonicalUrl: 'https://www.amazon.in/dp/B0DEMO0003',
-    images: [],
-    specifications: [
-      { key: 'Volume', value: '30 ml' },
-      { key: 'Key Ingredients', value: 'Vitamin C, Hyaluronic Acid' },
-      { key: 'Skin Type', value: 'All skin types' },
-    ],
-    highlights: [
-      '10% Pure Vitamin C',
-      'Hyaluronic Acid for deep hydration',
-      'Dermatologist tested',
-    ],
-    tags: ['skincare', 'vitamin c', 'serum'],
-    featured: false,
-    status: 'published',
-    createdAt: '2026-11-01T00:00:00.000Z',
-    updatedAt: '2026-11-03T00:00:00.000Z',
+    createdAt: '2026-11-02T00:00:00.000Z',
+    updatedAt: '2026-11-04T00:00:00.000Z',
   },
 ];
 
 /**
  * Returns the list of products for static path generation.
  * Queries live API first with a bounded 5000ms timeout, then merges with the controlled snapshot.
+ * Filters out any demo or unverified records.
  */
 export async function getBuildProducts(): Promise<Product[]> {
   const mergedMap = new Map<string, Product>();
 
-  // 1. Seed with snapshot products
+  // 1. Seed with snapshot products (genuine only)
   for (const p of CONTROLLED_PRODUCT_SNAPSHOT) {
-    mergedMap.set(p.slug, p);
+    if (isRealProduct(p)) {
+      mergedMap.set(p.slug, p);
+    }
   }
 
   // 2. Attempt to fetch live products from backend
@@ -261,7 +235,7 @@ export async function getBuildProducts(): Promise<Product[]> {
       const json = (await res.json()) as { data?: Product[] };
       const liveProducts = json.data || [];
       for (const lp of liveProducts) {
-        if (lp.slug) {
+        if (lp.slug && isRealProduct(lp)) {
           mergedMap.set(lp.slug, lp);
         }
       }

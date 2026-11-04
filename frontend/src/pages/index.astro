@@ -55,14 +55,14 @@ try {
   ]);
 } catch {}
 
-// Combine live products with snapshot to guarantee resilience and deterministic 6 unique items
+// Combine live products with snapshot to guarantee resilience and deterministic items
 const allAvailableProducts = [...recentProducts];
 for (const p of CONTROLLED_PRODUCT_SNAPSHOT) {
   if (!allAvailableProducts.some((ap) => ap.slug === p.slug)) {
     allAvailableProducts.push(p);
   }
 }
-const showcaseResult = selectShowcaseProducts(allAvailableProducts, 6);
+const showcaseResult = selectShowcaseProducts(allAvailableProducts);
 const showcaseProducts = showcaseResult.all;
 
 const topPick = featuredProducts.length > 0 ? featuredProducts[0] : (showcaseProducts[0] || null);

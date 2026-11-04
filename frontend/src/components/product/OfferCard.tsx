@@ -127,7 +127,7 @@ export default function OfferCard({ offer, className = '' }: OfferCardProps) {
         className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white transition-all duration-150 hover:brightness-105 active:scale-[0.98] min-h-[48px] shadow-sv-sm cursor-pointer"
         style={{ background: 'var(--color-accent)' }}
       >
-        <span>Buy at {merchant?.name || 'Retailer'}</span>
+        <span>Buy Now</span>
         <ExternalLink size={16} aria-hidden="true" />
       </a>
 

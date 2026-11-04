@@ -460,7 +460,7 @@ export default function ProductDetailView({
                         className="flex-1 py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white flex items-center justify-center gap-2 transition-transform duration-150 hover:brightness-105 active:scale-[0.98] shadow-md"
                         style={{ background: 'var(--color-accent)' }}
                       >
-                        <span>Buy at {getMerchantName(primaryOffer.merchantId)}</span>
+                        <span>Buy Now</span>
                         <ExternalLink size={18} />
                       </a>
 

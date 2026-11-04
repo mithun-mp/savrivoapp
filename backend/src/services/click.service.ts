@@ -64,7 +64,9 @@ export async function trackOfferClick(params: RecordClickParams): Promise<ClickR
     };
   }
 
-  const offer = await Offer.findById(offerId).populate('productId').populate('merchantId');
+  const offer = await Offer.findById(offerId)
+    .populate({ path: 'productId', populate: { path: 'sourceMerchantId' } })
+    .populate('merchantId');
   if (!offer) {
     return {
       success: false,

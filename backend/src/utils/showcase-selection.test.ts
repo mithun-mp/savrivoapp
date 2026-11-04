@@ -1,29 +1,50 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-// Pure selection algorithm matching frontend/src/lib/showcase-selection.ts
 interface TestProduct {
   _id: string;
   title: string;
   slug: string;
+  brand?: string;
+  shortDescription?: string;
   featured: boolean;
   status: string;
   createdAt: string;
 }
 
-function selectShowcaseProducts(allProducts: TestProduct[], targetCount: number = 6) {
+function isRealProduct(p: any): boolean {
+  if (!p || typeof p !== 'object') return false;
+  const title = String(p.title || '').trim().toLowerCase();
+  const slug = String(p.slug || '').trim().toLowerCase();
+  const desc = String(p.shortDescription || '').toLowerCase();
+  const brand = String(p.brand || '').trim().toLowerCase();
+
+  if (title.startsWith('demo:') || title.includes('[demo]') || title.includes('demo brand')) return false;
+  if (slug.startsWith('demo-') || slug === 'demo' || slug.includes('demo-product')) return false;
+  if (desc.startsWith('[demo]') || desc.includes('this is sample data')) return false;
+  if (brand === 'demo brand' || brand === 'demo') return false;
+
+  return Boolean(p._id && p.title && p.slug);
+}
+
+function selectShowcaseProducts(allProducts: TestProduct[]) {
   if (!Array.isArray(allProducts) || allProducts.length === 0) {
     return { recent: [], editorsChoice: [], all: [] };
   }
 
-  const sortedByRecent = [...allProducts]
-    .filter((p) => p && p.slug && p.status !== 'archived')
-    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+  const validProducts = allProducts.filter(
+    (p) => p && p.slug && p.status !== 'archived' && isRealProduct(p)
+  );
 
-  const sortedFeatured = sortedByRecent.filter((p) => Boolean(p.featured));
+  if (validProducts.length === 0) {
+    return { recent: [], editorsChoice: [], all: [] };
+  }
+
+  const sortedByRecent = [...validProducts].sort(
+    (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+  );
 
   const selectedRecent: TestProduct[] = [];
-  const selectedEditorsChoice: TestProduct[] = [];
   const usedIds = new Set<string>();
 
   for (const prod of sortedByRecent) {
@@ -32,6 +53,9 @@ function selectShowcaseProducts(allProducts: TestProduct[], targetCount: number 
     usedIds.add(prod._id);
   }
 
+  const sortedFeatured = sortedByRecent.filter((p) => Boolean(p.featured));
+
+  const selectedEditorsChoice: TestProduct[] = [];
   for (const prod of sortedFeatured) {
     if (selectedEditorsChoice.length >= 3) break;
     if (!usedIds.has(prod._id)) {
@@ -41,25 +65,83 @@ function selectShowcaseProducts(allProducts: TestProduct[], targetCount: number 
   }
 
   const combined = [...selectedRecent, ...selectedEditorsChoice];
-  if (combined.length < targetCount) {
-    for (const prod of sortedByRecent) {
-      if (combined.length >= targetCount) break;
-      if (!usedIds.has(prod._id)) {
-        combined.push(prod);
-        usedIds.add(prod._id);
-      }
-    }
-  }
 
   return {
     recent: selectedRecent,
     editorsChoice: selectedEditorsChoice,
-    all: combined.slice(0, targetCount),
+    all: combined,
   };
 }
 
-describe('Homepage Showcase 6-Product Selection', () => {
-  it('selects exactly 3 recent and 3 editors choice without overlap', () => {
+describe('Homepage Showcase Dynamic Product Selection', () => {
+  it('returns empty array when 0 products are available', () => {
+    const result = selectShowcaseProducts([]);
+    assert.equal(result.all.length, 0);
+    assert.equal(result.recent.length, 0);
+    assert.equal(result.editorsChoice.length, 0);
+  });
+
+  it('filters out all demo products and returns empty if only demo products exist', () => {
+    const demoProducts: TestProduct[] = [
+      {
+        _id: 'd1',
+        title: 'DEMO: Premium Wireless Headphones',
+        slug: 'demo-premium-wireless-headphones',
+        brand: 'DEMO Brand',
+        shortDescription: '[DEMO] Sample headphones',
+        featured: true,
+        status: 'published',
+        createdAt: '2026-11-04T10:00:00Z',
+      },
+      {
+        _id: 'd2',
+        title: 'DEMO: Smart Air Purifier',
+        slug: 'demo-smart-air-purifier',
+        brand: 'DEMO Brand',
+        shortDescription: 'This is sample data.',
+        featured: false,
+        status: 'published',
+        createdAt: '2026-11-04T09:00:00Z',
+      },
+    ];
+
+    const result = selectShowcaseProducts(demoProducts);
+    assert.equal(result.all.length, 0);
+  });
+
+  it('handles dynamic count of 1 product without padding or duplicating', () => {
+    const products: TestProduct[] = [
+      {
+        _id: 'p1',
+        title: 'Apple iPhone 14',
+        slug: 'apple-iphone-14',
+        brand: 'Apple',
+        featured: true,
+        status: 'published',
+        createdAt: '2026-11-04T10:00:00Z',
+      },
+    ];
+
+    const result = selectShowcaseProducts(products);
+    assert.equal(result.all.length, 1);
+    assert.equal(result.recent.length, 1);
+    assert.equal(result.editorsChoice.length, 0); // deduplicated because p1 is already in recent
+    assert.equal(result.all[0]._id, 'p1');
+  });
+
+  it('handles dynamic count of 3 products without forcing 6 cards', () => {
+    const products: TestProduct[] = [
+      { _id: '1', title: 'P1', slug: 'p1', featured: true, status: 'published', createdAt: '2026-11-04T10:00:00Z' },
+      { _id: '2', title: 'P2', slug: 'p2', featured: false, status: 'published', createdAt: '2026-11-04T09:00:00Z' },
+      { _id: '3', title: 'P3', slug: 'p3', featured: true, status: 'published', createdAt: '2026-11-04T08:00:00Z' },
+    ];
+
+    const result = selectShowcaseProducts(products);
+    assert.equal(result.all.length, 3);
+    assert.deepEqual(result.all.map((p) => p._id), ['1', '2', '3']);
+  });
+
+  it('selects 3 recent + 3 editors choice when 6+ products exist without duplicates', () => {
     const products: TestProduct[] = [
       { _id: '1', title: 'P1', slug: 'p1', featured: false, status: 'published', createdAt: '2026-11-04T10:00:00Z' },
       { _id: '2', title: 'P2', slug: 'p2', featured: false, status: 'published', createdAt: '2026-11-04T09:00:00Z' },
@@ -67,58 +149,31 @@ describe('Homepage Showcase 6-Product Selection', () => {
       { _id: '4', title: 'P4', slug: 'p4', featured: true,  status: 'published', createdAt: '2026-11-04T07:00:00Z' },
       { _id: '5', title: 'P5', slug: 'p5', featured: true,  status: 'published', createdAt: '2026-11-04T06:00:00Z' },
       { _id: '6', title: 'P6', slug: 'p6', featured: true,  status: 'published', createdAt: '2026-11-04T05:00:00Z' },
-      { _id: '7', title: 'P7', slug: 'p7', featured: false, status: 'published', createdAt: '2026-11-04T04:00:00Z' },
+      { _id: '7', title: 'P7', slug: 'p7', featured: true,  status: 'published', createdAt: '2026-11-04T04:00:00Z' },
     ];
 
-    const result = selectShowcaseProducts(products, 6);
+    const result = selectShowcaseProducts(products);
     assert.equal(result.recent.length, 3);
     assert.equal(result.editorsChoice.length, 3);
     assert.equal(result.all.length, 6);
-
-    const ids = result.all.map((p) => p._id);
-    assert.deepEqual(ids, ['1', '2', '3', '4', '5', '6']);
-    const uniqueIds = new Set(ids);
-    assert.equal(uniqueIds.size, 6);
-  });
-
-  it('deduplicates when a product is both among the 3 newest AND featured', () => {
-    // P1 and P2 are recent AND featured
-    const products: TestProduct[] = [
-      { _id: '1', title: 'P1', slug: 'p1', featured: true,  status: 'published', createdAt: '2026-11-04T10:00:00Z' },
-      { _id: '2', title: 'P2', slug: 'p2', featured: true,  status: 'published', createdAt: '2026-11-04T09:00:00Z' },
-      { _id: '3', title: 'P3', slug: 'p3', featured: false, status: 'published', createdAt: '2026-11-04T08:00:00Z' },
-      { _id: '4', title: 'P4', slug: 'p4', featured: true,  status: 'published', createdAt: '2026-11-04T07:00:00Z' },
-      { _id: '5', title: 'P5', slug: 'p5', featured: true,  status: 'published', createdAt: '2026-11-04T06:00:00Z' },
-      { _id: '6', title: 'P6', slug: 'p6', featured: true,  status: 'published', createdAt: '2026-11-04T05:00:00Z' },
-    ];
-
-    const result = selectShowcaseProducts(products, 6);
-    // Recent takes 1, 2, 3
-    assert.deepEqual(result.recent.map((p) => p._id), ['1', '2', '3']);
-    // Editors Choice skips 1 and 2 (already used) and selects next eligible: 4, 5, 6
-    assert.deepEqual(result.editorsChoice.map((p) => p._id), ['4', '5', '6']);
-    assert.equal(result.all.length, 6);
-
-    const uniqueIds = new Set(result.all.map((p) => p._id));
-    assert.equal(uniqueIds.size, 6);
-  });
-
-  it('fills remaining slots with next eligible recent products if fewer than 3 featured products exist', () => {
-    // Only 1 featured product
-    const products: TestProduct[] = [
-      { _id: '1', title: 'P1', slug: 'p1', featured: false, status: 'published', createdAt: '2026-11-04T10:00:00Z' },
-      { _id: '2', title: 'P2', slug: 'p2', featured: false, status: 'published', createdAt: '2026-11-04T09:00:00Z' },
-      { _id: '3', title: 'P3', slug: 'p3', featured: false, status: 'published', createdAt: '2026-11-04T08:00:00Z' },
-      { _id: '4', title: 'P4', slug: 'p4', featured: true,  status: 'published', createdAt: '2026-11-04T07:00:00Z' },
-      { _id: '5', title: 'P5', slug: 'p5', featured: false, status: 'published', createdAt: '2026-11-04T06:00:00Z' },
-      { _id: '6', title: 'P6', slug: 'p6', featured: false, status: 'published', createdAt: '2026-11-04T05:00:00Z' },
-    ];
-
-    const result = selectShowcaseProducts(products, 6);
-    assert.equal(result.all.length, 6);
-    const uniqueIds = new Set(result.all.map((p) => p._id));
-    assert.equal(uniqueIds.size, 6);
     assert.deepEqual(result.all.map((p) => p._id), ['1', '2', '3', '4', '5', '6']);
   });
-});
 
+  it('deduplicates when recent products are also featured without padding with duplicates', () => {
+    const products: TestProduct[] = [
+      { _id: '1', title: 'P1', slug: 'p1', featured: true, status: 'published', createdAt: '2026-11-04T10:00:00Z' },
+      { _id: '2', title: 'P2', slug: 'p2', featured: true, status: 'published', createdAt: '2026-11-04T09:00:00Z' },
+      { _id: '3', title: 'P3', slug: 'p3', featured: true, status: 'published', createdAt: '2026-11-04T08:00:00Z' },
+      { _id: '4', title: 'P4', slug: 'p4', featured: true, status: 'published', createdAt: '2026-11-04T07:00:00Z' },
+    ];
+
+    const result = selectShowcaseProducts(products);
+    // Recent takes 1, 2, 3
+    assert.deepEqual(result.recent.map((p) => p._id), ['1', '2', '3']);
+    // Featured skips 1, 2, 3 and takes 4
+    assert.deepEqual(result.editorsChoice.map((p) => p._id), ['4']);
+    // Total is 4 (does NOT pad to 6)
+    assert.equal(result.all.length, 4);
+    assert.deepEqual(result.all.map((p) => p._id), ['1', '2', '3', '4']);
+  });
+});

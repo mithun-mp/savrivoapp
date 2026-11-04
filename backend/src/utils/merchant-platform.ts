@@ -11,16 +11,88 @@
 export type SupportedPlatform = 'amazon' | 'flipkart' | 'myntra' | 'ajio' | 'generic';
 
 /**
+ * Checks whether a given hostname or domain string belongs to Amazon or its shortlinks.
+ */
+export function isAmazonHost(host: string): boolean {
+  if (!host) return false;
+  const h = host.toLowerCase().trim();
+  return (
+    h === 'amazon' ||
+    h === 'link.amazon' ||
+    h.endsWith('.amazon') ||
+    h === 'amzn.in' ||
+    h === 'amzn.to' ||
+    h === 'a.co' ||
+    h.endsWith('.amzn.in') ||
+    h.endsWith('.amzn.to') ||
+    h.endsWith('.a.co') ||
+    /(?:^|\.)amazon\.[a-z.]{2,8}$/i.test(h)
+  );
+}
+
+/**
+ * Checks whether a given hostname or domain string belongs to Flipkart or its shortlinks.
+ */
+export function isFlipkartHost(host: string): boolean {
+  if (!host) return false;
+  const h = host.toLowerCase().trim();
+  return (
+    h === 'flipkart' ||
+    h === 'fkrt.it' ||
+    h.endsWith('.fkrt.it') ||
+    /(?:^|\.)flipkart\.[a-z.]{2,8}$/i.test(h)
+  );
+}
+
+/**
+ * Checks whether a given hostname or domain string belongs to Myntra.
+ */
+export function isMyntraHost(host: string): boolean {
+  if (!host) return false;
+  const h = host.toLowerCase().trim();
+  return h === 'myntra' || /(?:^|\.)myntra\.[a-z.]{2,8}$/i.test(h);
+}
+
+/**
+ * Checks whether a given hostname or domain string belongs to AJIO.
+ */
+export function isAjioHost(host: string): boolean {
+  if (!host) return false;
+  const h = host.toLowerCase().trim();
+  return h === 'ajio' || /(?:^|\.)ajio\.[a-z.]{2,8}$/i.test(h);
+}
+
+/**
  * Normalizes any merchant string, domain, or slug into a standard platform identifier.
  */
 export function normalizePlatform(input?: string): SupportedPlatform {
   if (!input) return 'generic';
   const str = String(input).toLowerCase().trim();
 
-  if (str.includes('amazon') || str.includes('amzn')) return 'amazon';
-  if (str.includes('flipkart') || str.includes('fkrt')) return 'flipkart';
-  if (str.includes('myntra')) return 'myntra';
-  if (str.includes('ajio')) return 'ajio';
+  // Try parsing as URL or host
+  try {
+    const url = str.includes('://') ? new URL(str) : new URL(`https://${str}`);
+    const host = url.hostname.toLowerCase();
+    if (isAmazonHost(host)) return 'amazon';
+    if (isFlipkartHost(host)) return 'flipkart';
+    if (isMyntraHost(host)) return 'myntra';
+    if (isAjioHost(host)) return 'ajio';
+  } catch {
+    // not a valid URL/host, continue with string token matching
+  }
+
+  if (isAmazonHost(str) || str.includes('amazon') || str.includes('amzn') || str === 'a.co') {
+    return 'amazon';
+  }
+  if (isFlipkartHost(str) || str.includes('flipkart') || str.includes('fkrt')) {
+    return 'flipkart';
+  }
+  if (isMyntraHost(str) || str.includes('myntra')) {
+    return 'myntra';
+  }
+  if (isAjioHost(str) || str.includes('ajio')) {
+    return 'ajio';
+  }
 
   return 'generic';
 }
@@ -36,13 +108,13 @@ export function validatePlatformDomain(urlStr: string, platform: SupportedPlatfo
 
     switch (platform) {
       case 'amazon':
-        return host.includes('amazon.') || host === 'amzn.in' || host === 'amzn.to';
+        return isAmazonHost(host);
       case 'flipkart':
-        return host.includes('flipkart.') || host === 'fkrt.it';
+        return isFlipkartHost(host);
       case 'myntra':
-        return host.includes('myntra.com');
+        return isMyntraHost(host);
       case 'ajio':
-        return host.includes('ajio.com');
+        return isAjioHost(host);
       case 'generic':
         return true;
       default:
@@ -77,7 +149,11 @@ export function inferProductPlatform(
   // 2. Populated sourceMerchantId
   if (product.sourceMerchantId) {
     if (typeof product.sourceMerchantId === 'object') {
-      const p = normalizePlatform(product.sourceMerchantId.slug || product.sourceMerchantId.name || product.sourceMerchantId.websiteUrl);
+      const p = normalizePlatform(
+        product.sourceMerchantId.slug ||
+        product.sourceMerchantId.name ||
+        product.sourceMerchantId.websiteUrl
+      );
       if (p !== 'generic') return p;
     }
   }
@@ -99,7 +175,11 @@ export function inferProductPlatform(
       if (p !== 'generic') return p;
     }
     if (primaryOffer.merchantId && typeof primaryOffer.merchantId === 'object') {
-      const p = normalizePlatform(primaryOffer.merchantId.slug || primaryOffer.merchantId.name);
+      const p = normalizePlatform(
+        primaryOffer.merchantId.slug ||
+        primaryOffer.merchantId.name ||
+        primaryOffer.merchantId.websiteUrl
+      );
       if (p !== 'generic') return p;
     }
   }
@@ -136,11 +216,16 @@ export function isOfferAllowedForProduct(product: any, offer: any): boolean {
     offerPlatform = normalizePlatform(
       offer.merchantId.slug || offer.merchantId.name || offer.merchantId.websiteUrl
     );
-  } else if (offer.productUrl) {
+  }
+  if (offerPlatform === 'generic' && offer.productUrl) {
     offerPlatform = normalizePlatform(offer.productUrl);
   }
+  if (offerPlatform === 'generic' && offer.affiliateUrl) {
+    offerPlatform = normalizePlatform(offer.affiliateUrl);
+  }
 
-  if (targetPlatform !== 'generic' && offerPlatform !== targetPlatform) {
+  // Reject cross-platform mismatch
+  if (targetPlatform !== 'generic' && offerPlatform !== 'generic' && offerPlatform !== targetPlatform) {
     return false;
   }
 
@@ -164,4 +249,3 @@ export function filterOffersForProduct(product: any, offers: any[]): any[] {
   if (!Array.isArray(offers) || offers.length === 0) return [];
   return offers.filter((offer) => isOfferAllowedForProduct(product, offer));
 }
-

@@ -1,5 +1,11 @@
 import { URL } from 'node:url';
 import type { MerchantType } from './product-import.types';
+import {
+  isAmazonHost,
+  isFlipkartHost,
+  isMyntraHost,
+  isAjioHost,
+} from '../../utils/merchant-platform';
 
 export interface DetectedMerchantInfo {
   merchantType: MerchantType;
@@ -99,9 +105,9 @@ export function detectMerchant(inputUrl: string): DetectedMerchantInfo {
   const host = urlObj.hostname.toLowerCase();
 
   // 1. Amazon detection
-  if (host.includes('amazon.') || host === 'amzn.in' || host === 'amzn.to') {
+  if (isAmazonHost(host)) {
     const asin = extractAmazonAsin(inputUrl);
-    const isIndia = host.endsWith('.in') || inputUrl.includes('amazon.in');
+    const isIndia = host.endsWith('.in') || host.endsWith('.amzn.in') || inputUrl.includes('amazon.in');
     const merchantName = isIndia ? 'Amazon India' : 'Amazon';
     const canonicalDomain = isIndia ? 'https://www.amazon.in' : 'https://www.amazon.com';
     const canonicalUrl = asin ? `${canonicalDomain}/dp/${asin}` : cleanGenericTrackingParams(inputUrl);
@@ -116,7 +122,7 @@ export function detectMerchant(inputUrl: string): DetectedMerchantInfo {
   }
 
   // 2. Flipkart detection
-  if (host.includes('flipkart.') || host === 'fkrt.it') {
+  if (isFlipkartHost(host)) {
     const pid = extractFlipkartPid(inputUrl);
     // Build clean canonical URL
     let canonicalUrl: string;
@@ -141,7 +147,7 @@ export function detectMerchant(inputUrl: string): DetectedMerchantInfo {
   }
 
   // 3. Myntra detection
-  if (host.includes('myntra.com')) {
+  if (isMyntraHost(host)) {
     return {
       merchantType: 'myntra',
       merchantName: 'Myntra',
@@ -151,7 +157,7 @@ export function detectMerchant(inputUrl: string): DetectedMerchantInfo {
   }
 
   // 4. AJIO detection
-  if (host.includes('ajio.com')) {
+  if (isAjioHost(host)) {
     return {
       merchantType: 'ajio',
       merchantName: 'AJIO',
@@ -168,4 +174,3 @@ export function detectMerchant(inputUrl: string): DetectedMerchantInfo {
     domain: host,
   };
 }
-
